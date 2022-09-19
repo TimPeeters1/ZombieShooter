@@ -26,19 +26,13 @@ APlayerPawn::APlayerPawn()
 
 	FP_ArmModel = CreateDefaultSubobject<USkeletalMeshComponent>("FP_ArmModel");
 	FP_ArmModel->SetupAttachment(FP_WeaponSway);
-	
-	//Main_WeaponComponent = CreateDefaultSubobject<UWeaponComponent_Base>("Main_WeaponComponent");
-	FP_WeaponModel = CreateDefaultSubobject<USkeletalMeshComponent>("FP_WeaponModel");
-	FP_WeaponModel->SetupAttachment(FP_ArmModel, (FName)"GripPoint");
-
-
 }
 
 // Called when the game starts or when spawned
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (this->IsLocallyControlled()) 
 		GetMesh()->SetVisibility(false, true);
 	else

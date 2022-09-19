@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-//#include "WeaponComponent_Base.h"
+#include "WeaponComponent_Base.h"
 //#include "WeaponData.h"
 #include "PlayerPawn.generated.h"
 
@@ -39,11 +39,11 @@ protected:
 
 	/*Weapon Handling*/
 	//Weapon Logic Component
-	//UPROPERTY(Category = "Weapons|Main Weapon Component", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	//TObjectPtr<UWeaponComponent_Base> Main_WeaponComponent;
+	UPROPERTY(Category = "Weapons|Main Weapon Component", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UWeaponComponent_Base> Main_WeaponComponent;
 
-	UPROPERTY(Category = "Weapons|FP_WeaponModel", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USkeletalMeshComponent> FP_WeaponModel;
+	//UPROPERTY(Category = "Weapons|FP_WeaponModel", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	//TObjectPtr<USkeletalMeshComponent> FP_WeaponModel;
 
 	//Equipped Gun Asset
 	//UPROPERTY(Category = "Weapons|Equipped Weapon Data", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

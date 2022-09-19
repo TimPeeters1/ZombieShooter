@@ -17,5 +17,8 @@ public:
 		FName WeaponName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USkeletalMesh* WeaponModel; 
+		UStaticMesh* WeaponModel; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FTransform FP_Model_Transform;
 };

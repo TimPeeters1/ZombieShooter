@@ -21,4 +21,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FTransform FP_Model_Transform;
+
+	UPROPERTY(Category = "Ammo",EditAnywhere, BlueprintReadWrite)
+		uint8 Weapon_Max_Ammo;
+	   
 };

@@ -26,10 +26,6 @@ public:
 	float LookUp_Rate = 45;
 
 protected:
-
-	//First Person Camera
-	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCameraComponent> FP_PlayerCamera;
 	//Camera Arm for Simple Weapon Sway.
 	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> FP_WeaponSway;
@@ -59,6 +55,10 @@ protected:
 	void Look_Up(float AxisValue);
 
 public:	
+	//First Person Camera
+	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCameraComponent> FP_PlayerCamera;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

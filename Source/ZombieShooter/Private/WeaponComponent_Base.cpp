@@ -1,6 +1,8 @@
 
 #include "WeaponComponent_Base.h"
 
+#include "PlayerPawn.h"
+
 
 void UWeaponComponent_Base::SetEquippedWeapon(UWeaponData* NewWeapon)
 {
@@ -10,25 +12,33 @@ void UWeaponComponent_Base::SetEquippedWeapon(UWeaponData* NewWeapon)
 	this->SetRelativeTransform(EquippedWeapon->FP_Model_Transform);
 };
 
-void UWeaponComponent_Base::FireWeapon()
+void UWeaponComponent_Base::Server_FireWeapon_Implementation() 
 {
-	FVector CameraLocation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
+	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+	FHitResult HitResult(ForceInit);
 
-	FHitResult Hit(ForceInit);
-	FVector Start = CameraLocation;
-
-	ACharacter* PlayerParent = (ACharacter*)GetOwner();
-
-	if (PlayerParent) {
+	if (ParentPawn) {
 		//TODO Add Gun Range
-		FVector End = Start + (UKismetMathLibrary::GetForwardVector(PlayerParent->GetControlRotation()) * 10000.0f);
+		FVector StartLoc = ParentPawn->FP_PlayerCamera->GetComponentLocation();
+		FVector ControlRot = ParentPawn->GetControlRotation().Vector();
+		FVector EndLoc = StartLoc + ControlRot;
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, ParentPawn->GetControlRotation().ToString());
 
 		FCollisionQueryParams CollisionParams;
 
-		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false , 2.f, false, 4.f);
+		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
-		GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_WorldDynamic, CollisionParams);
+		//GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
+
+		//TODO Add Gun Damage
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
 	}
+}
+
+bool UWeaponComponent_Base::Server_FireWeapon_Validate() {
+	return true;
 }
 
 void UWeaponComponent_Base::ReloadWeapon()

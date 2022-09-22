@@ -5,9 +5,14 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 
 #include "WeaponData.h"
+
 #include "WeaponComponent_Base.generated.h"
+
+class APlayerPawn;
+
 /**
  * 
  */
@@ -29,15 +34,19 @@ public:
 		UWeaponData* EquippedWeapon;
 
 	//UFUNCTION(BlueprintCallable)
-	//FORCEINLINE class UWeaponData* GetEquippedWeapon() const { return EquippedWeapon; }
+	//FORCEINLINE class UWeaponData* GetEquippedWeapon() const { return EquippedWeapon;
 
 	//Weapon Switching
 	UFUNCTION(BlueprintCallable, meta=(DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
 	void SetEquippedWeapon(UPARAM(ref) UWeaponData* NewWeapon);
 
 	//Weapon Functionality
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
-	void FireWeapon();
+	UFUNCTION(Server, reliable, WithValidation, 
+		BlueprintCallable, meta = (DisplayName = "Server Fire Weapon"), Category = "WeaponFunctions")
+	void Server_FireWeapon();
+
+	void Server_FireWeapon_Implementation();
+	bool Server_FireWeapon_Validate();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reloead Weapon"), Category = "WeaponFunctions")
 	void ReloadWeapon();

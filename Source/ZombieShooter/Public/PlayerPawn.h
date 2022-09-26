@@ -6,8 +6,8 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "WeaponComponent_Base.h"
-//#include "WeaponData.h"
+#include "PlayerWeaponComponent.h"
+
 #include "PlayerPawn.generated.h"
 
 
@@ -26,9 +26,13 @@ public:
 	float LookUp_Rate = 45;
 
 protected:
+	//First Person Camera
+	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* FP_PlayerCamera;
+
 	//Camera Arm for Simple Weapon Sway.
 	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USpringArmComponent> FP_WeaponSway;
+	USpringArmComponent* FP_WeaponSway;
 	//First Person Arms Model
 	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> FP_ArmModel;
@@ -36,10 +40,10 @@ protected:
 	/*Weapon Handling*/
 	//Weapon Logic Component
 	UPROPERTY(Category = "Weapons|Main Weapon Component", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UWeaponComponent_Base> Main_WeaponComponent;
+	UPlayerWeaponComponent* PlayerWeaponComponent;
 
-	//UPROPERTY(Category = "Weapons|FP_WeaponModel", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	//TObjectPtr<USkeletalMeshComponent> FP_WeaponModel;
+	UPROPERTY(Category = "Weapons|FP_WeaponModel", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> FP_WeaponModel;
 
 	//Equipped Gun Asset
 	//UPROPERTY(Category = "Weapons|Equipped Weapon Data", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -55,9 +59,9 @@ protected:
 	void Look_Up(float AxisValue);
 
 public:	
-	//First Person Camera
-	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCameraComponent> FP_PlayerCamera;
+
+	/** Returns FP_Camera subobject **/
+	FORCEINLINE class UCameraComponent* GetFPCamera() const { return FP_PlayerCamera; }
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

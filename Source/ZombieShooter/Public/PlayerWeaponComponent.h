@@ -7,9 +7,9 @@
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
-#include "WeaponData.h"
 
-#include "WeaponComponent_Base.generated.h"
+
+#include "PlayerWeaponComponent.generated.h"
 
 class APlayerPawn;
 
@@ -18,15 +18,9 @@ class APlayerPawn;
  */
 
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
-class ZOMBIESHOOTER_API UWeaponComponent_Base : public UStaticMeshComponent
+class ZOMBIESHOOTER_API UPlayerWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
-protected:
-	UPROPERTY(Category = "Weapons|Ammunition", EditAnywhere, BlueprintReadWrite)
-		uint8 Ammo_Max;
-	UPROPERTY(Category = "Weapons|Ammunition", VisibleAnywhere, BlueprintReadWrite)
-		uint8 Ammo_Current;
 
 public:
 	//Equipped Weapon Data
@@ -48,7 +42,7 @@ public:
 	void Server_FireWeapon_Implementation();
 	bool Server_FireWeapon_Validate();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reloead Weapon"), Category = "WeaponFunctions")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
 	void ReloadWeapon();
 };
 

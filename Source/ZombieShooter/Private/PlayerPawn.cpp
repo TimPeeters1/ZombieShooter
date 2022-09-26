@@ -10,13 +10,13 @@ APlayerPawn::APlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	//Init Camera
-	FP_PlayerCamera = CreateDefaultSubobject<UCameraComponent>("FP_PlayerCamera");
+	FP_PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
 	FP_PlayerCamera->SetupAttachment(RootComponent);
-	FP_PlayerCamera->SetWorldLocation(FVector(0, 0, 65));
+	FP_PlayerCamera->SetRelativeLocation(FVector(0, 0, 65.0f));
 	FP_PlayerCamera->bUsePawnControlRotation = true;
 
 	//Init SpringArm and Set Variables to act as WeaponSway Component.
-	FP_WeaponSway = CreateDefaultSubobject<USpringArmComponent>("FP_SpringArm");
+	FP_WeaponSway = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	FP_WeaponSway->SetupAttachment(FP_PlayerCamera);
 	FP_WeaponSway->TargetArmLength = (float)0;
 	FP_WeaponSway->bDoCollisionTest = false;
@@ -24,8 +24,13 @@ APlayerPawn::APlayerPawn()
 	FP_WeaponSway->bEnableCameraRotationLag = true;
 	FP_WeaponSway->CameraRotationLagSpeed = (float)30;
 
-	FP_ArmModel = CreateDefaultSubobject<USkeletalMeshComponent>("FP_ArmModel");
+	FP_ArmModel = CreateDefaultSubobject<USkeletalMeshComponent>("ArmModel");
 	FP_ArmModel->SetupAttachment(FP_WeaponSway);
+
+	FP_WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
+	FP_WeaponModel->SetupAttachment(FP_ArmModel, TEXT("GripPoint"));
+
+	PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
 }
 
 // Called when the game starts or when spawned
@@ -51,11 +56,15 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	//Movement
 	PlayerInputComponent->BindAxis("MoveX", this, &APlayerPawn::Move_XAxis);
 	PlayerInputComponent->BindAxis("MoveY", this, &APlayerPawn::Move_YAxis);
 
 	PlayerInputComponent->BindAxis("Turn", this, &APlayerPawn::Turn_Character);
 	PlayerInputComponent->BindAxis("LookUp", this, &APlayerPawn::Look_Up);
+
+	//Weapon Component
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::Server_FireWeapon);
 }
 
 void APlayerPawn::Move_XAxis(float AxisValue) {

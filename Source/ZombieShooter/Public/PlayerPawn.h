@@ -35,7 +35,7 @@ protected:
 	USpringArmComponent* FP_WeaponSway;
 	//First Person Arms Model
 	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USkeletalMeshComponent> FP_ArmModel;
+	USkeletalMeshComponent* FP_ArmModel;
 
 	/*Weapon Handling*/
 	//Weapon Logic Component
@@ -43,7 +43,7 @@ protected:
 	UPlayerWeaponComponent* PlayerWeaponComponent;
 
 	UPROPERTY(Category = "Weapons|FP_WeaponModel", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> FP_WeaponModel;
+	UStaticMeshComponent* FP_WeaponModel;
 
 	//Equipped Gun Asset
 	//UPROPERTY(Category = "Weapons|Equipped Weapon Data", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -59,10 +59,6 @@ protected:
 	void Look_Up(float AxisValue);
 
 public:	
-
-	/** Returns FP_Camera subobject **/
-	FORCEINLINE class UCameraComponent* GetFPCamera() const { return FP_PlayerCamera; }
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

@@ -20,19 +20,17 @@ void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 	if (ParentPawn != nullptr) {
 
 		//TODO FIX STARTLOC w/ Actual Camera loc!
-		//FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 65.0f);
+		FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 65.0f);
 
-		FVector StartLoc = ParentPawn->GetActorLocation();
-
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, ParentPawn->GetFPCamera()->GetName());
+		//if (GEngine)
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, ParentPawn->GetFPCamera()->GetName());
 
 		//TODO Add Gun Range
 		FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
 		FVector EndLoc = StartLoc + ControlRot;
 
 		FCollisionQueryParams CollisionParams;
-
+		 
 		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);

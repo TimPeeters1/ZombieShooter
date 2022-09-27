@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
-
+#include "WeaponObject.h"
 
 #include "PlayerWeaponComponent.generated.h"
 
@@ -22,17 +22,29 @@ class ZOMBIESHOOTER_API UPlayerWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+protected:
+	//StartingWeapons
+	UPROPERTY(Category = "Weapons|Equipped Weapons ", EditAnywhere, BlueprintReadWrite)
+	TArray<UWeaponData*> StartingWeapons;
+
 	//Equipped Weapon Data
-	UPROPERTY(Category = "Weapons|Equipped Weapon Data", EditAnywhere, BlueprintReadWrite)
-		UWeaponData* EquippedWeapon;
+	UPROPERTY(Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
+	TArray<AWeaponObject*> EquippedWeapons;
+
+	//Equipped Weapon Data
+	UPROPERTY(Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
+	AWeaponObject* ActiveWeapon;
+
+public:
 
 	//UFUNCTION(BlueprintCallable)
 	//FORCEINLINE class UWeaponData* GetEquippedWeapon() const { return EquippedWeapon;
 
 	//Weapon Switching
-	UFUNCTION(BlueprintCallable, meta=(DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
-	void SetEquippedWeapon(UPARAM(ref) UWeaponData* NewWeapon);
+	//UFUNCTION(BlueprintCallable, meta=(DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
+	//void SetEquippedWeapon(UPARAM(ref) AWeaponObject* NewWeapon);
+
+	void SetEquippedWeapon(uint8 Index);
 
 	//Weapon Functionality
 	UFUNCTION(Server, reliable, WithValidation, 
@@ -44,6 +56,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
 	void ReloadWeapon();
+
+	virtual void BeginPlay() override;
 };
 
 

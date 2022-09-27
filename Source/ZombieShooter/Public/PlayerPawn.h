@@ -26,6 +26,7 @@ public:
 	float LookUp_Rate = 45;
 
 protected:
+
 	//First Person Camera
 	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FP_PlayerCamera;
@@ -33,21 +34,18 @@ protected:
 	//Camera Arm for Simple Weapon Sway.
 	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* FP_WeaponSway;
+
 	//First Person Arms Model
 	UPROPERTY(Category = "Character|First Person Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* FP_ArmModel;
 
-	/*Weapon Handling*/
-	//Weapon Logic Component
-	UPROPERTY(Category = "Weapons|Main Weapon Component", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UPlayerWeaponComponent* PlayerWeaponComponent;
-
-	UPROPERTY(Category = "Weapons|FP_WeaponModel", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "Weapons|FP_WeaponModel", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* FP_WeaponModel;
 
-	//Equipped Gun Asset
-	//UPROPERTY(Category = "Weapons|Equipped Weapon Data", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	//TObjectPtr<UWeaponData> StartingWeapon;
+	/*Weapon Handling*/
+	//Weapon Logic Component
+	UPROPERTY(Category = "Weapons|Player Weapon Component", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPlayerWeaponComponent* PlayerWeaponComponent;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -59,6 +57,9 @@ protected:
 	void Look_Up(float AxisValue);
 
 public:	
+	/** Returns Current FP Weapon Model **/
+	FORCEINLINE class UStaticMeshComponent* GetWeaponModel() const { return FP_WeaponModel; }
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

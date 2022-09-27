@@ -9,7 +9,7 @@
 
 #include "WeaponObject.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API AWeaponObject : public AActor
 {
 	GENERATED_BODY()
@@ -18,12 +18,24 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponObject();
 
+	UPROPERTY(Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
+	UWeaponData* WeaponData;
+
+	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadOnly)
+	uint8 MaxAmmo;
+	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+	uint8 CurrentAmmo;
+
+	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* WeaponModel;
 protected:
-	// Called when the game starts or when spawned
+
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
+
 	virtual void Tick(float DeltaTime) override;
+
 
 };

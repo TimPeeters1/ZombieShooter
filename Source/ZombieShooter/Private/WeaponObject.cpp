@@ -16,8 +16,6 @@ void AWeaponObject::OnConstruction(const FTransform& Transform)
 {
 	if (WeaponData != nullptr) {
 		WeaponModel->SetStaticMesh(WeaponData->WeaponModel);
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, WeaponData->WeaponModel->GetName());
 	}
 }
 

@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "GenericHealthComponent.h"
+
 #include "ZombiePawn.generated.h"
+
 
 UCLASS()
 class ZOMBIESHOOTER_API AZombiePawn : public ACharacter
@@ -15,14 +19,11 @@ public:
 	// Sets default values for this character's properties
 	AZombiePawn();
 
-	UPROPERTY(Category = "Health", EditAnywhere, BlueprintReadWrite)
-	float MaxHealth = 100;
-	UPROPERTY(Category = "Health", EditAnywhere, BlueprintReadWrite)
-	float Health;
-
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	/*Health*/
+	//Health Component
+	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UGenericHealthComponent* HealthComponent;
 
 	virtual float TakeDamage
 	(
@@ -32,13 +33,15 @@ protected:
 		AActor* DamageCauser
 	) override;
 
+	virtual void BeginPlay() override;
 
-public:	
 
-	// Called every frame
+public:
+
+	void OnDeath();
+
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

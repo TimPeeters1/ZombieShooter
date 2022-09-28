@@ -31,6 +31,7 @@ APlayerPawn::APlayerPawn()
 	FP_WeaponModel->SetupAttachment(FP_ArmModel, TEXT("GripPoint"));
 
 	PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
 }
 
 // Called when the game starts or when spawned
@@ -83,5 +84,13 @@ void APlayerPawn::Turn_Character(float AxisValue) {
 void APlayerPawn::Look_Up(float AxisValue) {
 	AddControllerPitchInput(AxisValue * LookUp_Rate * FApp::GetDeltaTime());
 }
+
+float APlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	HealthComponent->ReduceHealth(DamageAmount);
+
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
 
 

@@ -18,7 +18,7 @@ void UPlayerWeaponComponent::BeginPlay()
 
 			if (NewWeaponObject) {
 				NewWeaponObject->WeaponData = StartingWeapons[i];
-		
+
 				UGameplayStatics::FinishSpawningActor(NewWeaponObject, NewWeaponObject->GetTransform());
 
 				NewWeaponObject->GetRootComponent()->ToggleVisibility(true);
@@ -59,13 +59,19 @@ void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 		FVector EndLoc = StartLoc + ControlRot;
 
 		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(GetOwner());
 
 		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
-		//TODO Add Gun Damage
-		UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+		if (HitResult.GetActor()) {
+			//FString hitRes = HitResult.GetActor()->GetName();
+			//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+
+			//TODO Add Gun Damage
+			UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+		}
 	}
 }
 

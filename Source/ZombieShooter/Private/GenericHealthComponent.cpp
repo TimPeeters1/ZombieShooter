@@ -37,9 +37,7 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 
 void UGenericHealthComponent::Death()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health);
-	if (GetOwner())
-		GetOwner()->Destroy();
+	UE_LOG(LogTemp, Warning, TEXT("DEATH!"));
 }
 
 

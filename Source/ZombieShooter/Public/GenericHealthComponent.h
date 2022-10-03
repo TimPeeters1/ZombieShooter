@@ -26,11 +26,13 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	UDELEGATE(BlueprintAuthorityOnly)
+		DECLARE_DELEGATE(OnDeathEvent);
 
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);
 
-	void Death();
+	void OnDeath();
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

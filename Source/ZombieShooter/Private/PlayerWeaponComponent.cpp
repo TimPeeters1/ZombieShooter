@@ -66,8 +66,8 @@ void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
 		if (HitResult.GetActor()) {
-			//FString hitRes = HitResult.GetActor()->GetName();
-			//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+			FString hitRes = HitResult.GetActor()->GetName();
+			UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
 
 			//TODO Add Gun Damage
 			UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());

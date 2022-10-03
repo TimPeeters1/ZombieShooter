@@ -19,7 +19,6 @@ void AZombiePawn::BeginPlay()
 
 }
 
-
 float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if(HealthComponent)

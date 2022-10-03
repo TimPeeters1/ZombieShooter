@@ -87,6 +87,7 @@ void APlayerPawn::Look_Up(float AxisValue) {
 
 float APlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+
 	HealthComponent->ReduceHealth(DamageAmount);
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);

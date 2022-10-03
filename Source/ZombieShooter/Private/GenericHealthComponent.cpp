@@ -9,7 +9,6 @@ UGenericHealthComponent::UGenericHealthComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Health = MaxHealth;
-
 }
 
 
@@ -17,11 +16,14 @@ UGenericHealthComponent::UGenericHealthComponent()
 void UGenericHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//OnDeathEvent.Bind("OnDeath");
 }
 
 void UGenericHealthComponent::AddHealth(float Addition)
 {
 	Health += Addition;
+	UE_LOG(LogTemp, Warning, TEXT("Added Health: %f"), Addition);
 	if (Health > MaxHealth)
 		Health = MaxHealth;
 }
@@ -29,17 +31,12 @@ void UGenericHealthComponent::AddHealth(float Addition)
 void UGenericHealthComponent::ReduceHealth(float Deduction)
 {
 	Health -= Deduction;
+	UE_LOG(LogTemp, Warning, TEXT("Reduced Health: %f"), Deduction);
 	if (Health <= 0) {
 		Health = 0;
-		Death();
+		//OnDeathEvent.Execute();
 	}
 }
-
-void UGenericHealthComponent::Death()
-{
-	UE_LOG(LogTemp, Warning, TEXT("DEATH!"));
-}
-
 
 // Called every frame
 void UGenericHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

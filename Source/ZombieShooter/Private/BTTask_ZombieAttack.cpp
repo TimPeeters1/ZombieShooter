@@ -31,8 +31,8 @@ EBTNodeResult::Type UBTTask_ZombieAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
 	if (HitResult.GetActor()) {
-		//FString hitRes = HitResult.GetActor()->GetName();
-		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+		FString hitRes = HitResult.GetActor()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
 
 		UGameplayStatics::ApplyDamage(HitResult.GetActor(), AttackDamage, AIController, OwnerPawn, UDamageType::StaticClass());
 	}

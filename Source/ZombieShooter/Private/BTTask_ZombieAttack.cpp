@@ -38,7 +38,6 @@ EBTNodeResult::Type UBTTask_ZombieAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 	}
 
 	return EBTNodeResult::Succeeded;
-
 }
 
 

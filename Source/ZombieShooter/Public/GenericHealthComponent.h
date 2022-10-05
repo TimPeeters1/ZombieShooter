@@ -20,7 +20,6 @@ public:
 	UGenericHealthComponent();
 
 protected:
-
 	UPROPERTY(Category = "Health", EditAnywhere, BlueprintReadWrite)
 		float MaxHealth = 100;
 	UPROPERTY(Category = "Health", EditAnywhere, BlueprintReadWrite)

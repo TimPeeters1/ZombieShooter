@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API ASpawnBox : public ASpawnObject
 {
 	GENERATED_BODY()

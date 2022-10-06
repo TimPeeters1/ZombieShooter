@@ -3,6 +3,9 @@
 
 #include "SpawnObject.h"
 
+#include "GameFramework/Character.h"
+
+
 // Sets default values
 ASpawnObject::ASpawnObject()
 {
@@ -16,6 +19,18 @@ void ASpawnObject::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+FTransform ASpawnObject::GetSpawnTransform()
+{
+	return GetActorTransform();
+}
+
+void ASpawnObject::SpawnEnemy(TSubclassOf<class ACharacter> EnemyType, FTransform* SpawnTransform)
+{
+	//FActorSpawnParameters SpawnParameters;
+	//SpawnParameters.Name = MakeUniqueObjectName(this, EnemyType, FName("Zombie_AI"));
+	AActor* SpawnedEnemy = (AActor*)GetWorld()->SpawnActor(EnemyType, SpawnTransform);
 }
 
 // Called every frame

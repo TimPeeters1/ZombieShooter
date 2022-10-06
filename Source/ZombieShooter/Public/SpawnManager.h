@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SpawnArea.h"
+#include "SpawnObject.h"
 
 #include "SpawnManager.generated.h"
 
@@ -19,8 +20,8 @@ public:
 
 	UPROPERTY(Category = "Spawning|Enemies", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class ACharacter>> SpawnableEnemies;
-
-	UPROPERTY(Category = "Spawning|Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	
+	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<ASpawnArea*> SpawnAreas;
 
 protected:
@@ -29,7 +30,7 @@ protected:
 
 public:	
 	
-	void SpawnEnemies();
+	void InitWave();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

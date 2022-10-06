@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SpawnObject.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API ASpawnObject : public AActor
 {
 	GENERATED_BODY()
@@ -17,14 +17,15 @@ public:
 
 protected:
 
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
 
+	void SpawnEnemy(TSubclassOf<class ACharacter> EnemyType, FTransform* SpawnTransform);
 
-	// Called every frame
+	virtual FTransform GetSpawnTransform();
+
 	virtual void Tick(float DeltaTime) override;
 
 };

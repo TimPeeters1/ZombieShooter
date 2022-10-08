@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "DrawDebugHelpers.h"
+#include "GameMode_Main.h"
+#include "PlayerPawn.h"
 #include "SpawnArea.h"
 #include "SpawnObject.h"
 
@@ -13,26 +16,39 @@ UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API ASpawnManager : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
 	ASpawnManager();
 
+	//Wave Settings
+	UPROPERTY(Category = "Spawning|Enemies|WaveSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		uint8 MinWaveSize = 5;
+	UPROPERTY(Category = "Spawning|Enemies|WaveSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		uint8 MaxWaveSize = 10;
+
 	UPROPERTY(Category = "Spawning|Enemies", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TArray<TSubclassOf<class ACharacter>> SpawnableEnemies;
-	
+		TArray<TSubclassOf<class ACharacter>> SpawnableEnemies;
+
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TArray<ASpawnArea*> SpawnAreas;
+		TArray<ASpawnArea*> SpawnAreas;
+
+	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		float AreaSweepRange = 1500.0f;
+
+	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		bool bDrawDebug = false;
 
 protected:
-	// Called when the game starts or when spawned
+	FTimerHandle PlayerSweepTimer;
+
 	virtual void BeginPlay() override;
 
-public:	
-	
+public:
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "InitWave"), Category = "Spawning")
 	void InitWave();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "AreaSweep"), Category = "Spawning")
+	void AreaSweep();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };

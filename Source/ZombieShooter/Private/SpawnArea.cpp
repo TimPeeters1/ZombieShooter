@@ -33,3 +33,14 @@ bool ASpawnArea::SetAreaStatus(bool bActive)
 	return bAreaActive;
 }
 
+bool ASpawnArea::ContainsPlayers()
+{
+	return bContainsPlayers;
+}
+
+bool ASpawnArea::SetContainsPlayers(bool bActive)
+{
+	bContainsPlayers = bActive;
+	return bContainsPlayers;
+}
+

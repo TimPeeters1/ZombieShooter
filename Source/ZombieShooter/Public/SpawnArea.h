@@ -22,6 +22,9 @@ private:
 	UPROPERTY(Category = "Spawning|ActiveArea", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bAreaActive = false;
 
+	UPROPERTY(Category = "Spawning|ActiveArea", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bContainsPlayers = false;
+
 public:
 	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<ASpawnObject*> SpawnPoints;
@@ -33,6 +36,11 @@ public:
 	bool GetAreaStatus();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetAreaStatus"), Category = "Spawning|ActiveArea")
 	bool SetAreaStatus(bool bActive);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetContainsPlayers"), Category = "Spawning|ActiveArea")
+		bool ContainsPlayers();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetContainsPlayers"), Category = "Spawning|ActiveArea")
+		bool SetContainsPlayers(bool bActive);
 
 	virtual void BeginPlay() override;
 };

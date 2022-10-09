@@ -29,7 +29,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintAssignable)
-		FDeathEvent OnDeath;
+	FDeathEvent OnDeath;
 
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);

@@ -22,9 +22,9 @@ public:
 
 	//Wave Settings
 	UPROPERTY(Category = "Spawning|Enemies|WaveSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		uint8 MinWaveSize = 5;
+		uint8 MinWaveSize = 20;
 	UPROPERTY(Category = "Spawning|Enemies|WaveSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		uint8 MaxWaveSize = 10;
+		uint8 MaxWaveSize = 30;
 
 	UPROPERTY(Category = "Spawning|Enemies", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		TArray<TSubclassOf<class ACharacter>> SpawnableEnemies;
@@ -34,12 +34,17 @@ public:
 
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		float AreaSweepRange = 1500.0f;
-
+	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		float AreaSweepTimer = 2.0f;
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bDrawDebug = false;
 
+	UPROPERTY(Category = "Spawning|Active Areas", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<ASpawnArea*> ActiveAreaSet;
+
 protected:
 	FTimerHandle PlayerSweepTimer;
+
 
 	virtual void BeginPlay() override;
 

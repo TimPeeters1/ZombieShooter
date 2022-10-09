@@ -2,14 +2,19 @@
 
 #include "CoreMinimal.h"
 #include "Components/StaticMeshComponent.h"
+
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
 #include "WeaponObject.h"
 
 #include "PlayerWeaponComponent.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent);
 
 class APlayerPawn;
 
@@ -22,6 +27,9 @@ class ZOMBIESHOOTER_API UPlayerWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	UPlayerWeaponComponent();
+
 protected:
 	//StartingWeapons
 	UPROPERTY(Category = "Weapons|Equipped Weapons ", EditAnywhere, BlueprintReadWrite)
@@ -32,32 +40,38 @@ protected:
 	TArray<AWeaponObject*> EquippedWeapons;
 
 	//Equipped Weapon Data
-	UPROPERTY(Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
+	UPROPERTY(replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
 	AWeaponObject* ActiveWeapon;
 
 public:
+	UPROPERTY(BlueprintAssignable)
+		FOnFireEvent OnFireEvent;
+	UPROPERTY(BlueprintAssignable)
+		FOnReloadEvent OnReloadEvent;
 
-	//UFUNCTION(BlueprintCallable)
-	//FORCEINLINE class UWeaponData* GetEquippedWeapon() const { return EquippedWeapon;
-
-	//Weapon Switching
-	//UFUNCTION(BlueprintCallable, meta=(DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
-	//void SetEquippedWeapon(UPARAM(ref) AWeaponObject* NewWeapon);
-
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
 	void SetEquippedWeapon(uint8 Index);
 
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
+	void EquipPrimaryWeapon();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Secondary Weapon"), Category = "WeaponFunctions")
+	void EquipSecondaryWeapon();
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
+	void OnFire();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
+	void ReloadWeapon();
+
 	//Weapon Functionality
-	UFUNCTION(Server, reliable, WithValidation, 
-		BlueprintCallable, meta = (DisplayName = "Server Fire Weapon"), Category = "WeaponFunctions")
+	UFUNCTION(Server, reliable, WithValidation)
 	void Server_FireWeapon();
 
 	void Server_FireWeapon_Implementation();
 	bool Server_FireWeapon_Validate();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
-	void ReloadWeapon();
-
 	virtual void BeginPlay() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };
 
 

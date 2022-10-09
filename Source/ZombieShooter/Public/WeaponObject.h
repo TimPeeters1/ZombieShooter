@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Net/UnrealNetwork.h"
 
 #include "WeaponData.h"
 
@@ -21,13 +22,14 @@ public:
 	UPROPERTY(Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
 	UWeaponData* WeaponData;
 
-	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
 	uint8 MaxAmmo;
-	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
 	uint8 CurrentAmmo;
 
 	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* WeaponModel;
+
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -35,7 +37,12 @@ protected:
 
 public:	
 
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Ammo"), Category = "WeaponFunctions|Ammo")
+	uint8 SetAmmo(uint8 newAmount);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Max Ammo"), Category = "WeaponFunctions|Ammo")
+	uint8 SetMaxAmmo(uint8 newAmount);
+
 	virtual void Tick(float DeltaTime) override;
 
-
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

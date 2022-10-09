@@ -4,14 +4,20 @@
 // Sets default values
 AWeaponObject::AWeaponObject()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+	SetReplicates(true);
 
 	WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
 	RootComponent = WeaponModel;
 }
 
+void AWeaponObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AWeaponObject, MaxAmmo);
+	DOREPLIFETIME(AWeaponObject, CurrentAmmo);
+}
 void AWeaponObject::OnConstruction(const FTransform& Transform)
 {
 	if (WeaponData != nullptr) {
@@ -31,4 +37,19 @@ void AWeaponObject::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+
+uint8 AWeaponObject::SetAmmo(uint8 newAmount)
+{
+	CurrentAmmo = newAmount;
+	return CurrentAmmo;
+}
+
+uint8 AWeaponObject::SetMaxAmmo(uint8 newMaxAmount)
+{
+	MaxAmmo = newMaxAmount;
+	return MaxAmmo;
+}
+
+
 

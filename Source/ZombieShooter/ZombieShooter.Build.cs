@@ -4,11 +4,11 @@ using UnrealBuildTool;
 
 public class ZombieShooter : ModuleRules
 {
-	public ZombieShooter(ReadOnlyTargetRules Target) : base(Target)
+	public ZombieShooter(ReadOnlyTargetRules Target) : base(Target)	
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "GameplayTasks" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "GameplayTasks", "MetasoundEngine" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

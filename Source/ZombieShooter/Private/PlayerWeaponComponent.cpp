@@ -30,6 +30,19 @@ void UPlayerWeaponComponent::BeginPlay()
 }
 
 
+
+UPlayerWeaponComponent::UPlayerWeaponComponent()
+{
+	SetIsReplicatedByDefault(true);
+}
+
+void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayerWeaponComponent, ActiveWeapon);
+}
+
 void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 {
 	if (!EquippedWeapons[Index]) return;
@@ -43,10 +56,28 @@ void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 		ParentPawn->GetWeaponModel()->SetStaticMesh(EquippedWeapons[Index]->WeaponData->WeaponModel);
 		ParentPawn->GetWeaponModel()->SetRelativeTransform(EquippedWeapons[Index]->WeaponData->FP_Model_Transform);
 	}
+
+	if (ActiveWeapon->WeaponData->ShotAudio) {
+		ParentPawn->GetWeaponAudioComponent()->SetSound(EquippedWeapons[Index]->WeaponData->ShotAudio);
+	}
+}
+
+void UPlayerWeaponComponent::EquipPrimaryWeapon()
+{
+	SetEquippedWeapon(0);
+}
+
+void UPlayerWeaponComponent::EquipSecondaryWeapon()
+{
+	SetEquippedWeapon(1);
 }
 
 void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 {
+	if (ActiveWeapon->CurrentAmmo <= 0) return;
+
+	ActiveWeapon->CurrentAmmo--;
+
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 	FHitResult HitResult(ForceInit);
 
@@ -61,7 +92,7 @@ void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(GetOwner());
 
-		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
+		//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
@@ -79,7 +110,23 @@ bool UPlayerWeaponComponent::Server_FireWeapon_Validate() {
 	return true;
 }
 
+void UPlayerWeaponComponent::OnFire()
+{
+	if (GetOwner()->HasAuthority()) {
+		Server_FireWeapon();
+
+		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+		if (!ParentPawn) return;
+		ParentPawn->GetWeaponAudioComponent()->Play();
+
+		OnFireEvent.Broadcast();
+	}
+}
+
 void UPlayerWeaponComponent::ReloadWeapon()
 {
+	if (GetOwner()->HasAuthority()) {
+		OnReloadEvent.Broadcast();
+	}
 }
 

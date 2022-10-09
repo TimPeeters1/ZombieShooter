@@ -17,11 +17,7 @@ void ASpawnManager::BeginPlay()
 
 	if (!UKismetSystemLibrary::IsServer(GetWorld()) && !HasAuthority()) return;
 
-	//TODO Add Player Via GameMode instead of GetAll Func
-	//TArray<AActor*> FoundPlayers;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerPawn::StaticClass(), FoundPlayers);
-
-	GetWorldTimerManager().SetTimer(PlayerSweepTimer, this, &ASpawnManager::AreaSweep, 1.5f, true, 5.1f);
+	GetWorldTimerManager().SetTimer(PlayerSweepTimer, this, &ASpawnManager::AreaSweep, AreaSweepTimer, true, 5.1f);
 
 	//AreaSweep();
 	//InitWave();
@@ -32,17 +28,16 @@ void ASpawnManager::InitWave()
 	if (!UKismetSystemLibrary::IsServer(GetWorld()) && !HasAuthority()) return;
 
 	uint8 WavePopulation = FMath::RandRange(MinWaveSize, MaxWaveSize);
-
-	if (SpawnAreas.Num() > 0) {
-		for (uint8 i = 0; i < SpawnAreas.Num(); i++)
-		{
-			//if (SpawnAreas[i]->GetAreaStatus())	
-
-		}
+	if (GEngine && bDrawDebug)
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Wave Pop Size: %d"), WavePopulation));
+	
+	for (uint8 i = 0; i < WavePopulation; i++)
+	{
+		uint8 randomArea = FMath::RandRange(0, ActiveAreaSet.Num() - 1);
+		if (ActiveAreaSet[randomArea]->GetAreaStatus())
+			ActiveAreaSet[randomArea]->SpawnEnemies(SpawnableEnemies[0]);
 	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("SpawnManager: No Active SpawnAreas Found!"));
-	}
+	
 }
 
 void ASpawnManager::AreaSweep()
@@ -77,12 +72,32 @@ void ASpawnManager::AreaSweep()
 		}
 	}
 
-	for (uint8 f = 0; f < overlappedAreas.Num(); f++)
-	{
-		overlappedAreas[f]->SetAreaStatus(true);
-		if (GEngine && bDrawDebug)
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("%s"), *overlappedAreas[f]->GetActorLabel()));
+	if (!overlappedAreas.IsEmpty()) {
+		for (uint8 g = 0; g < ActiveAreaSet.Num(); g++)
+		{
+			if (!overlappedAreas.Contains(ActiveAreaSet[g])) {
+				ActiveAreaSet[g]->SetAreaStatus(false);
+			}
+		}
+		ActiveAreaSet.Empty();
+
+		for (uint8 f = 0; f < overlappedAreas.Num(); f++)
+		{
+			if (!ActiveAreaSet.Contains(overlappedAreas[f])) {
+				ActiveAreaSet.Add(overlappedAreas[f]);
+				overlappedAreas[f]->SetAreaStatus(true);
+			}	
+		}
 	}
+
+	for (uint8 h = 0; h < ActiveAreaSet.Num(); h++)
+	{
+		if (ActiveAreaSet[h]->ContainsPlayers()) {
+			ActiveAreaSet[h]->SetAreaStatus(false);
+			ActiveAreaSet.RemoveAt(h);
+		}
+	}
+
 }
 
 // Called every frame

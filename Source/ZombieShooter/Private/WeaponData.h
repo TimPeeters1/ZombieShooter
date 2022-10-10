@@ -35,7 +35,10 @@ public:
 		FTransform FP_Model_Transform;
 
 	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		uint8 Weapon_Max_Ammo;
+		uint8 Weapon_Default_MagazineSize;
+
+	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+		uint8 Weapon_Default_MaxAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		WeaponType WeaponBehaviour;

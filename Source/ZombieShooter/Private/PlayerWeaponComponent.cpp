@@ -4,7 +4,27 @@
 #include "PlayerPawn.h"
 
 
+UPlayerWeaponComponent::UPlayerWeaponComponent()
+{
+	SetIsReplicatedByDefault(true);
+}
+
+void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayerWeaponComponent, ActiveWeapon);
+}
+
 void UPlayerWeaponComponent::BeginPlay()
+{
+	//FString ObjectName = GetOwner()->GetName();
+	//UE_LOG(LogTemp, Warning, TEXT("Object Owner: %s"), *ObjectName);
+	//if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+	SpawnStartWeapons();
+}
+
+void UPlayerWeaponComponent::SpawnStartWeapons_Implementation()
 {
 	UWorld* World = GetWorld();
 	if (World) {
@@ -29,22 +49,9 @@ void UPlayerWeaponComponent::BeginPlay()
 	}
 }
 
-
-
-UPlayerWeaponComponent::UPlayerWeaponComponent()
+void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
 {
-	SetIsReplicatedByDefault(true);
-}
-
-void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UPlayerWeaponComponent, ActiveWeapon);
-}
-
-void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
-{
+	//TODO MEMORY LEAK!!
 	if (!EquippedWeapons[Index]) return;
 
 	ActiveWeapon = EquippedWeapons[Index];
@@ -72,11 +79,34 @@ void UPlayerWeaponComponent::EquipSecondaryWeapon()
 	SetEquippedWeapon(1);
 }
 
-void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
+void UPlayerWeaponComponent::OnFire()
 {
+	FireWeapon_Request();
+
+	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+	if (!ParentPawn) return;
+	ParentPawn->GetWeaponAudioComponent()->Play();
+
+	OnFireEvent.Broadcast();
+}
+
+void UPlayerWeaponComponent::FireWeapon_Request_Implementation()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Fire Request!")));
+	Server_FireWeapon();
+}
+
+void UPlayerWeaponComponent::Server_FireWeapon()
+{
+	if (!UKismetSystemLibrary::IsServer(GetWorld()) || !ActiveWeapon) return;
+
 	if (ActiveWeapon->CurrentAmmo <= 0) return;
 
 	ActiveWeapon->CurrentAmmo--;
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Current Ammo: %d"), ActiveWeapon->CurrentAmmo));
 
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 	FHitResult HitResult(ForceInit);
@@ -92,7 +122,7 @@ void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(GetOwner());
 
-		//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
+		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
@@ -106,22 +136,6 @@ void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 	}
 }
 
-bool UPlayerWeaponComponent::Server_FireWeapon_Validate() {
-	return true;
-}
-
-void UPlayerWeaponComponent::OnFire()
-{
-	if (GetOwner()->HasAuthority()) {
-		Server_FireWeapon();
-
-		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-		if (!ParentPawn) return;
-		ParentPawn->GetWeaponAudioComponent()->Play();
-
-		OnFireEvent.Broadcast();
-	}
-}
 
 void UPlayerWeaponComponent::ReloadWeapon()
 {

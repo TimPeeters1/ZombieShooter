@@ -47,10 +47,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FOnFireEvent OnFireEvent;
 	UPROPERTY(BlueprintAssignable)
-		FOnReloadEvent OnReloadEvent;
+		FOnReloadEvent OnReloadEvent; 
+	
+	UFUNCTION(Server, reliable)
+	void SpawnStartWeapons();
+	void SpawnStartWeapons_Implementation();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
+	UFUNCTION(NetMulticast, reliable, BlueprintCallable, meta = (DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
 	void SetEquippedWeapon(uint8 Index);
+	void SetEquippedWeapon_Implementation(uint8 Index);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
 	void EquipPrimaryWeapon();
@@ -63,11 +68,11 @@ public:
 	void ReloadWeapon();
 
 	//Weapon Functionality
-	UFUNCTION(Server, reliable, WithValidation)
-	void Server_FireWeapon();
+	UFUNCTION(Server, reliable)
+	void FireWeapon_Request();
+	void FireWeapon_Request_Implementation();
 
-	void Server_FireWeapon_Implementation();
-	bool Server_FireWeapon_Validate();
+	void Server_FireWeapon();
 
 	virtual void BeginPlay() override;
 

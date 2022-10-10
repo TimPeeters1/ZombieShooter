@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 #include "WeaponData.h"
@@ -14,33 +15,36 @@ UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableCo
 class ZOMBIESHOOTER_API AWeaponObject : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AWeaponObject();
 
 	UPROPERTY(Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
-	UWeaponData* WeaponData;
-
-	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
-	uint8 MaxAmmo;
-	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-	uint8 CurrentAmmo;
+		UWeaponData* WeaponData;
 
 	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* WeaponModel;
+		UStaticMeshComponent* WeaponModel;
 
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
+		uint8 MagazineSize = 10;
+	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
+		uint8 MaxAmmo = 100;
+	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+		uint8 CurrentAmmo = 10;
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Ammo"), Category = "WeaponFunctions|Ammo")
-	uint8 SetAmmo(uint8 newAmount);
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Max Ammo"), Category = "WeaponFunctions|Ammo")
-	uint8 SetMaxAmmo(uint8 newAmount);
+	UFUNCTION()
+		void OnRep_MagazineSizeUpdate();
+	UFUNCTION()
+		void OnRep_MaxAmmoUpdate();
+	UFUNCTION()
+		void OnRep_AmmoUpdate();
 
 	virtual void Tick(float DeltaTime) override;
 

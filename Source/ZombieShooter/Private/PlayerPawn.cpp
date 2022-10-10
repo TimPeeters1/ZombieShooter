@@ -1,6 +1,4 @@
 
-
-
 #include "PlayerPawn.h"
 
 // Sets default values
@@ -39,8 +37,8 @@ APlayerPawn::APlayerPawn()
 	FP_WeaponAudio = CreateDefaultSubobject<UAudioComponent>("WeaponAudioComponent");
 	FP_WeaponAudio->SetupAttachment(FP_WeaponModel);
 
-	if(!PlayerWeaponComponent)
-	PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+	//if(!PlayerWeaponComponent)
+	//PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
 
 	if(!HealthComponent)
 	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
@@ -57,6 +55,9 @@ void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!PlayerWeaponComponent)
+		PlayerWeaponComponent = (UPlayerWeaponComponent*) GetComponentByClass(TSubclassOf<UPlayerWeaponComponent>());
 
 	if (this->IsLocallyControlled()) 
 		GetMesh()->SetVisibility(false, true);

@@ -43,7 +43,7 @@ protected:
 	UPROPERTY(Category = "Components|Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		USkeletalMeshComponent* FP_ArmModel;
 
-	UPROPERTY(Category = "Components|Weapons", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "Components|Weapons", VisibleDefaultsOnly , BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* FP_WeaponModel;
 
 	UPROPERTY(Category = "Components|Weapons", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -56,7 +56,7 @@ protected:
 
 	/*Weapon Handling*/
 	//Weapon Logic Component
-	UPROPERTY(replicated, Category = "Components|Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(replicated, Category = "Components|Weapons", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UPlayerWeaponComponent* PlayerWeaponComponent;
 
 	virtual float TakeDamage

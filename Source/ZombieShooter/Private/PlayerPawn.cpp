@@ -33,9 +33,11 @@ APlayerPawn::APlayerPawn()
 	FP_WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
 	FP_WeaponModel->SetupAttachment(FP_ArmModel, TEXT("GripPoint"));
 
-	if (!FP_WeaponAudio)
-	FP_WeaponAudio = CreateDefaultSubobject<UAudioComponent>("WeaponAudioComponent");
-	FP_WeaponAudio->SetupAttachment(FP_WeaponModel);
+	if (!FP_WeaponAudio) {
+		FP_WeaponAudio = CreateDefaultSubobject<UAudioComponent>("WeaponAudioComponent");
+		FP_WeaponAudio->SetupAttachment(FP_WeaponModel);
+		FP_WeaponAudio->SetAutoActivate(false);
+	}
 
 	if(!PlayerWeaponComponent)
 	PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");

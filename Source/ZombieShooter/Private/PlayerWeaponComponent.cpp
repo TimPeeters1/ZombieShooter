@@ -85,56 +85,56 @@ void UPlayerWeaponComponent::EquipSecondaryWeapon()
 
 void UPlayerWeaponComponent::OnFire()
 {
+
 	ClientFireWeapon();
+
+	if (!ActiveWeapon) return;
+	if (ActiveWeapon->LocalCurrentAmmo > 0) {
+		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+
+		//Deduce from local var, to update via RepNotify! (Reduces snappy shooting over network)
+		ActiveWeapon->LocalCurrentAmmo--;
+
+		//Visuals and VFX!
+		ParentPawn->GetWeaponAudioComponent()->Play();
+		OnFireEvent.Broadcast();
+	}
 }
 
 void UPlayerWeaponComponent::ClientFireWeapon_Implementation()
 {
-	Server_FireWeapon();
-}
-
-void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
-{
-	if (!ActiveWeapon) return;
-
-	if (ActiveWeapon->CurrentAmmo <= 0) return;
-
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+	if (ParentPawn) {
+		if (!ActiveWeapon) return;
 
-	//Visuals and VFX!
-	ParentPawn->GetWeaponAudioComponent()->Play();
-	OnFireEvent.Broadcast();
+		if (ActiveWeapon->CurrentAmmo <= 0) return;
 
-	if (UKismetSystemLibrary::IsServer(GetWorld())) {
 		ActiveWeapon->CurrentAmmo--;
 
 		FHitResult HitResult(ForceInit);
-		if (ParentPawn) {
-			//TODO FIX STARTLOC w/ Actual Camera loc!
-			FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 65.0f);
+		//TODO FIX STARTLOC w/ Actual Camera loc!
+		FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 65.0f);
 
-			//TODO Add Gun Range
-			FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
-			FVector EndLoc = StartLoc + ControlRot;
+		//TODO Add Gun Range
+		FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
+		FVector EndLoc = StartLoc + ControlRot;
 
-			FCollisionQueryParams CollisionParams;
-			CollisionParams.AddIgnoredActor(GetOwner());
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(GetOwner());
 
-			DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
+		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
-			GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
+		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
-			if (HitResult.GetActor()) {
-				//FString hitRes = HitResult.GetActor()->GetName();
-				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+		if (HitResult.GetActor()) {
+			//FString hitRes = HitResult.GetActor()->GetName();
+			//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
 
-				//TODO Add Gun Damage
-				UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
-			}
-
+			//TODO Add Gun Damage
+			UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
 		}
-	}
 
+	}
 }
 
 

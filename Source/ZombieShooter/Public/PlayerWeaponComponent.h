@@ -72,10 +72,6 @@ public:
 	void ClientFireWeapon();
 	void ClientFireWeapon_Implementation();
 
-	UFUNCTION(NetMulticast, reliable)
-	void Server_FireWeapon();
-	void Server_FireWeapon_Implementation();
-
 	virtual void BeginPlay() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;

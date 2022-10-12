@@ -26,6 +26,9 @@ public:
 	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
 		UStaticMeshComponent* WeaponModel;
 
+	//Local Ammo will be updated after server callback. To reduce snappy shooting behaviour.
+	uint8 LocalCurrentAmmo;
+
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;

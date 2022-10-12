@@ -31,20 +31,18 @@ void AWeaponObject::OnConstruction(const FTransform& Transform)
 	MaxAmmo = WeaponData->Weapon_Default_MaxAmmo;
 	//remove this line for customizable ammo variable for spawned
 	CurrentAmmo = MagazineSize;
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Start Ammo: %d"), CurrentAmmo));
 }
 
 // Called when the game starts or when spawned
 void AWeaponObject::BeginPlay()
 {
 	Super::BeginPlay();
+	LocalCurrentAmmo = CurrentAmmo;
 }
 
 void AWeaponObject::OnRep_WeaponData()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Weapon Data Set!")));
+	
 }
 
 void AWeaponObject::OnRep_MagazineSizeUpdate()
@@ -59,6 +57,8 @@ void AWeaponObject::OnRep_AmmoUpdate()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Updated Ammo: %d"), CurrentAmmo));
+
+	LocalCurrentAmmo = CurrentAmmo;
 }
 
 // Called every frame

@@ -67,7 +67,6 @@ protected:
 		AActor* DamageCauser
 	) override;
 
-
 	virtual void BeginPlay() override;
 
 	void Move_XAxis(float AxisValue);

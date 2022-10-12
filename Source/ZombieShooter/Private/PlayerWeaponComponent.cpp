@@ -103,6 +103,7 @@ void UPlayerWeaponComponent::OnFire()
 		ActiveWeapon->LocalCurrentAmmo--;
 
 		//Visuals and VFX!
+		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
 		ParentPawn->GetWeaponAudioComponent()->Play();
 		OnFireEvent.Broadcast();
 	}
@@ -162,11 +163,13 @@ void UPlayerWeaponComponent::OnReloadWeapon()
 			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo - ActiveWeapon->MagazineSize;
 		else
 			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo;
+		*/
 
 		//Visuals and VFX!
-		//ParentPawn->GetWeaponAudioComponent()->Play();
+		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ReloadAudio);
+		ParentPawn->GetWeaponAudioComponent()->Play();
 		OnReloadEvent.Broadcast();
-		*/
+		
 	}
 }
 

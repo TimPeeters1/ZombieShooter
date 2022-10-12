@@ -47,4 +47,6 @@ public:
 		UStaticMesh* MuzzleFlash_VFX;
 	UPROPERTY(Category = "Visuals|Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ShotAudio;
+	UPROPERTY(Category = "Visuals|Audio", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* ReloadAudio;
 };

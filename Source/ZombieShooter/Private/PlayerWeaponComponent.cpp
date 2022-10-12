@@ -13,6 +13,7 @@ void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(UPlayerWeaponComponent, EquippedWeapons);
 	DOREPLIFETIME(UPlayerWeaponComponent, ActiveWeapon);
 }
 
@@ -37,6 +38,7 @@ void UPlayerWeaponComponent::SpawnStartWeapons_Implementation()
 				SpawnTransform, GetOwner(), GetOwner()->GetInstigator());
 
 			if (NewWeaponObject) {
+				NewWeaponObject->SetReplicates(true);
 				NewWeaponObject->WeaponData = StartingWeapons[i];
 
 				UGameplayStatics::FinishSpawningActor(NewWeaponObject, NewWeaponObject->GetTransform());
@@ -51,7 +53,9 @@ void UPlayerWeaponComponent::SpawnStartWeapons_Implementation()
 
 void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
 {
-	//TODO MEMORY LEAK!!
+	//Prevents nullptr crash
+	if (EquippedWeapons.IsEmpty()) return;
+
 	if (!EquippedWeapons[Index]) return;
 
 	ActiveWeapon = EquippedWeapons[Index];
@@ -81,59 +85,56 @@ void UPlayerWeaponComponent::EquipSecondaryWeapon()
 
 void UPlayerWeaponComponent::OnFire()
 {
-	FireWeapon_Request();
-
-	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-	if (!ParentPawn) return;
-	ParentPawn->GetWeaponAudioComponent()->Play();
-
-	OnFireEvent.Broadcast();
+	ClientFireWeapon();
 }
 
-void UPlayerWeaponComponent::FireWeapon_Request_Implementation()
+void UPlayerWeaponComponent::ClientFireWeapon_Implementation()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Fire Request!")));
 	Server_FireWeapon();
 }
 
-void UPlayerWeaponComponent::Server_FireWeapon()
+void UPlayerWeaponComponent::Server_FireWeapon_Implementation()
 {
-	if (!UKismetSystemLibrary::IsServer(GetWorld()) || !ActiveWeapon) return;
+	if (!ActiveWeapon) return;
 
 	if (ActiveWeapon->CurrentAmmo <= 0) return;
 
-	ActiveWeapon->CurrentAmmo--;
-
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Current Ammo: %d"), ActiveWeapon->CurrentAmmo));
-
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-	FHitResult HitResult(ForceInit);
 
-	if (ParentPawn != nullptr) {
-		//TODO FIX STARTLOC w/ Actual Camera loc!
-		FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 65.0f);
+	//Visuals and VFX!
+	ParentPawn->GetWeaponAudioComponent()->Play();
+	OnFireEvent.Broadcast();
 
-		//TODO Add Gun Range
-		FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
-		FVector EndLoc = StartLoc + ControlRot;
+	if (UKismetSystemLibrary::IsServer(GetWorld())) {
+		ActiveWeapon->CurrentAmmo--;
 
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(GetOwner());
+		FHitResult HitResult(ForceInit);
+		if (ParentPawn) {
+			//TODO FIX STARTLOC w/ Actual Camera loc!
+			FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 65.0f);
 
-		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
+			//TODO Add Gun Range
+			FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
+			FVector EndLoc = StartLoc + ControlRot;
 
-		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
+			FCollisionQueryParams CollisionParams;
+			CollisionParams.AddIgnoredActor(GetOwner());
 
-		if (HitResult.GetActor()) {
-			FString hitRes = HitResult.GetActor()->GetName();
-			UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+			DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
-			//TODO Add Gun Damage
-			UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+			GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
+
+			if (HitResult.GetActor()) {
+				//FString hitRes = HitResult.GetActor()->GetName();
+				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+
+				//TODO Add Gun Damage
+				UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+			}
+
 		}
 	}
+
 }
 
 

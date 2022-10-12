@@ -37,8 +37,8 @@ APlayerPawn::APlayerPawn()
 	FP_WeaponAudio = CreateDefaultSubobject<UAudioComponent>("WeaponAudioComponent");
 	FP_WeaponAudio->SetupAttachment(FP_WeaponModel);
 
-	//if(!PlayerWeaponComponent)
-	//PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+	if(!PlayerWeaponComponent)
+	PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
 
 	if(!HealthComponent)
 	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
@@ -56,10 +56,10 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!PlayerWeaponComponent)
-		PlayerWeaponComponent = (UPlayerWeaponComponent*) GetComponentByClass(TSubclassOf<UPlayerWeaponComponent>());
+	//if (!PlayerWeaponComponent)
+		//PlayerWeaponComponent = (UPlayerWeaponComponent*) GetComponentByClass(TSubclassOf<UPlayerWeaponComponent>());
 
-	if (this->IsLocallyControlled()) 
+	if (IsLocallyControlled()) 
 		GetMesh()->SetVisibility(false, true);
 	else
 		FP_ArmModel->SetVisibility(false, true);

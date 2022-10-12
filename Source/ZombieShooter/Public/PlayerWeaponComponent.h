@@ -36,11 +36,11 @@ protected:
 	TArray<UWeaponData*> StartingWeapons;
 
 	//Equipped Weapon Data
-	UPROPERTY(Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
+	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
 	TArray<AWeaponObject*> EquippedWeapons;
 
 	//Equipped Weapon Data
-	UPROPERTY(replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
+	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
 	AWeaponObject* ActiveWeapon;
 
 public:
@@ -69,10 +69,12 @@ public:
 
 	//Weapon Functionality
 	UFUNCTION(Server, reliable)
-	void FireWeapon_Request();
-	void FireWeapon_Request_Implementation();
+	void ClientFireWeapon();
+	void ClientFireWeapon_Implementation();
 
+	UFUNCTION(NetMulticast, reliable)
 	void Server_FireWeapon();
+	void Server_FireWeapon_Implementation();
 
 	virtual void BeginPlay() override;
 

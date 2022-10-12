@@ -16,13 +16,14 @@ void AWeaponObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AWeaponObject, WeaponData);
 	DOREPLIFETIME(AWeaponObject, MagazineSize);
 	DOREPLIFETIME(AWeaponObject, MaxAmmo);
 	DOREPLIFETIME(AWeaponObject, CurrentAmmo);
 }
 void AWeaponObject::OnConstruction(const FTransform& Transform)
 {
-	if (UKismetSystemLibrary::IsServer(GetWorld()) || !WeaponData) return;
+	if (!WeaponData) return;
 
 	WeaponModel->SetStaticMesh(WeaponData->WeaponModel);
 
@@ -38,6 +39,12 @@ void AWeaponObject::OnConstruction(const FTransform& Transform)
 void AWeaponObject::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AWeaponObject::OnRep_WeaponData()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Weapon Data Set!")));
 }
 
 void AWeaponObject::OnRep_MagazineSizeUpdate()

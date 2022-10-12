@@ -20,7 +20,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponObject();
 
-	UPROPERTY(Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(ReplicatedUsing= OnRep_WeaponData, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
 		UWeaponData* WeaponData;
 
 	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
@@ -36,9 +36,11 @@ public:
 		uint8 MagazineSize = 10;
 	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
 		uint8 MaxAmmo = 100;
-	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(ReplicatedUsing= OnRep_AmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
 		uint8 CurrentAmmo = 10;
 
+	UFUNCTION()
+		void OnRep_WeaponData();
 	UFUNCTION()
 		void OnRep_MagazineSizeUpdate();
 	UFUNCTION()

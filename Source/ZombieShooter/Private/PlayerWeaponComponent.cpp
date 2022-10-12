@@ -19,12 +19,10 @@ void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 void UPlayerWeaponComponent::BeginPlay()
 {
-	//FString ObjectName = GetOwner()->GetName();
-	//UE_LOG(LogTemp, Warning, TEXT("Object Owner: %s"), *ObjectName);
-	//if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 	SpawnStartWeapons();
 }
 
+#pragma region WeaponObjectFunctionality 
 void UPlayerWeaponComponent::SpawnStartWeapons_Implementation()
 {
 	UWorld* World = GetWorld();
@@ -50,7 +48,12 @@ void UPlayerWeaponComponent::SpawnStartWeapons_Implementation()
 		}
 	}
 }
+#pragma endregion  
 
+#pragma region WeaponSwitchFunctionality 
+/*
+Weapon Switching (Inventory) Functionality
+*/
 void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
 {
 	//Prevents nullptr crash
@@ -83,11 +86,15 @@ void UPlayerWeaponComponent::EquipSecondaryWeapon()
 	SetEquippedWeapon(1);
 }
 
+#pragma endregion 
+
+#pragma region FiringFunctionality 
+/*
+Firing Functionality
+*/
 void UPlayerWeaponComponent::OnFire()
 {
-
-	ClientFireWeapon();
-
+	ServerFireWeapon();
 	if (!ActiveWeapon) return;
 	if (ActiveWeapon->LocalCurrentAmmo > 0) {
 		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
@@ -101,7 +108,7 @@ void UPlayerWeaponComponent::OnFire()
 	}
 }
 
-void UPlayerWeaponComponent::ClientFireWeapon_Implementation()
+void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 {
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 	if (ParentPawn) {
@@ -136,12 +143,50 @@ void UPlayerWeaponComponent::ClientFireWeapon_Implementation()
 
 	}
 }
+#pragma endregion 
 
-
-void UPlayerWeaponComponent::ReloadWeapon()
+#pragma region ReloadFunctionality 
+/*
+Reloading Functionality
+*/
+void UPlayerWeaponComponent::OnReloadWeapon()
 {
-	if (GetOwner()->HasAuthority()) {
+	ServerReloadWeapon();
+
+	if (!ActiveWeapon) return;
+	if (ActiveWeapon->LocalCurrentAmmo >= 0) {
+		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+
+		/*
+		if (ActiveWeapon->InventoryAmmo > ActiveWeapon->MagazineSize)
+			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo - ActiveWeapon->MagazineSize;
+		else
+			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo;
+
+		//Visuals and VFX!
+		//ParentPawn->GetWeaponAudioComponent()->Play();
 		OnReloadEvent.Broadcast();
+		*/
 	}
 }
+
+
+void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
+{
+	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+	if (ParentPawn) {
+		if (!ActiveWeapon) return;
+
+		if (ActiveWeapon->InventoryAmmo > ActiveWeapon->MagazineSize) {
+			ActiveWeapon->CurrentAmmo = ActiveWeapon->MagazineSize;
+			ActiveWeapon->InventoryAmmo -= ActiveWeapon->MagazineSize;
+		}	
+		else {
+			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo;
+			ActiveWeapon->InventoryAmmo = 0;
+		}
+		
+	}
+}
+#pragma endregion 
 

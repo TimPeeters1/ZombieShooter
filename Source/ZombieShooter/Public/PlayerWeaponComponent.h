@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent);
 class APlayerPawn;
 
 /**
- * 
+ *
  */
 
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
@@ -33,44 +33,48 @@ public:
 protected:
 	//StartingWeapons
 	UPROPERTY(Category = "Weapons|Equipped Weapons ", EditAnywhere, BlueprintReadWrite)
-	TArray<UWeaponData*> StartingWeapons;
+		TArray<UWeaponData*> StartingWeapons;
 
 	//Equipped Weapon Data
 	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
-	TArray<AWeaponObject*> EquippedWeapons;
+		TArray<AWeaponObject*> EquippedWeapons;
 
 	//Equipped Weapon Data
 	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
-	AWeaponObject* ActiveWeapon;
+		AWeaponObject* ActiveWeapon;
 
 public:
 	UPROPERTY(BlueprintAssignable)
 		FOnFireEvent OnFireEvent;
 	UPROPERTY(BlueprintAssignable)
-		FOnReloadEvent OnReloadEvent; 
-	
+		FOnReloadEvent OnReloadEvent;
+
 	UFUNCTION(Server, reliable)
-	void SpawnStartWeapons();
-	void SpawnStartWeapons_Implementation();
+		void SpawnStartWeapons();
+		void SpawnStartWeapons_Implementation();
 
 	UFUNCTION(NetMulticast, reliable, BlueprintCallable, meta = (DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
-	void SetEquippedWeapon(uint8 Index);
-	void SetEquippedWeapon_Implementation(uint8 Index);
+		void SetEquippedWeapon(uint8 Index);
+		void SetEquippedWeapon_Implementation(uint8 Index);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
-	void EquipPrimaryWeapon();
+		void EquipPrimaryWeapon();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Secondary Weapon"), Category = "WeaponFunctions")
-	void EquipSecondaryWeapon();
+		void EquipSecondaryWeapon();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
-	void OnFire();
+		void OnFire();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
-	void ReloadWeapon();
+		void OnReloadWeapon();
 
 	//Weapon Functionality
 	UFUNCTION(Server, reliable)
-	void ClientFireWeapon();
-	void ClientFireWeapon_Implementation();
+		void ServerFireWeapon();
+		void ServerFireWeapon_Implementation();
+
+	UFUNCTION(Server, reliable)
+		void ServerReloadWeapon();
+		void ServerReloadWeapon_Implementation();
 
 	virtual void BeginPlay() override;
 

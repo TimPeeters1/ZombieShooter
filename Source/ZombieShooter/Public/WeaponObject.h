@@ -20,7 +20,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponObject();
 
-	UPROPERTY(ReplicatedUsing= OnRep_WeaponData, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Replicated, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
 		UWeaponData* WeaponData;
 
 	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
@@ -35,23 +35,28 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing = OnRep_MagazineSizeUpdate, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
 		uint8 MagazineSize = 10;
-	UPROPERTY(replicated, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
-		uint8 MaxAmmo = 100;
-	UPROPERTY(ReplicatedUsing= OnRep_AmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		uint8 CurrentAmmo = 10;
+	UPROPERTY(ReplicatedUsing = OnRep_MaxInventoryAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
+		uint8 MaxInventoryAmmo = 100;
 
-	UFUNCTION()
-		void OnRep_WeaponData();
+	//Total Ammo in the Weapon's Inventory.
+	UPROPERTY(ReplicatedUsing = OnRep_InventoryAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+		uint8 InventoryAmmo;
+
+	//Current Ammo in the Weapon's Magazine (Most important!).
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+		uint8 CurrentAmmo;
+
 	UFUNCTION()
 		void OnRep_MagazineSizeUpdate();
 	UFUNCTION()
-		void OnRep_MaxAmmoUpdate();
-	UFUNCTION()
-		void OnRep_AmmoUpdate();
+		void OnRep_MaxInventoryAmmoUpdate();
 
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION()
+		void OnRep_CurrentAmmoUpdate();
+	UFUNCTION()
+		void OnRep_InventoryAmmoUpdate();
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

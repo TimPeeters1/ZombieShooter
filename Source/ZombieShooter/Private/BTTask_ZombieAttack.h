@@ -28,6 +28,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings", meta = (AllowPrivateAcces = "true"))
 		float AttackDamage = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings", meta = (AllowPrivateAcces = "true"))
+		float AttackSphereSize = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DebugSettings", meta = (AllowPrivateAcces = "true"))
+		TEnumAsByte<EDrawDebugTrace::Type> DebugType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DebugSettings", meta = (AllowPrivateAcces = "true"))
+		float DebugDrawTime = 5.0f;
 };
 
 

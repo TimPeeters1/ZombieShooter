@@ -13,6 +13,10 @@ UBTTask_ZombieAttack::UBTTask_ZombieAttack()
 
 EBTNodeResult::Type UBTTask_ZombieAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld()))
+		return EBTNodeResult::Aborted;
+
+
 	AAIController* AIController = Cast<AAIController>(OwnerComp.GetAIOwner());
 	APawn* OwnerPawn = AIController->GetPawn();
 
@@ -23,12 +27,13 @@ EBTNodeResult::Type UBTTask_ZombieAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 	FVector ControlRot = OwnerPawn->GetActorForwardVector() * AttackDistance;
 	FVector EndLoc = StartLoc + ControlRot;
 
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(OwnerPawn);
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(OwnerPawn);
 
-	DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Purple, false, 2.0f, 0, 3.f);
+	//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Purple, false, 2.0f, 0, 3.f);
 
-	GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), StartLoc, EndLoc, AttackSphereSize, ETraceTypeQuery::TraceTypeQuery1, true, IgnoredActors,
+		DebugType, HitResult, true, FLinearColor::Green, FLinearColor::Red, DebugDrawTime);
 
 	if (HitResult.GetActor()) {
 		FString hitRes = HitResult.GetActor()->GetName();

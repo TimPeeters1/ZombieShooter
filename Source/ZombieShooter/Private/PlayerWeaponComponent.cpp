@@ -103,7 +103,7 @@ void UPlayerWeaponComponent::OnFire()
 		ActiveWeapon->LocalCurrentAmmo--;
 
 		//Visuals and VFX!
-		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
+		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
 		ParentPawn->GetWeaponAudioComponent()->Play();
 		OnFireEvent.Broadcast();
 	}
@@ -130,7 +130,7 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(GetOwner());
 
-		DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
+		//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
 		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
@@ -166,8 +166,8 @@ void UPlayerWeaponComponent::OnReloadWeapon()
 		*/
 
 		//Visuals and VFX!
-		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ReloadAudio);
-		ParentPawn->GetWeaponAudioComponent()->Play();
+		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ReloadAudio);
+		//ParentPawn->GetWeaponAudioComponent()->Play();
 		OnReloadEvent.Broadcast();
 		
 	}

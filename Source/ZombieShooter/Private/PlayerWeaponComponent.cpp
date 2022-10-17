@@ -180,9 +180,13 @@ void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 	if (ParentPawn) {
 		if (!ActiveWeapon) return;
 
-		if (ActiveWeapon->InventoryAmmo > ActiveWeapon->MagazineSize) {
-			ActiveWeapon->CurrentAmmo = ActiveWeapon->MagazineSize;
-			ActiveWeapon->InventoryAmmo -= ActiveWeapon->MagazineSize;
+		if (ActiveWeapon->InventoryAmmo <= 0) return;
+
+		uint8 ammoToAdd = ActiveWeapon->MagazineSize - ActiveWeapon->CurrentAmmo;
+
+		if (ActiveWeapon->InventoryAmmo >= ammoToAdd) {
+			ActiveWeapon->CurrentAmmo += ammoToAdd;
+			ActiveWeapon->InventoryAmmo -= ammoToAdd;
 		}	
 		else {
 			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo;

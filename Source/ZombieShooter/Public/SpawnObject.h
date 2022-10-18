@@ -22,7 +22,7 @@ protected:
 
 public:	
 
-	void SpawnEnemy(TSubclassOf<class ACharacter> EnemyType, FTransform* SpawnTransform);
+	void SpawnEnemy(TSubclassOf<class ACharacter> EnemyType);
 
 	virtual FTransform GetSpawnTransform();
 

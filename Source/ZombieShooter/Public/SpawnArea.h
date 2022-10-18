@@ -16,8 +16,6 @@ class ZOMBIESHOOTER_API ASpawnArea : public ATriggerBox
 {
 	GENERATED_BODY()
 private:
-	UPROPERTY(Category = "Spawning|AreaSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	uint8 DesiredEnemyCount = 5;
 
 	UPROPERTY(Category = "Spawning|ActiveArea", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bAreaActive = false;
@@ -29,8 +27,11 @@ public:
 	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<ASpawnObject*> SpawnPoints;
 
+	UPROPERTY(Category = "Spawning|AreaSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	uint8 DesiredEnemyCount = 5;
+
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnEnemies"), Category = "Spawning")
-	void SpawnEnemies(TSubclassOf<class ACharacter> EnemyToSpawn);
+	void SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetAreaStatus"), Category = "Spawning|ActiveArea")
 	bool GetAreaStatus();

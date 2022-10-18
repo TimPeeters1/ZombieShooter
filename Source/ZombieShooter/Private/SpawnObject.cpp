@@ -9,9 +9,7 @@
 // Sets default values
 ASpawnObject::ASpawnObject()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // Called when the game starts or when spawned
@@ -26,11 +24,11 @@ FTransform ASpawnObject::GetSpawnTransform()
 	return GetActorTransform();
 }
 
-void ASpawnObject::SpawnEnemy(TSubclassOf<class ACharacter> EnemyType, FTransform* SpawnTransform)
+void ASpawnObject::SpawnEnemy(TSubclassOf<class ACharacter> EnemyType)
 {
-	//FActorSpawnParameters SpawnParameters;
-	//SpawnParameters.Name = MakeUniqueObjectName(this, EnemyType, FName("Zombie_AI"));
-	AActor* SpawnedEnemy = (AActor*)GetWorld()->SpawnActor(EnemyType, SpawnTransform);
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Name = MakeUniqueObjectName(this, EnemyType, FName("Zombie_AI"));
+	GetWorld()->SpawnActor<ACharacter>(EnemyType, this->GetActorLocation(), FRotator::ZeroRotator);
 }
 
 // Called every frame

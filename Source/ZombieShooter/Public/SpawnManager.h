@@ -40,7 +40,7 @@ public:
 		bool bDrawDebug = false;
 
 	UPROPERTY(Category = "Spawning|Active Areas", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<ASpawnArea*> ActiveAreaSet;
+		TArray<ASpawnArea*> ActiveAreaSet;
 
 protected:
 	FTimerHandle PlayerSweepTimer;
@@ -49,10 +49,12 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "PopulateWave"), Category = "Spawning")
+		void PopulateGame();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "InitWave"), Category = "Spawning")
-	void InitWave();
+		void InitWave();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "AreaSweep"), Category = "Spawning")
-	void AreaSweep();
+		void AreaSweep();
 
 	virtual void Tick(float DeltaTime) override;
 

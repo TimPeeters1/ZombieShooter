@@ -1,4 +1,5 @@
 #include "SpawnArea.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void ASpawnArea::BeginPlay()
 {
@@ -8,14 +9,13 @@ void ASpawnArea::BeginPlay()
 	//SetAreaStatus(true);
 }
 
-void ASpawnArea::SpawnEnemies(TSubclassOf<class ACharacter> EnemyToSpawn)
+void ASpawnArea::SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn)
 {
-	if (SpawnPoints.Num() > 0) {
-		for (uint8 i = 0; i < SpawnPoints.Num(); i++)
-		{
-			FTransform SpawnTransform = SpawnPoints[i]->GetSpawnTransform();
-			SpawnPoints[i]->SpawnEnemy(EnemyToSpawn, &SpawnTransform);
-		}
+	if (!SpawnPoints.IsEmpty()) {
+		uint8 RandomSpawnPoint = UKismetMathLibrary::RandomIntegerInRange(0, (SpawnPoints.Num() - 1));
+		ASpawnObject* SelectedSpawner = SpawnPoints[RandomSpawnPoint];
+		if(SelectedSpawner != nullptr)
+			SelectedSpawner->SpawnEnemy(EnemyToSpawn);
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("SPAWNAREA %s: No SpawnObjects Found!"), *this->GetName());

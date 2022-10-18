@@ -1,13 +1,10 @@
-
-
-
 #include "ZombiePawn.h"
 
 // Sets default values
 AZombiePawn::AZombiePawn()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
 }

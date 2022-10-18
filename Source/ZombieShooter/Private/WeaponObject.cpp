@@ -56,7 +56,7 @@ void AWeaponObject::OnRep_MaxInventoryAmmoUpdate()
 
 void AWeaponObject::OnRep_InventoryAmmoUpdate()
 {
-
+	
 }
 
 void AWeaponObject::OnRep_CurrentAmmoUpdate()

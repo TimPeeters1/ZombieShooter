@@ -193,6 +193,8 @@ void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 			ActiveWeapon->InventoryAmmo = 0;
 		}
 		
+		//Server Local Ammo
+		ActiveWeapon->LocalCurrentAmmo = ActiveWeapon->CurrentAmmo;
 	}
 }
 #pragma endregion 

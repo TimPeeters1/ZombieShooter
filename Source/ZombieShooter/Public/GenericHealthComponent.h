@@ -4,38 +4,46 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 #include "GenericHealthComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDeathEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathEvent);
 
 UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API UGenericHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-
 public:
-	// Sets default values for this component's properties
+
 	UGenericHealthComponent();
 
-protected:
-	UPROPERTY(Category = "Health", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth, Category = "Health", EditAnywhere, BlueprintReadWrite)
 		float MaxHealth = 100;
-	UPROPERTY(Category = "Health", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(ReplicatedUsing = OnRep_Health, Category = "Health", EditAnywhere, BlueprintReadWrite)
 		float Health;
-
-	virtual void BeginPlay() override;
+protected:
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FDeathEvent OnDeath;
+	FOnDeathEvent OnDeath;
+
+	UFUNCTION(NetMulticast, Reliable)
+		void OnReplicateDeath();
+		void OnReplicateDeath_Implementation();
 
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void BeginPlay() override;
 
+	UFUNCTION()
+		void OnRep_MaxHealth();
+	UFUNCTION()
+		void OnRep_Health();
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 };

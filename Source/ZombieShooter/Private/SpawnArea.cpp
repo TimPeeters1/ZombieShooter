@@ -1,5 +1,4 @@
 #include "SpawnArea.h"
-#include "Kismet/KismetMathLibrary.h"
 
 void ASpawnArea::BeginPlay()
 {
@@ -12,7 +11,7 @@ void ASpawnArea::BeginPlay()
 void ASpawnArea::SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn)
 {
 	if (!SpawnPoints.IsEmpty()) {
-		uint8 RandomSpawnPoint = UKismetMathLibrary::RandomIntegerInRange(0, (SpawnPoints.Num() - 1));
+		uint8 RandomSpawnPoint = FMath::RandRange(0, (SpawnPoints.Num() - 1));
 		ASpawnObject* SelectedSpawner = SpawnPoints[RandomSpawnPoint];
 		if(SelectedSpawner != nullptr)
 			SelectedSpawner->SpawnEnemy(EnemyToSpawn);

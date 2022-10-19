@@ -28,10 +28,12 @@ APlayerPawn::APlayerPawn()
 	if (!FP_ArmModel)
 	FP_ArmModel = CreateDefaultSubobject<USkeletalMeshComponent>("ArmModel");
 	FP_ArmModel->SetupAttachment(FP_WeaponSway);
+	FP_ArmModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	if (!FP_WeaponModel)
 	FP_WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
 	FP_WeaponModel->SetupAttachment(FP_ArmModel, TEXT("GripPoint"));
+	FP_WeaponModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	if (!FP_WeaponAudio) {
 		FP_WeaponAudio = CreateDefaultSubobject<UAudioComponent>("WeaponAudioComponent");
@@ -39,11 +41,15 @@ APlayerPawn::APlayerPawn()
 		FP_WeaponAudio->SetAutoActivate(false);
 	}
 
-	if(!PlayerWeaponComponent)
-	PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+	if (!PlayerWeaponComponent) {
+		PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+		PlayerWeaponComponent->SetIsReplicated(true);
+	}
 
-	if(!HealthComponent)
-	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
+	if (!HealthComponent) {
+		HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
+		HealthComponent->SetIsReplicated(true);
+	}
 }
 
 void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -112,6 +118,7 @@ void APlayerPawn::Look_Up(float AxisValue) {
 
 float APlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (HealthComponent)
 	HealthComponent->ReduceHealth(DamageAmount);
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);

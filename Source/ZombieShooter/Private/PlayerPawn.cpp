@@ -12,7 +12,7 @@ APlayerPawn::APlayerPawn()
 	//Init Camera
 	FP_PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
 	FP_PlayerCamera->SetupAttachment(RootComponent);
-	FP_PlayerCamera->SetRelativeLocation(FVector(0, 0, 65.0f));
+	FP_PlayerCamera->SetRelativeLocation(FVector(0, 0, 75.0f));
 	FP_PlayerCamera->bUsePawnControlRotation = true;
 
 	if (!FP_WeaponSway)

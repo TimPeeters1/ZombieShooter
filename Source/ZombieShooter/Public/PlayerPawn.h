@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "GenericTeamAgentInterface.h"
 
 #include "PlayerWeaponComponent.h"
 #include "GenericHealthComponent.h"
@@ -16,7 +17,7 @@
 
 
 UCLASS()
-class ZOMBIESHOOTER_API APlayerPawn : public ACharacter
+class ZOMBIESHOOTER_API APlayerPawn : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -67,6 +68,8 @@ protected:
 		AActor* DamageCauser
 	) override;
 
+	FGenericTeamId TeamId = 0;
+
 	virtual void BeginPlay() override;
 
 	void Move_XAxis(float AxisValue);
@@ -88,4 +91,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; }
 };

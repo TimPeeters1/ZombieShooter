@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MetasoundSource.h"
-#include "GenericTeamAgentInterface.h"
 
 #include "GenericHealthComponent.h"
 
@@ -13,7 +12,7 @@
 
 
 UCLASS(Blueprintable)
-class ZOMBIESHOOTER_API AZombiePawn : public ACharacter, public IGenericTeamAgentInterface
+class ZOMBIESHOOTER_API AZombiePawn : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -59,10 +58,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	FGenericTeamId TeamId;
 
 public:
-
 	//Called via AnimNotify
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Server_OnZombieAttack"))
 	void Server_OnZombieAttack();
@@ -74,6 +71,4 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; }
 };

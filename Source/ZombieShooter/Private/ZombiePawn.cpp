@@ -74,5 +74,11 @@ void AZombiePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+void AZombiePawn::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
+{
+	OutLocation = GetMesh()->GetSocketLocation("HeadSocket");
+	OutRotation = GetMesh()->GetSocketRotation("HeadSocket");
+}
+
 
 

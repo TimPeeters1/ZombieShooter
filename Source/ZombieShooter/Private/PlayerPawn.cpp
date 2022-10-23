@@ -1,5 +1,6 @@
 
 #include "PlayerPawn.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -7,6 +8,9 @@ APlayerPawn::APlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	SetReplicates(true);
 	SetReplicateMovement(true);
+
+	if(GetCapsuleComponent())
+	GetCapsuleComponent()->SetCapsuleHalfHeight(100.0f);
 
 	if (!FP_PlayerCamera)
 	//Init Camera

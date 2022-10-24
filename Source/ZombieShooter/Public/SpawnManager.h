@@ -20,6 +20,19 @@ class ZOMBIESHOOTER_API ASpawnManager : public AActor
 public:
 	ASpawnManager();
 
+	/*
+	* Max Amount of AI Units that may be present in game at all times. (PERFORMANCE!)
+	*/
+	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		uint8 Max_AI_Population = 50;
+
+	//Replace with Array in the future?
+	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		uint8 Current_AI_Population;
+
+	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		float PopulationCheckInterval = 10.0f;
+
 	//Wave Settings
 	UPROPERTY(Category = "Spawning|Enemies|WaveSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		uint8 MinWaveSize = 20;
@@ -35,7 +48,7 @@ public:
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		float AreaSweepRange = 1500.0f;
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		float AreaSweepTimer = 2.0f;
+		float AreaSweepInterval = 2.0f;
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bDrawDebug = false;
 
@@ -44,7 +57,7 @@ public:
 
 protected:
 	FTimerHandle PlayerSweepTimer;
-
+	FTimerHandle PopCheckTimer;
 
 	virtual void BeginPlay() override;
 
@@ -52,7 +65,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "PopulateWave"), Category = "Spawning")
 		void PopulateGame();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "InitWave"), Category = "Spawning")
-		void InitWave();
+		void CheckPopulation();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "AreaSweep"), Category = "Spawning")
 		void AreaSweep();
 

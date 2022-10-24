@@ -15,29 +15,57 @@ void ASpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode)
+		if (!GameMode->SpawnManager)
+			GameMode->SpawnManager = this;
+
+
 	if (UKismetSystemLibrary::IsServer(GetWorld())) {
-		GetWorldTimerManager().SetTimer(PlayerSweepTimer, this, &ASpawnManager::AreaSweep, AreaSweepTimer, true, 5.0f);
+		GetWorldTimerManager().SetTimer(PlayerSweepTimer, this, &ASpawnManager::AreaSweep, AreaSweepInterval, true, 5.0f);
+		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, 5.1f + PopulationCheckInterval);
 	}
 }
 
 void ASpawnManager::PopulateGame()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+	if (ActiveAreaSet.IsEmpty()) return;
 
-	if (!ActiveAreaSet.IsEmpty())
-		for (uint8 i = 0; i < ActiveAreaSet.Num(); i++)
+	for (uint8 i = 0; i < ActiveAreaSet.Num(); i++)
+	{
+		uint8 DesiredZombieCount = ActiveAreaSet[i]->DesiredEnemyCount;
+		for (uint8 j = 0; j < DesiredZombieCount; j++)
 		{
-			uint8 DesiredZombieCount = ActiveAreaSet[i]->DesiredEnemyCount;
-			for (uint8 j = 0; j < DesiredZombieCount; j++)
-			{
-				ActiveAreaSet[i]->SpawnEnemy(SpawnableEnemies[0]);
-			}
+			ActiveAreaSet[i]->SpawnEnemy(SpawnableEnemies[0]);
+			Current_AI_Population++;
 		}
+	}
 }
 
-void ASpawnManager::InitWave()
+void ASpawnManager::CheckPopulation()
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+	if (ActiveAreaSet.IsEmpty()) return;
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Current Population: %d"), Current_AI_Population));
+
+	if (Current_AI_Population < Max_AI_Population) {
+		uint8 AI_Pop_Budget = Max_AI_Population - Current_AI_Population;
+
+		for (uint8 i = 0; i < AI_Pop_Budget; i++)
+		{
+			uint8 RandomArea = FMath::RandRange(0, ActiveAreaSet.Num() - 1);
+			ActiveAreaSet[RandomArea]->SpawnEnemy(SpawnableEnemies[0]);
+			Current_AI_Population++;
+		}
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Populating With %d New Enemies!"), AI_Pop_Budget));
+	}
 }
+
 
 void ASpawnManager::AreaSweep()
 {

@@ -1,6 +1,3 @@
-
-
-
 #include "BTTask_ZombieAttack.h"
 
 
@@ -8,8 +5,8 @@ UBTTask_ZombieAttack::UBTTask_ZombieAttack()
 {
 	bNotifyTick = false;
 	bNotifyTaskFinished = true;
-	bCreateNodeInstance = false;
-	NodeName = TEXT("Zombie Attack Task");
+	bCreateNodeInstance = true;
+	NodeName = TEXT("Zombie Attack");
 }
 
 EBTNodeResult::Type UBTTask_ZombieAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

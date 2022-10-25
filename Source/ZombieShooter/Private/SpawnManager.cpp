@@ -23,25 +23,10 @@ void ASpawnManager::BeginPlay()
 
 	if (UKismetSystemLibrary::IsServer(GetWorld())) {
 		GetWorldTimerManager().SetTimer(PlayerSweepTimer, this, &ASpawnManager::AreaSweep, AreaSweepInterval, true, 5.0f);
-		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, 5.1f + PopulationCheckInterval);
+		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, 5.1f + PopulationCheckInterval);;
 	}
 }
 
-void ASpawnManager::PopulateGame()
-{
-	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
-	if (ActiveAreaSet.IsEmpty()) return;
-
-	for (uint8 i = 0; i < ActiveAreaSet.Num(); i++)
-	{
-		uint8 DesiredZombieCount = ActiveAreaSet[i]->DesiredEnemyCount;
-		for (uint8 j = 0; j < DesiredZombieCount; j++)
-		{
-			ActiveAreaSet[i]->SpawnEnemy(SpawnableEnemies[0]);
-			Current_AI_Population++;
-		}
-	}
-}
 
 void ASpawnManager::CheckPopulation()
 {
@@ -50,6 +35,9 @@ void ASpawnManager::CheckPopulation()
 
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Current Population: %d"), Current_AI_Population));
+
+
+
 
 	if (Current_AI_Population < Max_AI_Population) {
 		uint8 AI_Pop_Budget = Max_AI_Population - Current_AI_Population;
@@ -121,8 +109,17 @@ void ASpawnManager::AreaSweep()
 	{
 		if (ActiveAreaSet[h]->ContainsPlayers()) {
 			ActiveAreaSet[h]->SetAreaStatus(false);
+
 			ActiveAreaSet.RemoveAt(h);
 		}
+	}
+
+	//TODO Refactor ActivePlayerArea Assignment for performance. SpawnManager.cpp
+	ActivePlayerArea.Empty();
+	for (uint8 j = 0; j < ActiveAreaSet.Num(); j++)
+	{
+		if (ActiveAreaSet[j]->ContainsPlayers())
+			ActivePlayerArea.Add(ActiveAreaSet[j]);
 	}
 
 }

@@ -12,6 +12,15 @@
 
 #include "AI_Controller_Base.generated.h"
 
+UENUM(BlueprintType)
+enum class E_AI_State : uint8 {
+	IDLE = 0 UMETA(DisplayName="Idle"),
+	ROAMING = 1 UMETA(DisplayName = "Roaming"),
+	FOLLOWING = 2 UMETA(DisplayName = "Following"),
+	ATTACKING = 3 UMETA(DisplayName = "Attacking"),
+	TRAVELLING = 4 UMETA(DisplayName = "Travelling"),
+};
+
 UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AAI_Controller_Base : public AAIController
 {
@@ -19,6 +28,9 @@ class ZOMBIESHOOTER_API AAI_Controller_Base : public AAIController
 
 public:
 	AAI_Controller_Base(FObjectInitializer const& ObjectInitializer);
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+		TEnumAsByte<E_AI_State> Current_AIState;
 
 protected:
 
@@ -32,8 +44,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		UAIPerceptionComponent* AIPerceptionComponent;
-
-
 
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 

@@ -4,25 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "AIController.h"
 #include "Kismet/GameplayStatics.h"
-#include "ZombiePawn.h"
+#include "GameMode_Main.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
-#include "BTTask_ZombieAttack.generated.h"
+#include "BTTask_TravelToActiveArea.generated.h"
 
 /**
  * 
  */
 UCLASS(Blueprintable)
-class UBTTask_ZombieAttack : public UBTTaskNode
+class ZOMBIESHOOTER_API UBTTask_TravelToActiveArea : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
 public:
-	UBTTask_ZombieAttack();
+	UBTTask_TravelToActiveArea();
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
-
+	
 };
-
-

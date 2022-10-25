@@ -4,6 +4,7 @@
 
 #include "Perception/AISenseConfig_Sight.h"
 
+
 AAI_Controller_Base::AAI_Controller_Base(FObjectInitializer const& ObjectInitializer)
 {
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTConstruct(TEXT("BehaviorTree'/Game/_GAME/Blueprints/Gameplay/Characters/AI/BT_Zombie.BT_Zombie'"));
@@ -56,17 +57,19 @@ void AAI_Controller_Base::OnPerception(AActor* Actor, FAIStimulus Stimulus)
 	if (!DetectedThreats.Contains(Actor)) return;
 
 	//Set Focus on Actual First Sensed Actor. Only changes when lost sight.
-	SetFocus(Stimulus.WasSuccessfullySensed() ? Actor : nullptr);
+	//SetFocus(Stimulus.WasSuccessfullySensed() ? Actor : nullptr);
 
 	if (!BlackboardComponent) return;
 
-	if (GetFocusActor()) {
-		BlackboardComponent->SetValueAsObject(FName("TargetActor"), GetFocusActor());
+	if (Actor) {
+		Current_AIState = E_AI_State::FOLLOWING;
+		BlackboardComponent->SetValueAsObject(FName("TargetActor"), Actor);
 
 		//Update Last Know Location in BB
-		BlackboardComponent->SetValueAsVector(FName("TargetLocation"), GetFocusActor()->GetActorLocation());
+		BlackboardComponent->SetValueAsVector(FName("TargetLocation"), Actor->GetActorLocation());
 	}
 	else {
+		Current_AIState = E_AI_State::IDLE;
 		BlackboardComponent->SetValueAsObject(FName("TargetActor"), nullptr);
 	}
 

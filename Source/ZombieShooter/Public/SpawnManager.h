@@ -55,6 +55,9 @@ public:
 	UPROPERTY(Category = "Spawning|Active Areas", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		TArray<ASpawnArea*> ActiveAreaSet;
 
+	UPROPERTY(Category = "Spawning|Active Areas", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		TArray<ASpawnArea*> ActivePlayerArea;
+
 protected:
 	FTimerHandle PlayerSweepTimer;
 	FTimerHandle PopCheckTimer;
@@ -62,9 +65,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "PopulateWave"), Category = "Spawning")
-		void PopulateGame();
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "InitWave"), Category = "Spawning")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "CheckPopulation"), Category = "Spawning")
 		void CheckPopulation();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "AreaSweep"), Category = "Spawning")
 		void AreaSweep();

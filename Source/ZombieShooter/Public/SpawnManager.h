@@ -31,7 +31,7 @@ public:
 		uint8 Current_AI_Population;
 
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		float PopulationCheckInterval = 10.0f;
+		float PopulationCheckInterval = 3.0f;
 
 	//Wave Settings
 	UPROPERTY(Category = "Spawning|Enemies|WaveSettings", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -48,7 +48,7 @@ public:
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		float AreaSweepRange = 1500.0f;
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		float AreaSweepInterval = 2.0f;
+		float ActiveAreaSweepInterval = 2.0f;
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bDrawDebug = false;
 
@@ -59,7 +59,8 @@ public:
 		TArray<ASpawnArea*> ActivePlayerArea;
 
 protected:
-	FTimerHandle PlayerSweepTimer;
+	FTimerHandle ActiveAreaSweepTimer;
+
 	FTimerHandle PopCheckTimer;
 
 	virtual void BeginPlay() override;
@@ -67,9 +68,7 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "CheckPopulation"), Category = "Spawning")
 		void CheckPopulation();
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "AreaSweep"), Category = "Spawning")
-		void AreaSweep();
-
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ActiveAreaSweep"), Category = "Spawning")
+		void ActiveAreaSweep();
 
 };

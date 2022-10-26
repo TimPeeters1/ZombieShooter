@@ -6,7 +6,7 @@
 AWeaponObject::AWeaponObject()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	SetReplicates(true);
+	bReplicates = true;
 
 	WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
 	RootComponent = WeaponModel;

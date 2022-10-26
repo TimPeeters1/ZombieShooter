@@ -1,5 +1,8 @@
 #include "ZombiePawn.h"
 #include "Math/UnrealMathUtility.h"
+#include "GameMode_Main.h"
+#include "SpawnManager.h"
+
 // Sets default values
 AZombiePawn::AZombiePawn()
 {
@@ -13,7 +16,15 @@ AZombiePawn::AZombiePawn()
 void AZombiePawn::BeginPlay()
 {
 	Super::BeginPlay();
+	if(HealthComponent)
+		HealthComponent->OnDeath.AddDynamic(this, &AZombiePawn::OnDeath);
+}
 
+void AZombiePawn::OnDeath()
+{
+	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
+	if(GameMode)
+			GameMode->SpawnManager->Current_AI_Population--;
 }
 
 float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

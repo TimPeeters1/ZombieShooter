@@ -20,9 +20,9 @@ AAI_Controller_Base::AAI_Controller_Base(FObjectInitializer const& ObjectInitial
 
 	SightPercpetion = ObjectInitializer.CreateDefaultSubobject<UAISenseConfig_Sight>(this, TEXT("SightConfig"));
 
-	SightPercpetion->SightRadius = 3000.0f;
-	SightPercpetion->LoseSightRadius = 3500.0f;
-	SightPercpetion->PeripheralVisionAngleDegrees = 105.f;
+	SightPercpetion->SightRadius = 1000.0f;
+	SightPercpetion->LoseSightRadius = 1500.0f;
+	SightPercpetion->PeripheralVisionAngleDegrees = 60.f;
 	SightPercpetion->DetectionByAffiliation.bDetectNeutrals = true;
 
 	AIPerceptionComponent->ConfigureSense(*SightPercpetion);
@@ -73,6 +73,7 @@ void AAI_Controller_Base::OnPerception(AActor* Actor, FAIStimulus Stimulus)
 		BlackboardComponent->SetValueAsObject(FName("TargetActor"), nullptr);
 	}
 
+	BlackboardComponent->SetValueAsEnum(FName("AI_State"), (uint8)Current_AIState);
 }
 
 ETeamAttitude::Type AAI_Controller_Base::GetTeamAttitudeTowards(const AActor& Other) const

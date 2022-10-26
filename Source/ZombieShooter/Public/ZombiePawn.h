@@ -48,6 +48,8 @@ protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UGenericHealthComponent* HealthComponent;
 
+	void OnDeath();
+
 	virtual float TakeDamage
 	(
 		float DamageAmount,

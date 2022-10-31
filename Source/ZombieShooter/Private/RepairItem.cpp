@@ -1,10 +1,9 @@
 
-
-
 #include "RepairItem.h"
 
 ARepairItem::ARepairItem()
 {
+	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
 
 	ObjectMesh = CreateDefaultSubobject<UStaticMeshComponent>("ObjectMeshComponent", false);
@@ -16,8 +15,7 @@ ARepairItem::ARepairItem()
 
 void ARepairItem::OnInteract_Implementation()
 {
-	SetActorHiddenInGame(true);
-	SetActorEnableCollision(false);
+	MC_ServerInteract();
 }
 
 void ARepairItem::StartHover_Implementation()
@@ -26,6 +24,12 @@ void ARepairItem::StartHover_Implementation()
 
 void ARepairItem::StopHover_Implementation()
 {
+}
+
+void ARepairItem::MC_ServerInteract_Implementation()
+{
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
 }
 
 

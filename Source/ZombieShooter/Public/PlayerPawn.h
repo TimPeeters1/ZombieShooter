@@ -24,7 +24,6 @@ class ZOMBIESHOOTER_API APlayerPawn : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	APlayerPawn();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInteraction")
@@ -90,9 +89,18 @@ protected:
 
 	void OnStartJump();
 	void OnStopJump();
+
 	void OnPerformInteraction();
 
+	UFUNCTION(Server, reliable)
+	void ServerPerformInteraction();
+	void ServerPerformInteraction_Implementation();
+
 	void InteractionTrace();
+
+	UFUNCTION(Server, reliable)
+	void ServerSetInteractingActor(AActor* InteractingObject);
+	void ServerSetInteractingActor_Implementation(AActor* InteractingObject);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnInteractionStart OnStartInteraction;

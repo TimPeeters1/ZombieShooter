@@ -150,6 +150,18 @@ void APlayerPawn::OnStopJump()
 void APlayerPawn::OnPerformInteraction()
 {
 	if (!IsLocallyControlled()) return;
+
+	ServerPerformInteraction();
+
+	if (InteractingActor)
+		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
+
+}
+
+void APlayerPawn::ServerPerformInteraction_Implementation()
+{
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	if (InteractingActor) {
 		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
 
@@ -159,7 +171,8 @@ void APlayerPawn::OnPerformInteraction()
 			if (!RepairObjectInventory.Contains(RepairObject)) {
 				RepairObjectInventory.Add(RepairObject);
 			}
-		} else if (Cast<ARepairObjective>(InteractingActor)) {
+		}
+		else if (Cast<ARepairObjective>(InteractingActor)) {
 			ARepairObjective* RepairObjective = Cast<ARepairObjective>(InteractingActor);
 			if (!RepairObjectInventory.IsEmpty()) {
 				RepairObjective->AddRepairItem(RepairObjectInventory[0]);
@@ -194,29 +207,42 @@ void APlayerPawn::InteractionTrace()
 				if (HitResult.GetActor() != InteractingActor) {
 					//Set New Interacting Actor
 					InteractingActor = HitResult.GetActor();
+					//Replicate InteractingActor to Server
+					ServerSetInteractingActor(InteractingActor);
+
+					//Start Local Hover FX
 					Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StartHover(InteractingActor);
 					OnStartInteraction.Broadcast();
 				}
 			}
+			else if (InteractingActor)
+			{
+				ServerSetInteractingActor(nullptr);
 
-			//TODO REFACTOR DOUBLE STATEMENTS, this is stupid.
-			else {
-				if (InteractingActor) {
-					Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
-					OnStopInteraction.Broadcast();
-				}
+				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
+				OnStopInteraction.Broadcast();
+
 				InteractingActor = nullptr;
 			}
 		}
-		else {
-			if (InteractingActor) {
-				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
-				OnStopInteraction.Broadcast();
-			}
+		else if (InteractingActor) {
+			ServerSetInteractingActor(nullptr);
+
+			Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
+			OnStopInteraction.Broadcast();
+
 			InteractingActor = nullptr;
 		}
 	}
+}
 
+void APlayerPawn::ServerSetInteractingActor_Implementation(AActor* InteractingObject)
+{
+	//Serverside Assignment.
+	InteractingActor = InteractingObject;
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, "Updated InteractingActor!");
 }
 
 float APlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

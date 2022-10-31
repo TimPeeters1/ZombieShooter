@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -32,4 +30,8 @@ protected:
 		void StopHover();
 		virtual void StopHover_Implementation() override;
 
+public:
+	UFUNCTION(NetMulticast, unreliable)
+		void MC_ServerInteract();
+		void MC_ServerInteract_Implementation();
 };

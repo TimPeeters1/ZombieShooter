@@ -16,6 +16,7 @@ AZombiePawn::AZombiePawn()
 void AZombiePawn::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if(HealthComponent)
 		HealthComponent->OnDeath.AddDynamic(this, &AZombiePawn::OnDeath);
 }

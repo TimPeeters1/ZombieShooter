@@ -153,7 +153,9 @@ void APlayerPawn::OnPerformInteraction()
 
 	ServerPerformInteraction();
 
-	if (InteractingActor)
+	//This Could be a little overdone, as this is also called from the Server RPC (ServerPerformInteraction). 
+	//but as lag would have it, the earlier the actor responds, the better.. right?
+	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
 		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
 
 }
@@ -217,20 +219,20 @@ void APlayerPawn::InteractionTrace()
 			}
 			else if (InteractingActor)
 			{
-				ServerSetInteractingActor(nullptr);
 
 				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
 				OnStopInteraction.Broadcast();
 
+				ServerSetInteractingActor(nullptr);
 				InteractingActor = nullptr;
 			}
 		}
 		else if (InteractingActor) {
-			ServerSetInteractingActor(nullptr);
 
 			Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
 			OnStopInteraction.Broadcast();
 
+			ServerSetInteractingActor(nullptr);
 			InteractingActor = nullptr;
 		}
 	}

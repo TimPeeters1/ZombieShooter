@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/TriggerBox.h"
+#include "Net/UnrealNetwork.h"
+
 #include "InteractableObjectInterface.h"
 #include "RepairItem.h"
 
@@ -23,6 +24,16 @@ class ZOMBIESHOOTER_API ARepairObjective : public AActor, public IInteractableOb
 public:
 	ARepairObjective();
 
+	//Amount of RepairItems that need to be added before the objective is completed.
+	UPROPERTY(Replicated, Category = "Interaction", EditAnywhere, BlueprintReadWrite)
+		uint8 RepairItemAmount = 3;
+
+	UPROPERTY(ReplicatedUsing = OnRep_RepairAmount, Category = "Interaction", EditAnywhere, BlueprintReadOnly)
+		uint8 CurrentRepairedAmount;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		TArray<ARepairItem*> CollectedRepairItems;
+
 protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* ObjectMesh;
@@ -40,14 +51,18 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 		void StopHover();
 	virtual void StopHover_Implementation() override;
+	
+	//Visuals
+	void TextVisualUpdate();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		uint8 RepairItemAmount;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		TArray<ARepairItem*> CollectedRepairItems;
-
 	UFUNCTION(BlueprintCallable, Category = "RepairItem")
 		void AddRepairItem(ARepairItem* RepairObject);
+
+	UFUNCTION()
+		void OnRep_RepairAmount();
+
+	virtual void BeginPlay() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

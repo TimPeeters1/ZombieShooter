@@ -21,7 +21,6 @@ class APlayerPawn;
 /**
  *
  */
-
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API UPlayerWeaponComponent : public UActorComponent
 {

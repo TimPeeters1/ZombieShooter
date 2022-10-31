@@ -120,28 +120,33 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 		ActiveWeapon->CurrentAmmo--;
 
 		FHitResult HitResult(ForceInit);
-		//TODO FIX STARTLOC w/ Actual Camera loc!
-		FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 65.0f);
 
-		//TODO Add Gun Range
-		FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
-		FVector EndLoc = StartLoc + ControlRot;
+		if (ParentPawn->GetFP_Camera()) {
+			FVector StartLoc = ParentPawn->GetFP_Camera()->GetComponentLocation();
+			//FVector StartLoc = ParentPawn->GetActorLocation() + ParentPawn
 
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(GetOwner());
+			//TODO FIX STARTLOC w/ Actual Camera loc!
+			//FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 75.0f);
 
-		//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
+			//TODO Add Gun Range
+			FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
+			FVector EndLoc = StartLoc + ControlRot;
 
-		GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
+			FCollisionQueryParams CollisionParams;
+			CollisionParams.AddIgnoredActor(GetOwner());
 
-		if (HitResult.GetActor()) {
-			//FString hitRes = HitResult.GetActor()->GetName();
-			//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+			//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor(255, 0, 0), false, 2.0f, 0, 3.f);
 
-			//TODO Add Gun Damage
-			UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+			GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
+
+			if (HitResult.GetActor()) {
+				//FString hitRes = HitResult.GetActor()->GetName();
+				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
+
+				//TODO Add Gun Damage
+				UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+			}
 		}
-
 	}
 }
 #pragma endregion 
@@ -169,7 +174,7 @@ void UPlayerWeaponComponent::OnReloadWeapon()
 		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ReloadAudio);
 		//ParentPawn->GetWeaponAudioComponent()->Play();
 		OnReloadEvent.Broadcast();
-		
+
 	}
 }
 
@@ -187,12 +192,12 @@ void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 		if (ActiveWeapon->InventoryAmmo >= ammoToAdd) {
 			ActiveWeapon->CurrentAmmo += ammoToAdd;
 			ActiveWeapon->InventoryAmmo -= ammoToAdd;
-		}	
+		}
 		else {
 			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo;
 			ActiveWeapon->InventoryAmmo = 0;
 		}
-		
+
 		//Server Local Ammo
 		ActiveWeapon->LocalCurrentAmmo = ActiveWeapon->CurrentAmmo;
 	}

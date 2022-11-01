@@ -42,6 +42,8 @@ protected:
 	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
 		AWeaponObject* ActiveWeapon;
 
+	FTimerHandle AutomaticFireTimer;
+
 public:
 	UPROPERTY(BlueprintAssignable)
 		FOnFireEvent OnFireEvent;
@@ -63,8 +65,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
 		void OnFire();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
+		void OnFireEnd();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
 		void OnReloadWeapon();
+
+	void SingleFire();
+	void AutomaticFire();
 
 	//Weapon Functionality
 	UFUNCTION(Server, reliable)

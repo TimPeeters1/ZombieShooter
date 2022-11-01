@@ -81,6 +81,7 @@ void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
 	if (ActiveWeapon->WeaponData->ShotAudio) {
 		ParentPawn->GetWeaponAudioComponent()->SetSound(EquippedWeapons[Index]->WeaponData->ShotAudio);
 	}
+
 }
 
 void UPlayerWeaponComponent::EquipPrimaryWeapon()
@@ -101,8 +102,54 @@ Firing Functionality
 */
 void UPlayerWeaponComponent::OnFire()
 {
-	ServerFireWeapon();
 	if (!ActiveWeapon) return;
+
+	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
+	switch (ActiveType)
+	{
+	case EWeaponType::MELEE:
+		break;
+	case EWeaponType::SHOTGUN:
+		break;
+	case EWeaponType::SINGLEFIRE:
+		SingleFire();
+		break;
+	case EWeaponType::BURSTFIRE:
+		break;
+	case EWeaponType::AUTOFIRE:
+		GetOwner()->GetWorldTimerManager().SetTimer(AutomaticFireTimer, this, &UPlayerWeaponComponent::SingleFire, ActiveWeapon->WeaponData->Default_ShotDelay, true, 0.0f);
+		break;
+	default:
+		break;
+	}
+}
+
+void UPlayerWeaponComponent::OnFireEnd()
+{
+	if (!ActiveWeapon) return;
+
+	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
+	switch (ActiveType)
+	{
+	case EWeaponType::MELEE:
+		break;
+	case EWeaponType::SHOTGUN:
+		break;
+	case EWeaponType::SINGLEFIRE:
+		break;
+	case EWeaponType::BURSTFIRE:
+		break;
+	case EWeaponType::AUTOFIRE:
+		GetOwner()->GetWorldTimerManager().ClearTimer(AutomaticFireTimer);
+		break;
+	default:
+		break;
+	}
+}
+
+void UPlayerWeaponComponent::SingleFire()
+{
+	ServerFireWeapon();
 	if (ActiveWeapon->LocalCurrentAmmo > 0) {
 		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 
@@ -112,7 +159,7 @@ void UPlayerWeaponComponent::OnFire()
 		//Visuals and VFX!
 		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
 		ParentPawn->GetWeaponAudioComponent()->Play();
-		if(ActiveWeapon->WeaponData->MuzzleFlash_VFX)
+		if (ActiveWeapon->WeaponData->MuzzleFlash_VFX)
 			UNiagaraFunctionLibrary::SpawnSystemAttached(ActiveWeapon->WeaponData->MuzzleFlash_VFX, ParentPawn->GetWeaponModel(), FName(TEXT("MuzzleFlash")), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 		OnFireEvent.Broadcast();
 	}
@@ -186,7 +233,6 @@ void UPlayerWeaponComponent::OnReloadWeapon()
 
 	}
 }
-
 
 void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 {

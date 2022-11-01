@@ -63,32 +63,6 @@ APlayerPawn::APlayerPawn()
 	}
 }
 
-void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(APlayerPawn, PlayerWeaponComponent);
-}
-
-// Called when the game starts or when spawned
-void APlayerPawn::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (IsLocallyControlled())
-		GetMesh()->SetVisibility(false, true);
-	else
-		FP_ArmModel->SetVisibility(false, true);
-}
-
-// Called every frame
-void APlayerPawn::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	InteractionTrace();
-}
-
 // Called to bind functionality to input
 void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -108,10 +82,38 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	if (!PlayerWeaponComponent) return;
 	//Weapon Component
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFireEnd);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnReloadWeapon);
 	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
 	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
 }
+
+void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayerPawn, PlayerWeaponComponent);
+}
+
+
+void APlayerPawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (IsLocallyControlled())
+		GetMesh()->SetVisibility(false, true);
+	else
+		FP_ArmModel->SetVisibility(false, true);
+}
+
+// Called every frame
+void APlayerPawn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	InteractionTrace();
+}
+
 
 void APlayerPawn::Move_XAxis(float AxisValue) {
 	AddMovementInput(GetActorRightVector(), AxisValue);

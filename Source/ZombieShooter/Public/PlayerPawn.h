@@ -111,6 +111,8 @@ protected:
 public:
 	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
 
+	/** Returns Current FP Arm Model **/
+	FORCEINLINE class USkeletalMeshComponent* GetArmModel() const { return FP_ArmModel; }
 	/** Returns Current FP Weapon Model **/
 	FORCEINLINE class UStaticMeshComponent* GetWeaponModel() const { return FP_WeaponModel; }
 	/** Returns  FP Audio Component **/

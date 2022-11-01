@@ -30,8 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName WeaponName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* WeaponModel;
+	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* WeaponArmMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FTransform FP_Model_Transform;

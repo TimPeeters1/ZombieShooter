@@ -38,8 +38,9 @@ float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	DamageEvent.GetBestHitInfo(this, DamageCauser, hitRes, impulseDir);
 	impulseDir.Normalize();
 
+	DrawDebugPoint(GetWorld(), hitRes.ImpactPoint, 3.0f, FColor::Green, false, 0.15f);
 	//TEMP Old Particle system!
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodSplatter_VFX, hitRes.Location, hitRes.ImpactNormal.Rotation(), true);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodSplatter_VFX, hitRes.ImpactPoint, hitRes.ImpactNormal.Rotation(), true);
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }

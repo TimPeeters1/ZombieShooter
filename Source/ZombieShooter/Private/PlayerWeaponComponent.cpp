@@ -69,6 +69,10 @@ void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 	if (!ParentPawn) return;
 
+	if (ParentPawn->GetArmModel()) {
+		ParentPawn->GetArmModel()->SetSkeletalMesh(EquippedWeapons[Index]->WeaponData->WeaponArmMesh, true);
+	}
+
 	if (ParentPawn->GetWeaponModel()) {
 		ParentPawn->GetWeaponModel()->SetStaticMesh(EquippedWeapons[Index]->WeaponData->WeaponModel);
 		ParentPawn->GetWeaponModel()->SetRelativeTransform(EquippedWeapons[Index]->WeaponData->FP_Model_Transform);

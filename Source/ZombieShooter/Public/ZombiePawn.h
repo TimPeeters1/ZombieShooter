@@ -48,6 +48,10 @@ protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UGenericHealthComponent* HealthComponent;
 
+	//TEMP
+	UPROPERTY(Category = "VFX|Temp", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UParticleSystem* BloodSplatter_VFX;
+
 	void OnDeath();
 
 	virtual float TakeDamage

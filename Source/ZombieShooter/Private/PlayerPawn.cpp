@@ -114,36 +114,31 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 }
 
 void APlayerPawn::Move_XAxis(float AxisValue) {
-	if (!IsLocallyControlled()) return;
 	AddMovementInput(GetActorRightVector(), AxisValue);
 }
 
 void APlayerPawn::Move_YAxis(float AxisValue) {
-	if (!IsLocallyControlled()) return;
 	AddMovementInput(GetActorForwardVector(), AxisValue);
 }
 
 void APlayerPawn::Turn_Character(float AxisValue)
 {
-	if (!IsLocallyControlled()) return;
 	AddControllerYawInput(AxisValue * Turn_Rate * FApp::GetDeltaTime());
 }
 
 void APlayerPawn::Look_Up(float AxisValue)
 {
-	if (!IsLocallyControlled()) return;
+
 	AddControllerPitchInput(AxisValue * LookUp_Rate * FApp::GetDeltaTime());
 }
 
 void APlayerPawn::OnStartJump()
 {
-	if (!IsLocallyControlled()) return;
 	Jump();
 }
 
 void APlayerPawn::OnStopJump()
 {
-	if (!IsLocallyControlled()) return;
 	StopJumping();
 }
 

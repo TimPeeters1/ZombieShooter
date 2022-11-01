@@ -2,6 +2,9 @@
 #include "PlayerWeaponComponent.h"
 
 #include "PlayerPawn.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+
 
 
 UPlayerWeaponComponent::UPlayerWeaponComponent()
@@ -105,6 +108,8 @@ void UPlayerWeaponComponent::OnFire()
 		//Visuals and VFX!
 		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
 		ParentPawn->GetWeaponAudioComponent()->Play();
+		if(ActiveWeapon->WeaponData->MuzzleFlash_VFX)
+			UNiagaraFunctionLibrary::SpawnSystemAttached(ActiveWeapon->WeaponData->MuzzleFlash_VFX, ParentPawn->GetWeaponModel(), FName(TEXT("MuzzleFlash")), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 		OnFireEvent.Broadcast();
 	}
 }

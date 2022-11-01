@@ -33,6 +33,14 @@ float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	if(HealthComponent)
 	HealthComponent->ReduceHealth(DamageAmount);
 
+	FHitResult hitRes;
+	FVector impulseDir;
+	DamageEvent.GetBestHitInfo(this, DamageCauser, hitRes, impulseDir);
+	impulseDir.Normalize();
+
+	//TEMP Old Particle system!
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodSplatter_VFX, hitRes.Location, hitRes.ImpactNormal.Rotation(), true);
+
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 

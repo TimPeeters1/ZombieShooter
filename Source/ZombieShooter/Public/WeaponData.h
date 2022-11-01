@@ -3,9 +3,11 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "MetasoundSource.h"
+#include "Camera/CameraShakeBase.h"
 
 #include "WeaponData.generated.h"
 
+class UNiagaraSystem;
 
 UENUM(BlueprintType)
 enum class WeaponType : uint8 {
@@ -43,8 +45,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		WeaponType WeaponBehaviour;
 
+
+	UPROPERTY(Category = "Visuals|CameraShake", EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UCameraShakeBase> Shot_CamShake;
+
 	UPROPERTY(Category = "Visuals|VFX", EditAnywhere, BlueprintReadWrite)
-		UStaticMesh* MuzzleFlash_VFX;
+		UNiagaraSystem* MuzzleFlash_VFX;
 	UPROPERTY(Category = "Visuals|Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ShotAudio;
 	UPROPERTY(Category = "Visuals|Audio", EditAnywhere, BlueprintReadWrite)

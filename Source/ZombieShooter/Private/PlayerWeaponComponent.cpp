@@ -5,8 +5,6 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
-
-
 UPlayerWeaponComponent::UPlayerWeaponComponent()
 {
 	SetIsReplicatedByDefault(true);
@@ -22,6 +20,7 @@ void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 void UPlayerWeaponComponent::BeginPlay()
 {
+	bIsFiring = false;
 	SpawnStartWeapons();
 }
 
@@ -59,29 +58,35 @@ Weapon Switching (Inventory) Functionality
 */
 void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
 {
+
 	//Prevents nullptr crash
-	if (EquippedWeapons.IsEmpty()) return;
+	if (EquippedWeapons.IsEmpty()){ return; }
+	if (!EquippedWeapons[Index]) { return; }
 
-	if (!EquippedWeapons[Index]) return;
+	if (ActiveWeapon != EquippedWeapons[Index] && !bIsFiring) {
 
-	ActiveWeapon = EquippedWeapons[Index];
+		ActiveWeapon = EquippedWeapons[Index];
 
-	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-	if (!ParentPawn) return;
 
-	if (ParentPawn->GetArmModel()) {
-		ParentPawn->GetArmModel()->SetSkeletalMesh(EquippedWeapons[Index]->WeaponData->WeaponArmMesh, true);
+		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+		if (!ParentPawn) return;
+
+		if (ParentPawn->GetArmModel()) {
+			ParentPawn->GetArmModel()->SetSkeletalMesh(ActiveWeapon->WeaponData->WeaponArmMesh, true);
+		}
+
+		if (ParentPawn->GetWeaponModel()) {
+			ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponModel);
+			ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->FP_Model_Transform);
+		}
+
+		if (ActiveWeapon->WeaponData->ShotAudio) {
+			ParentPawn->GetWeaponAudioComponent()->Stop();
+			ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
+		}
+
+		bIsFiring = false;
 	}
-
-	if (ParentPawn->GetWeaponModel()) {
-		ParentPawn->GetWeaponModel()->SetStaticMesh(EquippedWeapons[Index]->WeaponData->WeaponModel);
-		ParentPawn->GetWeaponModel()->SetRelativeTransform(EquippedWeapons[Index]->WeaponData->FP_Model_Transform);
-	}
-
-	if (ActiveWeapon->WeaponData->ShotAudio) {
-		ParentPawn->GetWeaponAudioComponent()->SetSound(EquippedWeapons[Index]->WeaponData->ShotAudio);
-	}
-
 }
 
 void UPlayerWeaponComponent::EquipPrimaryWeapon()
@@ -103,6 +108,8 @@ Firing Functionality
 void UPlayerWeaponComponent::OnFire()
 {
 	if (!ActiveWeapon) return;
+
+	bIsFiring = true;
 
 	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
 	switch (ActiveType)
@@ -127,6 +134,8 @@ void UPlayerWeaponComponent::OnFire()
 void UPlayerWeaponComponent::OnFireEnd()
 {
 	if (!ActiveWeapon) return;
+
+	bIsFiring = false;
 
 	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
 	switch (ActiveType)
@@ -159,8 +168,10 @@ void UPlayerWeaponComponent::SingleFire()
 		//Visuals and VFX!
 		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
 		ParentPawn->GetWeaponAudioComponent()->Play();
+
 		if (ActiveWeapon->WeaponData->MuzzleFlash_VFX)
 			UNiagaraFunctionLibrary::SpawnSystemAttached(ActiveWeapon->WeaponData->MuzzleFlash_VFX, ParentPawn->GetWeaponModel(), FName(TEXT("MuzzleFlash")), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
+
 		OnFireEvent.Broadcast();
 	}
 }
@@ -216,6 +227,8 @@ void UPlayerWeaponComponent::OnReloadWeapon()
 	ServerReloadWeapon();
 
 	if (!ActiveWeapon) return;
+	if (bIsFiring) return;
+
 	if (ActiveWeapon->LocalCurrentAmmo >= 0) {
 		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 
@@ -243,7 +256,7 @@ void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 		if (ActiveWeapon->InventoryAmmo <= 0) return;
 
 		uint8 ammoToAdd = ActiveWeapon->MagazineSize - ActiveWeapon->CurrentAmmo;
-
+		
 		if (ActiveWeapon->InventoryAmmo >= ammoToAdd) {
 			ActiveWeapon->CurrentAmmo += ammoToAdd;
 			ActiveWeapon->InventoryAmmo -= ammoToAdd;

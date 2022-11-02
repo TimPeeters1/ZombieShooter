@@ -45,6 +45,8 @@ protected:
 	FTimerHandle AutomaticFireTimer;
 
 public:
+	bool bIsFiring;
+
 	UPROPERTY(BlueprintAssignable)
 		FOnFireEvent OnFireEvent;
 	UPROPERTY(BlueprintAssignable)
@@ -71,7 +73,6 @@ public:
 		void OnReloadWeapon();
 
 	void SingleFire();
-	void AutomaticFire();
 
 	//Weapon Functionality
 	UFUNCTION(Server, reliable)

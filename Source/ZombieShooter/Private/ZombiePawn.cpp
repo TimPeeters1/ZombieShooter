@@ -33,14 +33,12 @@ float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	if(HealthComponent)
 	HealthComponent->ReduceHealth(DamageAmount);
 
-	FHitResult hitRes;
-	FVector impulseDir;
-	DamageEvent.GetBestHitInfo(this, DamageCauser, hitRes, impulseDir);
-	impulseDir.Normalize();
+	FHitResult HitRes;
+	FVector ImpulseDir;
+	DamageEvent.GetBestHitInfo(this, DamageCauser, HitRes, ImpulseDir);
+	ImpulseDir.Normalize();
 
-	DrawDebugPoint(GetWorld(), hitRes.ImpactPoint, 3.0f, FColor::Green, false, 0.15f);
-	//TEMP Old Particle system!
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodSplatter_VFX, hitRes.ImpactPoint, hitRes.ImpactNormal.Rotation(), true);
+	MC_TakeDamageFX_Implementation(HitRes.ImpactPoint, HitRes.ImpactNormal);
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
@@ -79,6 +77,13 @@ void AZombiePawn::MC_OnZombieAttack_Implementation()
 	UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
 	if (AnimInst)
 		AnimInst->Montage_Play(AttackAnimation[FMath::RandRange(0, (AttackAnimation.Num() - 1))]);
+}
+
+void AZombiePawn::MC_TakeDamageFX_Implementation(FVector ImpactLocation, FVector ImpactNormal)
+{
+	DrawDebugPoint(GetWorld(), ImpactLocation, 3.0f, FColor::Green, false, 0.15f);
+	//TEMP Old Particle system!
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodSplatter_VFX, ImpactLocation, ImpactNormal.Rotation(), true);
 }
 
 // Called every frame

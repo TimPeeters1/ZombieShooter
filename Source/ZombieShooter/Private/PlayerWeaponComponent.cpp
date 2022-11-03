@@ -21,12 +21,15 @@ void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 void UPlayerWeaponComponent::BeginPlay()
 {
 	bIsFiring = false;
+
 	SpawnStartWeapons();
 }
 
 #pragma region WeaponObjectFunctionality 
-void UPlayerWeaponComponent::SpawnStartWeapons_Implementation()
+void UPlayerWeaponComponent::SpawnStartWeapons()
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	UWorld* World = GetWorld();
 	if (World) {
 		for (size_t i = 0; i < StartingWeapons.Num(); i++)
@@ -45,31 +48,37 @@ void UPlayerWeaponComponent::SpawnStartWeapons_Implementation()
 
 				NewWeaponObject->GetRootComponent()->ToggleVisibility(true);
 				EquippedWeapons.Add(NewWeaponObject);
-				SetEquippedWeapon(0);
 			}
 		}
+		ClientStartWeaponsSpawned();
 	}
 }
 #pragma endregion  
 
-#pragma region WeaponSwitchFunctionality 
+#pragma region WeaponSwitchFunctionality
+
+void UPlayerWeaponComponent::ClientStartWeaponsSpawned_Implementation()
+{
+	SetEquippedWeapon(1);
+}
+
 /*
 Weapon Switching (Inventory) Functionality
 */
-void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
+void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 {
-
 	//Prevents nullptr crash
-	if (EquippedWeapons.IsEmpty()){ return; }
+	if (EquippedWeapons.IsEmpty()){ return;}
 	if (!EquippedWeapons[Index]) { return; }
 
 	if (ActiveWeapon != EquippedWeapons[Index] && !bIsFiring) {
-
 		ActiveWeapon = EquippedWeapons[Index];
-
 
 		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 		if (!ParentPawn) return;
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, ParentPawn->GetArmModel()->GetName());
 
 		if (ParentPawn->GetArmModel()) {
 			ParentPawn->GetArmModel()->SetSkeletalMesh(ActiveWeapon->WeaponData->WeaponArmMesh, true);
@@ -87,6 +96,17 @@ void UPlayerWeaponComponent::SetEquippedWeapon_Implementation(uint8 Index)
 
 		bIsFiring = false;
 	}
+
+	Server_SetEquippedWeapon(Index);
+}
+
+
+void UPlayerWeaponComponent::Server_SetEquippedWeapon_Implementation(uint8 Index)
+{
+	if (EquippedWeapons.IsEmpty()) { return; }
+	if (!EquippedWeapons[Index]) { return; }
+
+	ActiveWeapon = EquippedWeapons[Index];
 }
 
 void UPlayerWeaponComponent::EquipPrimaryWeapon()

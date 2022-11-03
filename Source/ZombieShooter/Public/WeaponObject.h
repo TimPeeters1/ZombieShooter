@@ -20,7 +20,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponObject();
 
-	UPROPERTY(Replicated, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponData, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
 		UWeaponData* WeaponData;
 
 	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
@@ -47,6 +47,9 @@ public:
 	//Current Ammo in the Weapon's Magazine (Most important!).
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
 		uint8 CurrentAmmo;
+
+	UFUNCTION()
+		void OnRep_WeaponData();
 
 	UFUNCTION()
 		void OnRep_MagazineSizeUpdate();

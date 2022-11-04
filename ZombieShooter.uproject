@@ -79,6 +79,11 @@
 			"Name": "SortPlugin",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/813e339b92ad4cf587a4cef56bec7020"
+		},
+		{
+			"Name": "AsyncBlueprintsExtension",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/30897fddee3844108f20b0326dd0bac8"
 		}
 	]
 }

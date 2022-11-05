@@ -5,11 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MetasoundSource.h"
-
 #include "GenericHealthComponent.h"
 
 #include "ZombiePawn.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieDamaged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieAttack);
 
 UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AZombiePawn : public ACharacter
@@ -19,6 +22,16 @@ class ZOMBIESHOOTER_API AZombiePawn : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AZombiePawn();
+
+	/** The event delegates that other objects can subscribe to. */
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnZombieDamaged ZombieDamaged;
+
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnZombieDeath ZombieDeath;
+
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnZombieAttack ZombieAttack;
 
 protected:
 
@@ -82,4 +95,5 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
+
 };

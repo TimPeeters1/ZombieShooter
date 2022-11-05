@@ -10,6 +10,7 @@
 #include "GenericHealthComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamageEvent);
 
 UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API UGenericHealthComponent : public UActorComponent
@@ -29,6 +30,9 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnDeathEvent OnDeath;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDamageEvent OnTakeDamage;
 
 	UFUNCTION(NetMulticast, Reliable)
 		void OnReplicateDeath();

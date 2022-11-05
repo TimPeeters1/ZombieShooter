@@ -58,7 +58,8 @@ void UGenericHealthComponent::OnRep_MaxHealth()
 
 void UGenericHealthComponent::OnRep_Health()
 {
-	
+	//Temp Implementation
+	OnTakeDamage.Broadcast();
 }
 
 

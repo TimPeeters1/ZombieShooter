@@ -55,14 +55,15 @@ public:
 	void SpawnStartWeapons();
 
 	UFUNCTION(Client, Reliable)
-	void ClientStartWeaponsSpawned();
-	void ClientStartWeaponsSpawned_Implementation();
+	void OnReplicatedStartWeapons();
+	void OnReplicatedStartWeapons_Implementation();
 
 	void SetEquippedWeapon(uint8 Index);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetEquippedWeapon(uint8 Index);
 	void Server_SetEquippedWeapon_Implementation(uint8 Index);
+
 
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")

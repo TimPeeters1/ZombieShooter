@@ -50,16 +50,18 @@ void UPlayerWeaponComponent::SpawnStartWeapons()
 				EquippedWeapons.Add(NewWeaponObject);
 			}
 		}
-		ClientStartWeaponsSpawned();
+
+		OnReplicatedStartWeapons();
 	}
 }
+
 #pragma endregion  
 
 #pragma region WeaponSwitchFunctionality
 
-void UPlayerWeaponComponent::ClientStartWeaponsSpawned_Implementation()
+void UPlayerWeaponComponent::OnReplicatedStartWeapons_Implementation()
 {
-	SetEquippedWeapon(1);
+	SetEquippedWeapon(0);
 }
 
 /*
@@ -67,6 +69,8 @@ Weapon Switching (Inventory) Functionality
 */
 void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 {
+	Server_SetEquippedWeapon(Index);
+
 	//Prevents nullptr crash
 	if (EquippedWeapons.IsEmpty()){ return;}
 	if (!EquippedWeapons[Index]) { return; }
@@ -76,9 +80,6 @@ void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 
 		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 		if (!ParentPawn) return;
-
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, ParentPawn->GetArmModel()->GetName());
 
 		if (ParentPawn->GetArmModel()) {
 			ParentPawn->GetArmModel()->SetSkeletalMesh(ActiveWeapon->WeaponData->WeaponArmMesh, true);
@@ -97,7 +98,7 @@ void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 		bIsFiring = false;
 	}
 
-	Server_SetEquippedWeapon(Index);
+
 }
 
 

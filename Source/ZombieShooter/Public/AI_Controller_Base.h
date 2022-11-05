@@ -12,6 +12,8 @@
 
 #include "AI_Controller_Base.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieStateChanged);
+
 UENUM(BlueprintType)
 enum class E_AI_State : uint8 {
 	IDLE = 0 UMETA(DisplayName="Idle"),
@@ -19,6 +21,7 @@ enum class E_AI_State : uint8 {
 	FOLLOWING = 2 UMETA(DisplayName = "Following"),
 	TRAVELLING = 3 UMETA(DisplayName = "Travelling"),
 };
+
 
 UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AAI_Controller_Base : public AAIController
@@ -30,6 +33,10 @@ public:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 		E_AI_State Current_AIState;
+
+	/** The event delegate that other objects can subscribe to. */
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnZombieStateChanged ZombieStateChanged;
 
 protected:
 

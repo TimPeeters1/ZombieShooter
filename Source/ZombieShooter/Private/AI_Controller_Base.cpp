@@ -5,6 +5,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 
 
+
 AAI_Controller_Base::AAI_Controller_Base(FObjectInitializer const& ObjectInitializer)
 {
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTConstruct(TEXT("BehaviorTree'/Game/_GAME/Blueprints/Gameplay/Characters/AI/BT_Zombie.BT_Zombie'"));
@@ -34,6 +35,9 @@ void AAI_Controller_Base::BeginPlay()
 	Super::BeginPlay();
 	RunBehaviorTree(BehaviorTree);
 	BehaviorTreeComponent->StartTree(*BehaviorTree);
+
+	
+	ZombieStateChanged.Broadcast();
 
 	if (BlackboardComponent)
 	{
@@ -67,6 +71,9 @@ void AAI_Controller_Base::OnPerception(AActor* Actor, FAIStimulus Stimulus)
 
 		//Update Last Know Location in BB
 		BlackboardComponent->SetValueAsVector(FName("TargetLocation"), Actor->GetActorLocation());
+
+		/** Call an event dispatcher to notify observers. */
+
 	}
 	else {
 		Current_AIState = E_AI_State::IDLE;

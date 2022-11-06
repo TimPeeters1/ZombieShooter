@@ -100,10 +100,23 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (HealthComponent) {
+		HealthComponent->OnTakeDamage.AddDynamic(this, &APlayerPawn::OnPlayerDamaged);
+		HealthComponent->OnDeath.AddDynamic(this, &APlayerPawn::OnPlayerDeath);
+	}
+
 	if (IsLocallyControlled())
 		GetMesh()->SetVisibility(false, true);
 	else
 		FP_ArmModel->SetVisibility(false, true);
+}
+
+void APlayerPawn::OnPlayerDamaged()
+{
+}
+
+void APlayerPawn::OnPlayerDeath()
+{
 }
 
 // Called every frame

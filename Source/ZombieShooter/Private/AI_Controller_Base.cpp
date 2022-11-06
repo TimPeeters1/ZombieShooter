@@ -21,9 +21,9 @@ AAI_Controller_Base::AAI_Controller_Base(FObjectInitializer const& ObjectInitial
 
 	SightPercpetion = ObjectInitializer.CreateDefaultSubobject<UAISenseConfig_Sight>(this, TEXT("SightConfig"));
 
-	SightPercpetion->SightRadius = 1000.0f;
-	SightPercpetion->LoseSightRadius = 1500.0f;
-	SightPercpetion->PeripheralVisionAngleDegrees = 60.f;
+	SightPercpetion->SightRadius = 2000.0f;
+	SightPercpetion->LoseSightRadius = 2400.0f;
+	SightPercpetion->PeripheralVisionAngleDegrees = 90.f;
 	SightPercpetion->DetectionByAffiliation.bDetectNeutrals = true;
 
 	AIPerceptionComponent->ConfigureSense(*SightPercpetion);

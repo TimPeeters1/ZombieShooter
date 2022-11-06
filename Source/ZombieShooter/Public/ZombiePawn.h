@@ -44,6 +44,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings", meta = (AllowPrivateAcces = "true"))
 		float AttackSphereSize = 60.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings", meta = (AllowPrivateAcces = "true"))
+		float AttackDelay = 1.5f;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings|Debug", meta = (AllowPrivateAcces = "true"))
 		TEnumAsByte<EDrawDebugTrace::Type> Attack_DebugType;
 
@@ -79,13 +83,15 @@ protected:
 
 
 public:
-	//Called via AnimNotify
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Server_OnZombieAttack"))
-	void Server_OnZombieAttack();
+	FTimerHandle ZombieAttackTraceDelay;
 
+	//Called via BTTask_ZombieAttack
 	UFUNCTION(NetMulticast, Reliable)
-	void MC_OnZombieAttack();
-	void MC_OnZombieAttack_Implementation();
+	void OnZombieAttack();
+	void OnZombieAttack_Implementation();
+
+	//Called Via OnZombieAttack
+	void ZombieAttack_Trace();
 
 	UFUNCTION(NetMulticast, unreliable)
 	void MC_TakeDamageFX(FVector ImpactLocation, FVector ImpactNormal);

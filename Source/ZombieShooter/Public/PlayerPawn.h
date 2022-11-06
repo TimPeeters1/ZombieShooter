@@ -118,6 +118,12 @@ public:
 	/** Returns  FP Audio Component **/
 	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
 
+	 UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnPlayerDamaged"), Category = "Damage")
+	 void OnPlayerDamaged();
+
+	 UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnPlayerDeath"), Category = "Damage")
+	 void OnPlayerDeath();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

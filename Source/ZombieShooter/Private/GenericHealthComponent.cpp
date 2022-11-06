@@ -45,6 +45,10 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	Health -= Deduction;
+
+	//Serverside Damage Effect (TEMP)
+	OnTakeDamage.Broadcast();
+
 	//UE_LOG(LogTemp, Warning, TEXT("Reduced Health: %f"), Deduction);
 	if (Health <= 0) {
 		Health = 0;
@@ -58,7 +62,7 @@ void UGenericHealthComponent::OnRep_MaxHealth()
 
 void UGenericHealthComponent::OnRep_Health()
 {
-	//Temp Implementation
+	//Cleintside Damage Effect (TEMP)
 	OnTakeDamage.Broadcast();
 }
 

@@ -51,6 +51,8 @@ void UPlayerWeaponComponent::SpawnStartWeapons()
 			}
 		}
 
+		SetEquippedWeapon(0);
+
 		OnReplicatedStartWeapons();
 	}
 }
@@ -69,8 +71,6 @@ Weapon Switching (Inventory) Functionality
 */
 void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 {
-	Server_SetEquippedWeapon(Index);
-
 	//Prevents nullptr crash
 	if (EquippedWeapons.IsEmpty()){ return;}
 	if (!EquippedWeapons[Index]) { return; }
@@ -98,7 +98,7 @@ void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 		bIsFiring = false;
 	}
 
-
+	Server_SetEquippedWeapon(Index);
 }
 
 

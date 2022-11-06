@@ -35,8 +35,8 @@ public:
 	FOnDamageEvent OnTakeDamage;
 
 	UFUNCTION(NetMulticast, Reliable)
-		void OnReplicateDeath();
-		void OnReplicateDeath_Implementation();
+	void OnReplicateDeath();
+	void OnReplicateDeath_Implementation();
 
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);

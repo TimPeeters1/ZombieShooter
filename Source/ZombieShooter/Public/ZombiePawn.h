@@ -23,15 +23,6 @@ public:
 	// Sets default values for this character's properties
 	AZombiePawn();
 
-	/** The event delegates that other objects can subscribe to. */
-	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
-	FOnZombieDamaged ZombieDamaged;
-
-	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
-	FOnZombieDeath ZombieDeath;
-
-	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
-	FOnZombieAttack ZombieAttack;
 
 protected:
 
@@ -78,9 +69,6 @@ protected:
 		class AController* EventInstigator,
 		AActor* DamageCauser
 	) override;
-
-	virtual void BeginPlay() override;
-
 
 public:
 	FTimerHandle ZombieAttackTraceDelay;

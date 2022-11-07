@@ -25,18 +25,12 @@ public:
 		float MaxHealth = 100;
 	UPROPERTY(ReplicatedUsing = OnRep_Health, Category = "Health", EditAnywhere, BlueprintReadWrite)
 		float Health;
-protected:
 
-public:
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 	FOnDeathEvent OnDeath;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 	FOnDamageEvent OnTakeDamage;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void OnReplicateDeath();
-	void OnReplicateDeath_Implementation();
 
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);

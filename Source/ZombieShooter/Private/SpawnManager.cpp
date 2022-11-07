@@ -8,6 +8,7 @@ ASpawnManager::ASpawnManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -140,6 +141,14 @@ void ASpawnManager::ActiveAreaSweep()
 		}
 	}
 
+}
+
+void ASpawnManager::DecreaseAI_Population()
+{
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
+	if(Current_AI_Population > 0)
+		Current_AI_Population--;
 }
 
 

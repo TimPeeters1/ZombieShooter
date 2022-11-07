@@ -12,29 +12,11 @@ AZombiePawn::AZombiePawn()
 	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
 }
 
-// Called when the game starts or when spawned
-void AZombiePawn::BeginPlay()
-{
-	Super::BeginPlay();
-
-	HealthComponent->OnDeath.AddDynamic(this, &AZombiePawn::OnDeath);
-}
-
-void AZombiePawn::OnDeath()
-{
-	ZombieDeath.Broadcast();
-
-	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	if(GameMode)
-		GameMode->SpawnManager->Current_AI_Population--;
-
-	
-}
 
 float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if(HealthComponent)
-	HealthComponent->ReduceHealth(DamageAmount);
+	if (HealthComponent)
+		HealthComponent->ReduceHealth(DamageAmount);
 
 	FHitResult HitRes;
 	FVector ImpulseDir;
@@ -42,8 +24,6 @@ float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	ImpulseDir.Normalize();
 
 	MC_TakeDamageFX(HitRes.ImpactPoint, HitRes.ImpactNormal);
-
-	ZombieDamaged.Broadcast();
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
@@ -89,7 +69,6 @@ void AZombiePawn::OnZombieAttack_Implementation()
 	if (AnimInst)
 		AnimInst->Montage_Play(AttackAnimation[FMath::RandRange(0, (AttackAnimation.Num() - 1))]);
 
-	ZombieAttack.Broadcast();
 }
 
 void AZombiePawn::MC_TakeDamageFX_Implementation(FVector ImpactLocation, FVector ImpactNormal)

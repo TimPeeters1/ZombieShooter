@@ -25,10 +25,6 @@ void UGenericHealthComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UGenericHealthComponent::OnReplicateDeath_Implementation()
-{
-	OnDeath.Broadcast();
-}
 
 void UGenericHealthComponent::AddHealth(float Addition)
 {
@@ -52,7 +48,9 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 	//UE_LOG(LogTemp, Warning, TEXT("Reduced Health: %f"), Deduction);
 	if (Health <= 0) {
 		Health = 0;
-		OnReplicateDeath();
+
+		//Serverside Death
+		OnDeath.Broadcast();
 	}
 }
 

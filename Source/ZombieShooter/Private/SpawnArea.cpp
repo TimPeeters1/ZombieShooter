@@ -78,8 +78,9 @@ void ASpawnArea::SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn)
 			ACharacter* NewEnemy = GetWorld()->SpawnActor<ACharacter>(EnemyToSpawn, SelectedSpawner->GetSpawnTransform().GetLocation(), FRotator::ZeroRotator);
 			if (NewEnemy) {
 				AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-				if (GameMode)
+				if (GameMode) {
 					GameMode->SpawnManager->Current_AI_Population++;
+				}
 			}
 		}
 	}

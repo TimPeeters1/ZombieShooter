@@ -52,13 +52,19 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FOnReloadEvent OnReloadEvent;
 
-	UFUNCTION(Server, reliable)
-		void SpawnStartWeapons();
-		void SpawnStartWeapons_Implementation();
+	void SpawnStartWeapons();
 
-	UFUNCTION(NetMulticast, reliable, BlueprintCallable, meta = (DisplayName = "Set Equipped Weapon"), Category = "WeaponFunctions")
-		void SetEquippedWeapon(uint8 Index);
-		void SetEquippedWeapon_Implementation(uint8 Index);
+	UFUNCTION(Client, Reliable)
+	void OnReplicatedStartWeapons();
+	void OnReplicatedStartWeapons_Implementation();
+
+	void SetEquippedWeapon(uint8 Index);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetEquippedWeapon(uint8 Index);
+	void Server_SetEquippedWeapon_Implementation(uint8 Index);
+
+
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
 		void EquipPrimaryWeapon();

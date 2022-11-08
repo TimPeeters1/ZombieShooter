@@ -16,7 +16,7 @@ EBTNodeResult::Type UBTTask_ZombieAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	AAIController* AIController = Cast<AAIController>(OwnerComp.GetAIOwner());
 	if (AZombiePawn* ZombieOwner = Cast<AZombiePawn>(AIController->GetPawn())) {
-		ZombieOwner->MC_OnZombieAttack();
+		ZombieOwner->OnZombieAttack();
 		return EBTNodeResult::Succeeded;
 	}
 	else {

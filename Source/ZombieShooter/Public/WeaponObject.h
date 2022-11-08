@@ -11,6 +11,7 @@
 
 #include "WeaponObject.generated.h"
 
+
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API AWeaponObject : public AActor
 {
@@ -20,13 +21,14 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponObject();
 
-	UPROPERTY(Replicated, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponData, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
 		UWeaponData* WeaponData;
 
 	UPROPERTY(Category = "Visuals", VisibleAnywhere, BlueprintReadOnly)
 		UStaticMeshComponent* WeaponModel;
 
 	//Local Ammo Vars will be updated after server callback. To reduce snappy shooting behaviour.
+	UPROPERTY(Category = "Ammo|Local", VisibleAnywhere, BlueprintReadOnly)
 	uint8 LocalCurrentAmmo;
 
 protected:
@@ -47,6 +49,10 @@ public:
 	//Current Ammo in the Weapon's Magazine (Most important!).
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
 		uint8 CurrentAmmo;
+
+
+	UFUNCTION()
+		void OnRep_WeaponData();
 
 	UFUNCTION()
 		void OnRep_MagazineSizeUpdate();

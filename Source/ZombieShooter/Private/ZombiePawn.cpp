@@ -12,38 +12,23 @@ AZombiePawn::AZombiePawn()
 	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
 }
 
-// Called when the game starts or when spawned
-void AZombiePawn::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if(HealthComponent)
-		HealthComponent->OnDeath.AddDynamic(this, &AZombiePawn::OnDeath);
-}
-
-void AZombiePawn::OnDeath()
-{
-	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	if(GameMode)
-			GameMode->SpawnManager->Current_AI_Population--;
-}
 
 float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if(HealthComponent)
-	HealthComponent->ReduceHealth(DamageAmount);
+	if (HealthComponent)
+		HealthComponent->ReduceHealth(DamageAmount);
 
 	FHitResult HitRes;
 	FVector ImpulseDir;
 	DamageEvent.GetBestHitInfo(this, DamageCauser, HitRes, ImpulseDir);
 	ImpulseDir.Normalize();
 
-	MC_TakeDamageFX_Implementation(HitRes.ImpactPoint, HitRes.ImpactNormal);
+	MC_TakeDamageFX(HitRes.ImpactPoint, HitRes.ImpactNormal);
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
-void AZombiePawn::Server_OnZombieAttack()
+void AZombiePawn::ZombieAttack_Trace()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
@@ -58,9 +43,9 @@ void AZombiePawn::Server_OnZombieAttack()
 
 	//DrawDebugLine(GetWorld(), StartLoc, EndLoc, FColor::Purple, false, 2.0f, 0, 3.f);
 
-	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), StartLoc, EndLoc, AttackSphereSize, ETraceTypeQuery::TraceTypeQuery1, true, 
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), StartLoc, EndLoc, AttackSphereSize, ETraceTypeQuery::TraceTypeQuery1, true,
 		IgnoredActors,
-		Attack_DebugType, HitResult, true, 
+		Attack_DebugType, HitResult, true,
 		FLinearColor::Green, FLinearColor::Red, Attack_DebugDrawTime);
 
 	if (HitResult.GetActor()) {
@@ -70,18 +55,25 @@ void AZombiePawn::Server_OnZombieAttack()
 
 		UGameplayStatics::ApplyDamage(HitResult.GetActor(), AttackDamage, GetController(), GetOwner(), UDamageType::StaticClass());
 	}
+
+	GetWorldTimerManager().ClearTimer(ZombieAttackTraceDelay);
 }
 
-void AZombiePawn::MC_OnZombieAttack_Implementation()
+void AZombiePawn::OnZombieAttack_Implementation()
 {
+	if (UKismetSystemLibrary::IsServer(GetWorld())) {
+		GetWorldTimerManager().SetTimer(ZombieAttackTraceDelay, this, &AZombiePawn::ZombieAttack_Trace, AttackDelay, false, AttackDelay);
+	}
+
 	UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
 	if (AnimInst)
 		AnimInst->Montage_Play(AttackAnimation[FMath::RandRange(0, (AttackAnimation.Num() - 1))]);
+
 }
 
 void AZombiePawn::MC_TakeDamageFX_Implementation(FVector ImpactLocation, FVector ImpactNormal)
 {
-	DrawDebugPoint(GetWorld(), ImpactLocation, 3.0f, FColor::Green, false, 0.15f);
+	//DrawDebugPoint(GetWorld(), ImpactLocation, 3.0f, FColor::Green, false, 0.15f);
 	//TEMP Old Particle system!
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodSplatter_VFX, ImpactLocation, ImpactNormal.Rotation(), true);
 }

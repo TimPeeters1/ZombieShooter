@@ -71,4 +71,6 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ActiveAreaSweep"), Category = "Spawning")
 		void ActiveAreaSweep();
 
+	void DecreaseAI_Population();
+
 };

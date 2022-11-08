@@ -112,11 +112,17 @@ public:
 	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
 
 	/** Returns Current FP Arm Model **/
-	FORCEINLINE class USkeletalMeshComponent* GetArmModel() const { return FP_ArmModel; }
+	 class USkeletalMeshComponent* GetArmModel() { return FP_ArmModel; }
 	/** Returns Current FP Weapon Model **/
-	FORCEINLINE class UStaticMeshComponent* GetWeaponModel() const { return FP_WeaponModel; }
+	 class UStaticMeshComponent* GetWeaponModel()  { return FP_WeaponModel; }
 	/** Returns  FP Audio Component **/
-	FORCEINLINE class UAudioComponent* GetWeaponAudioComponent() const { return FP_WeaponAudio; }
+	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
+
+	 UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnPlayerDamaged"), Category = "Damage")
+	 void OnPlayerDamaged();
+
+	 UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnPlayerDeath"), Category = "Damage")
+	 void OnPlayerDeath();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

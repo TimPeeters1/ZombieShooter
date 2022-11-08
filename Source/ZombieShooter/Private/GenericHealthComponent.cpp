@@ -25,10 +25,6 @@ void UGenericHealthComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UGenericHealthComponent::OnReplicateDeath_Implementation()
-{
-	OnDeath.Broadcast();
-}
 
 void UGenericHealthComponent::AddHealth(float Addition)
 {
@@ -45,10 +41,16 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	Health -= Deduction;
+
+	//Serverside Damage Effect (TEMP)
+	OnTakeDamage.Broadcast();
+
 	//UE_LOG(LogTemp, Warning, TEXT("Reduced Health: %f"), Deduction);
 	if (Health <= 0) {
 		Health = 0;
-		OnReplicateDeath();
+
+		//Serverside Death
+		OnDeath.Broadcast();
 	}
 }
 
@@ -58,7 +60,8 @@ void UGenericHealthComponent::OnRep_MaxHealth()
 
 void UGenericHealthComponent::OnRep_Health()
 {
-	
+	//Cleintside Damage Effect (TEMP)
+	OnTakeDamage.Broadcast();
 }
 
 

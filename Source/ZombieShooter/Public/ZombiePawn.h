@@ -5,11 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MetasoundSource.h"
-
 #include "GenericHealthComponent.h"
 
 #include "ZombiePawn.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieDamaged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieAttack);
 
 UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AZombiePawn : public ACharacter
@@ -19,6 +22,7 @@ class ZOMBIESHOOTER_API AZombiePawn : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AZombiePawn();
+
 
 protected:
 
@@ -30,6 +34,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings", meta = (AllowPrivateAcces = "true"))
 		float AttackSphereSize = 60.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings", meta = (AllowPrivateAcces = "true"))
+		float AttackDelay = 1.5f;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackSettings|Debug", meta = (AllowPrivateAcces = "true"))
 		TEnumAsByte<EDrawDebugTrace::Type> Attack_DebugType;
@@ -62,17 +70,16 @@ protected:
 		AActor* DamageCauser
 	) override;
 
-	virtual void BeginPlay() override;
-
-
 public:
-	//Called via AnimNotify
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Server_OnZombieAttack"))
-	void Server_OnZombieAttack();
+	FTimerHandle ZombieAttackTraceDelay;
 
+	//Called via BTTask_ZombieAttack
 	UFUNCTION(NetMulticast, Reliable)
-	void MC_OnZombieAttack();
-	void MC_OnZombieAttack_Implementation();
+	void OnZombieAttack();
+	void OnZombieAttack_Implementation();
+
+	//Called Via OnZombieAttack
+	void ZombieAttack_Trace();
 
 	UFUNCTION(NetMulticast, unreliable)
 	void MC_TakeDamageFX(FVector ImpactLocation, FVector ImpactNormal);
@@ -82,4 +89,5 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
+
 };

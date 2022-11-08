@@ -46,6 +46,12 @@ void AWeaponObject::BeginPlay()
 	LocalCurrentAmmo = CurrentAmmo;
 }
 
+void AWeaponObject::OnRep_WeaponData()
+{
+	if (!WeaponData) return;
+	WeaponModel->SetStaticMesh(WeaponData->WeaponModel);
+}
+
 void AWeaponObject::OnRep_MagazineSizeUpdate()
 {
 }

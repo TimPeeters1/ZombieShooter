@@ -33,7 +33,7 @@ EBTNodeResult::Type UBTTask_TravelToActiveArea::ExecuteTask(UBehaviorTreeCompone
 			//FVector ProjectedPos = UNavigationSystemV1::GetRandomPointInNavigableRadius(GetWorld(), RandomPos, 300.0f);
 
 			OwnerComp.GetBlackboardComponent()->SetValueAsVector(FName("TargetLocation"), RandomPos);
-			DrawDebugPoint(GetWorld(), RandomPos, 20.0f, FColor::Blue, false, 3.0f);
+			//DrawDebugPoint(GetWorld(), RandomPos, 20.0f, FColor::Blue, false, 3.0f);
 
 			return EBTNodeResult::Succeeded;
 		}

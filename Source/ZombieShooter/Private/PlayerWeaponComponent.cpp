@@ -211,10 +211,6 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 
 		if (ParentPawn->GetFP_Camera()) {
 			FVector StartLoc = ParentPawn->GetFP_Camera()->GetComponentLocation();
-			//FVector StartLoc = ParentPawn->GetActorLocation() + ParentPawn
-
-			//TODO FIX STARTLOC w/ Actual Camera loc!
-			//FVector StartLoc = ParentPawn->GetActorLocation() + FVector(0, 0, 75.0f);
 
 			//TODO Add Gun Range
 			FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;

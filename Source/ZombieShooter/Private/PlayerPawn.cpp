@@ -1,5 +1,7 @@
 
 #include "PlayerPawn.h"
+
+#include "PlayerDeathCamera.h"
 #include "Components/CapsuleComponent.h"
 #include "RepairObjective.h"
 
@@ -100,10 +102,8 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HealthComponent) {
-		HealthComponent->OnTakeDamage.AddDynamic(this, &APlayerPawn::OnPlayerDamaged);
-		HealthComponent->OnDeath.AddDynamic(this, &APlayerPawn::OnPlayerDeath);
-	}
+	if(HealthComponent)
+		HealthComponent->OnDeath.AddDynamic(this, &APlayerPawn::OnDeath);
 
 	if (IsLocallyControlled())
 		GetMesh()->SetVisibility(false, true);
@@ -111,13 +111,6 @@ void APlayerPawn::BeginPlay()
 		FP_ArmModel->SetVisibility(false, true);
 }
 
-void APlayerPawn::OnPlayerDamaged()
-{
-}
-
-void APlayerPawn::OnPlayerDeath()
-{
-}
 
 // Called every frame
 void APlayerPawn::Tick(float DeltaTime)
@@ -126,6 +119,7 @@ void APlayerPawn::Tick(float DeltaTime)
 
 	InteractionTrace();
 }
+
 
 
 void APlayerPawn::Move_XAxis(float AxisValue) {
@@ -265,5 +259,33 @@ float APlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
+void APlayerPawn::OnDeath()
+{
+	if(IsLocallyControlled())
+	{
+		FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FP_PlayerCamera->GetComponentLocation() + FVector(0, 0, 1200.0f), FVector::OneVector);
 
+		APlayerDeathCamera* PlayerDeathCam = GetWorld()->SpawnActorDeferred<APlayerDeathCamera>(APlayerDeathCamera::StaticClass(),
+			SpawnTransform, GetOwner(), GetOwner()->GetInstigator());
 
+		if (PlayerDeathCam) {
+			PlayerDeathCam->PlayerRef = this;
+
+			UGameplayStatics::FinishSpawningActor(PlayerDeathCam, PlayerDeathCam->GetTransform());
+
+			UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(PlayerDeathCam, 6.0f, EViewTargetBlendFunction::VTBlend_EaseOut);
+		}
+
+		//Blueprint Assignable Local Death (Hide HUD, Hide FPS Viewmodel etc.)
+		OnPlayerDeathLocal.Broadcast();
+	}
+
+	if (UKismetSystemLibrary::IsServer(GetWorld()))
+		MC_Death();
+}
+
+void APlayerPawn::MC_Death_Implementation()
+{
+	//Blueprint Assignable Replicated Death (Enable Ragdoll for all clients, etc.)
+	OnPlayerDeathReplicated.Broadcast();
+}

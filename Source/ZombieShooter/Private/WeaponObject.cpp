@@ -25,6 +25,7 @@ void AWeaponObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AWeaponObject, InventoryAmmo);
 	DOREPLIFETIME(AWeaponObject, CurrentAmmo);
 }
+
 void AWeaponObject::OnConstruction(const FTransform& Transform)
 {
 	if (!WeaponData) return;

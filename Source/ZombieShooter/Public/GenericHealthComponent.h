@@ -26,14 +26,12 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_Health, Category = "Health", EditAnywhere, BlueprintReadWrite)
 		float Health;
 
-	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
-	FOnDeathEvent OnDeath;
-
-	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
-	FOnDamageEvent OnTakeDamage;
-
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);
+
+	UFUNCTION(Client, Reliable)
+	void RPC_Death();
+	void RPC_Death_Implementation();
 
 	virtual void BeginPlay() override;
 
@@ -44,4 +42,9 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnDeathEvent OnDeath;
+
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnDamageEvent OnTakeDamage;
 };

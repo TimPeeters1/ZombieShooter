@@ -18,6 +18,9 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractionStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractionStop);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeathLocal);
+
 UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API APlayerPawn : public ACharacter
 {
@@ -71,6 +74,31 @@ protected:
 	UPROPERTY(Category = "Interaction|Inventory", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<ARepairItem*> RepairObjectInventory;
 
+
+public:
+
+	/** Returns Current FP Camera **/
+	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
+
+	/** Returns Current FP Arm Model **/
+	 class USkeletalMeshComponent* GetArmModel() { return FP_ArmModel; }
+	/** Returns Current FP Weapon Model **/
+	 class UStaticMeshComponent* GetWeaponModel()  { return FP_WeaponModel; }
+	/** Returns  FP Audio Component **/
+	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+protected:
+
+	virtual void BeginPlay() override;
+
 	virtual float TakeDamage
 	(
 		float DamageAmount,
@@ -79,8 +107,16 @@ protected:
 		AActor* DamageCauser
 	) override;
 
-	virtual void BeginPlay() override;
+	UFUNCTION()
+	void OnDeath();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MC_Death();
+	void MC_Death_Implementation();
+
+	/*
+	 * Input Logic
+	 */
 	void Move_XAxis(float AxisValue);
 	void Move_YAxis(float AxisValue);
 
@@ -90,6 +126,10 @@ protected:
 	void OnStartJump();
 	void OnStopJump();
 
+	/*
+	 * Interaction Logic
+	 * (Could be moved to actor component in future!)
+	 */
 	void OnPerformInteraction();
 
 	UFUNCTION(Server, reliable)
@@ -108,27 +148,10 @@ protected:
 	UPROPERTY(BlueprintAssignable)
 	FOnInteractionStop OnStopInteraction;
 
-public:
-	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerDeathLocal OnPlayerDeathLocal;
 
-	/** Returns Current FP Arm Model **/
-	 class USkeletalMeshComponent* GetArmModel() { return FP_ArmModel; }
-	/** Returns Current FP Weapon Model **/
-	 class UStaticMeshComponent* GetWeaponModel()  { return FP_WeaponModel; }
-	/** Returns  FP Audio Component **/
-	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerDeath OnPlayerDeathReplicated;
 
-	 UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnPlayerDamaged"), Category = "Damage")
-	 void OnPlayerDamaged();
-
-	 UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnPlayerDeath"), Category = "Damage")
-	 void OnPlayerDeath();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

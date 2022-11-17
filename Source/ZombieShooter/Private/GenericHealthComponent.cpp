@@ -49,9 +49,15 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 	if (Health <= 0) {
 		Health = 0;
 
-		//Serverside Death
 		OnDeath.Broadcast();
+		RPC_Death();
 	}
+}
+
+void UGenericHealthComponent::RPC_Death_Implementation()
+{
+	//Death Delegate
+	OnDeath.Broadcast();
 }
 
 void UGenericHealthComponent::OnRep_MaxHealth()

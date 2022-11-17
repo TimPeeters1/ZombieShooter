@@ -49,7 +49,6 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 	if (Health <= 0) {
 		Health = 0;
 
-		OnDeath.Broadcast();
 		RPC_Death();
 	}
 }

@@ -29,7 +29,7 @@ public:
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);
 
-	UFUNCTION(Client, Reliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void RPC_Death();
 	void RPC_Death_Implementation();
 

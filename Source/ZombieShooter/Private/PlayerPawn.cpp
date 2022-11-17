@@ -280,12 +280,7 @@ void APlayerPawn::OnDeath()
 		OnPlayerDeathLocal.Broadcast();
 	}
 
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
-		MC_Death();
-}
-
-void APlayerPawn::MC_Death_Implementation()
-{
-	//Blueprint Assignable Replicated Death (Enable Ragdoll for all clients, etc.)
+	//Blueprint Assignable Replicated Death (Enable Ragdoll, Disable Collision, etc.)
 	OnPlayerDeathReplicated.Broadcast();
+
 }

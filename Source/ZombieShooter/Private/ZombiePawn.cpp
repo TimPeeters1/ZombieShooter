@@ -3,6 +3,7 @@
 #include "GameMode_Main.h"
 #include "SpawnManager.h"
 
+
 // Sets default values
 AZombiePawn::AZombiePawn()
 {
@@ -13,13 +14,14 @@ AZombiePawn::AZombiePawn()
 }
 
 
-float AZombiePawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AZombiePawn::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (HealthComponent)
 		HealthComponent->ReduceHealth(DamageAmount);
 
 	FHitResult HitRes;
 	FVector ImpulseDir;
+
 	DamageEvent.GetBestHitInfo(this, DamageCauser, HitRes, ImpulseDir);
 	ImpulseDir.Normalize();
 

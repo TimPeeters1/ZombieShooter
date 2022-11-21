@@ -252,20 +252,20 @@ bool ULowEntryExtendedStandardLibrary::MacPlatform()
 
 bool ULowEntryExtendedStandardLibrary::Ps4Platform()
 {
-#if PLATFORM_PS4
-	return true;
-#else
+//#if PLATFORM_PS4
+	//return true;
+//#else
 	return false;
-#endif
+//#endif
 }
 
 bool ULowEntryExtendedStandardLibrary::XboxOnePlatform()
 {
-#if PLATFORM_XBOXONE
+//#if PLATFORM_XBOXONE
 	return true;
-#else
+//#else
 	return false;
-#endif
+//#endif
 }
 
 bool ULowEntryExtendedStandardLibrary::SwitchPlatform()

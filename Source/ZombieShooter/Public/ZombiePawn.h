@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Engine/EngineTypes.h"
+
 #include "MetasoundSource.h"
 #include "GenericHealthComponent.h"
 

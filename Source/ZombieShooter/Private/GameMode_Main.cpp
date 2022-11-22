@@ -1,17 +1,27 @@
 #include "GameMode_Main.h"
 
+#include "GameInstance_Main.h"
+#include "SessionSubsystem_Main.h"
+
+AGameMode_Main::AGameMode_Main()
+{
+	bUseSeamlessTravel = true;
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "INIT GAMEMODE");
+}
+
 void AGameMode_Main::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetGameState(EZombieGameState::DEFAULT);
 }
 
 void AGameMode_Main::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
-
+		
 	PlayerCharacters.Add(NewPlayer);
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, NewPlayer->GetName());
 }
 
 void AGameMode_Main::Logout(AController* ExitingPlayer)
@@ -90,16 +100,28 @@ void AGameMode_Main::RespawnPlayer(AController* PlayerToRespawn)
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, PlayerToRespawn->GetName());
 }
 
-void AGameMode_Main::StartLobby()
+void AGameMode_Main::StartLobby(bool isLANSession)
 {
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
+	if (UKismetSystemLibrary::IsServer(GetWorld())) {
 		SetGameState(EZombieGameState::PRE_LOBBY);
+
+		const FString URL = LobbyLevel.ToString() + "?Listen";
+		GetWorld()->ServerTravel(URL, true, false);
+
+		UGameInstance_Main* GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
+		USessionSubsystem_Main* SessionSubsystem = GameInstance->GetSubsystem<USessionSubsystem_Main>();
+		SessionSubsystem->CreateSession(4, isLANSession);
+	}
 }
 
 void AGameMode_Main::StartGame()
 {
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
+	if (UKismetSystemLibrary::IsServer(GetWorld())) {
 		SetGameState(EZombieGameState::PRE_GAME);
+
+		const FString URL = GameLevel.ToString() + "?Listen";
+		GetWorld()->ServerTravel(URL, false, false);
+	}
 }
 
 

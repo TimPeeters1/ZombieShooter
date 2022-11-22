@@ -1,10 +1,8 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/GameEngine.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "PlayerPawn.h"
 
 #include "GameMode_Main.generated.h"
@@ -23,13 +21,19 @@ enum class EZombieGameState : uint8
 };
 
 UCLASS()
-class ZOMBIESHOOTER_API AGameMode_Main : public AGameModeBase
+class ZOMBIESHOOTER_API AGameMode_Main : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 		EZombieGameState CurrentGameState;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
+		 FName MenuLevel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
+		 FName LobbyLevel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
+		 FName GameLevel;
 
 	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		TArray<AController*> PlayerCharacters;
@@ -43,9 +47,11 @@ protected:
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
 public:
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetGameState"), Category = "GameState")
+	AGameMode_Main();
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set GameState"), Category = "GameState")
 	EZombieGameState SetGameState(EZombieGameState newState);
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetGameState"), Category = "GameState")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get GameState"), Category = "GameState")
 	EZombieGameState GetGameState() const;
 
 	void HandleGameState();
@@ -54,13 +60,11 @@ public:
 	void RespawnPlayer(AController* PlayerToRespawn);
 
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "StartLobby"), Category = "GameState")
-		void StartLobby();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Lobby"), Category = "GameState")
+		void StartLobby(bool isLANSession);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "StartGame"), Category = "GameState")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
 		void StartGame();
-
-
 
 	virtual void BeginPlay() override;
 

@@ -26,14 +26,14 @@ void APlayerController_Main::FindRandomSession(bool isLanSearch)
 void APlayerController_Main::OnFoundSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool Successful)
 {
 	if (SessionSubsystem) {
-		if (Successful) {
+		if (Successful && SessionResults.Num() > 0){
 			SessionSubsystem->JoinGameSession(SessionResults[0]);
 			if (GEngine)
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Joining Session!");
 		}
 		else {
 			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "No Session Found!");
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "No Session(s) Found!");
 		}
 	}
 
@@ -45,11 +45,6 @@ void APlayerController_Main::OnJoinedSession(EOnJoinSessionCompleteResult::Type 
 		SessionSubsystem->TryTravelToCurrentSession();
 }
 
-void APlayerController_Main::JoinSelectedSession()
-{
-}
-
-
 void APlayerController_Main::RequestRespawn_Implementation()
 {
 	InitRespawn();
@@ -59,6 +54,6 @@ void APlayerController_Main::InitRespawn()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
-	Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()))->RespawnPlayer(this);
+	Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()))->RespawnGamePawn(this);
 }
 

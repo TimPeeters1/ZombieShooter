@@ -4,6 +4,7 @@
 #include "Engine/GameEngine.h"
 #include "GameFramework/GameMode.h"
 #include "PlayerPawn.h"
+#include "SessionSubsystem_Main.h"
 
 #include "GameMode_Main.generated.h"
 
@@ -20,14 +21,14 @@ enum class EZombieGameState : uint8
 	POSTGAME = 5 UMETA(DisplayName = "PostGame"),
 };
 
-UCLASS()
+UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AGameMode_Main : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-		EZombieGameState CurrentGameState;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Status")
+		 EZombieGameState CurrentGameState;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		 FName MenuLevel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
@@ -42,26 +43,33 @@ public:
 		ASpawnManager* SpawnManager;
 
 protected:
-	//int32 MaxNumberOfPlayers = 4;
+	USessionSubsystem_Main* SessionSubsystem;
+
+	int32 MaxNumberOfPlayers = 4;
+
+	UPROPERTY(Category = "Status", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	uint8 ActivePlayersInSession;
 
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
-public:
-	AGameMode_Main();
+	virtual void HandleSeamlessTravelPlayer(AController*& Controller) override;
 
+public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set GameState"), Category = "GameState")
-	EZombieGameState SetGameState(EZombieGameState newState);
+	void SetGameState(EZombieGameState newState);
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get GameState"), Category = "GameState")
 	EZombieGameState GetGameState() const;
 
 	void HandleGameState();
 
-	void SpawnPlayer(AController* PlayerToSpawn);
-	void RespawnPlayer(AController* PlayerToRespawn);
-
+	void SpawnGamePawn(AController* Controller);
+	void RespawnGamePawn(AController* Controller);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Lobby"), Category = "GameState")
 		void StartLobby(bool isLANSession);
+
+	UFUNCTION()
+	void OnCreatedLobby(bool Succeeded);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
 		void StartGame();

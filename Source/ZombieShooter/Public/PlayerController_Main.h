@@ -24,9 +24,6 @@ public:
 
 	void OnJoinedSession(EOnJoinSessionCompleteResult::Type Result);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Join Selected Session"), Category = "Connection")
-		void JoinSelectedSession();
-
 	UFUNCTION(Server, Reliable, BlueprintCallable, meta = (DisplayName = "RequestRespawn"), Category = "Spawning")
 	void RequestRespawn();
 	void RequestRespawn_Implementation();

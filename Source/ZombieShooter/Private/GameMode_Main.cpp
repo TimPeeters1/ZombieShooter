@@ -1,27 +1,45 @@
 #include "GameMode_Main.h"
 
 #include "GameInstance_Main.h"
-#include "SessionSubsystem_Main.h"
-
-AGameMode_Main::AGameMode_Main()
-{
-	bUseSeamlessTravel = true;
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "INIT GAMEMODE");
-}
 
 void AGameMode_Main::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UGameInstance_Main* GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
+	SessionSubsystem = GameInstance->GetSubsystem<USessionSubsystem_Main>();
+	if (SessionSubsystem)
+		SessionSubsystem->OnCreateSessionCompleteEvent.AddUObject(this, &AGameMode_Main::OnCreatedLobby);
 }
 
 void AGameMode_Main::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
-		
+
 	PlayerCharacters.Add(NewPlayer);
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, NewPlayer->GetName());
+
+	HandleGameState();
+
+	switch (CurrentGameState) {
+	case EZombieGameState::DEFAULT:
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, "DEFAULT!!!!");
+		break;
+	case EZombieGameState::LOBBY:
+		ActivePlayersInSession++;
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, "Plus one!");
+		break;
+	case EZombieGameState::INGAME:
+		if (PlayerCharacters.Num() == ActivePlayersInSession) {
+			for (size_t i = 0; i < PlayerCharacters.Num(); i++)
+			{
+				SpawnGamePawn(PlayerCharacters[i]);
+			}
+		}
+		break;
+	}
+	
 }
 
 void AGameMode_Main::Logout(AController* ExitingPlayer)
@@ -34,16 +52,25 @@ void AGameMode_Main::Logout(AController* ExitingPlayer)
 
 APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
-	APawn* TempPawn = GetWorld()->SpawnActor<APawn>(APawn::StaticClass(), FTransform(FRotator::ZeroRotator, FVector::Zero(), FVector::One()));
-	return TempPawn;
+	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(APawn::StaticClass(), FTransform(FRotator::ZeroRotator, FVector::Zero(), FVector::One()));
+	return NewPawn;
 }
 
-EZombieGameState AGameMode_Main::SetGameState(EZombieGameState newState)
+void AGameMode_Main::HandleSeamlessTravelPlayer(AController*& Controller)
+{
+	Super::HandleSeamlessTravelPlayer(Controller);
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, "HELLO I TRAVELLED SEAMLESS!");
+}
+
+void AGameMode_Main::SetGameState(EZombieGameState newState)
 {
 	CurrentGameState = newState;
 	HandleGameState();
-	return newState;
 }
+
+
 
 EZombieGameState AGameMode_Main::GetGameState() const
 {
@@ -63,7 +90,6 @@ void AGameMode_Main::HandleGameState()
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "PRE LOBBY STATE");
 
 		SetGameState(EZombieGameState::LOBBY);
-
 		break;
 	case EZombieGameState::LOBBY:
 		if (GEngine)
@@ -72,9 +98,6 @@ void AGameMode_Main::HandleGameState()
 	case EZombieGameState::PRE_GAME:
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "INGAME STATE");
-
-		SetGameState(EZombieGameState::INGAME);
-
 		break;
 	case EZombieGameState::INGAME:
 		if (GEngine)
@@ -87,17 +110,22 @@ void AGameMode_Main::HandleGameState()
 	default:
 		break;
 	}
+
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, UEnum::GetValueAsString(CurrentGameState));
 }
 
-void AGameMode_Main::SpawnPlayer(AController* PlayerToSpawn)
+void AGameMode_Main::SpawnGamePawn(AController* Controller)
 {
-	
+	APawn* PlayerPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, FTransform(FRotator::ZeroRotator, FVector::Zero(), FVector::One()));
+	Controller->Possess(PlayerPawn);
 }
 
-void AGameMode_Main::RespawnPlayer(AController* PlayerToRespawn)
+void AGameMode_Main::RespawnGamePawn(AController* Controller)
 {
 	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, PlayerToRespawn->GetName());
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, Controller->GetName());
 }
 
 void AGameMode_Main::StartLobby(bool isLANSession)
@@ -108,9 +136,15 @@ void AGameMode_Main::StartLobby(bool isLANSession)
 		const FString URL = LobbyLevel.ToString() + "?Listen";
 		GetWorld()->ServerTravel(URL, true, false);
 
-		UGameInstance_Main* GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
-		USessionSubsystem_Main* SessionSubsystem = GameInstance->GetSubsystem<USessionSubsystem_Main>();
-		SessionSubsystem->CreateSession(4, isLANSession);
+		SessionSubsystem->CreateSession(MaxNumberOfPlayers, isLANSession);
+	}
+}
+
+void AGameMode_Main::OnCreatedLobby(bool Succeeded)
+{
+	if (Succeeded) {
+		SetGameState(EZombieGameState::LOBBY);
+		//bUseSeamlessTravel = true;
 	}
 }
 

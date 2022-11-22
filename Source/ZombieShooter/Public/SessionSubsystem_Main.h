@@ -7,11 +7,11 @@
 #include "SessionSubsystem_Main.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FZSOnCreateSessionComplete, bool, Succes);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FZSOnUpdateSessionComplete, bool, Succes);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FZSOnStartSessionComplete, bool, Succes);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FZSOnEndSessionComplete, bool, Succes);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FZSOnDestroySessionComplete, bool, Successful);
+DECLARE_MULTICAST_DELEGATE_OneParam(FZSOnCreateSessionComplete, bool Succes);
+DECLARE_MULTICAST_DELEGATE_OneParam(FZSOnUpdateSessionComplete, bool Succes);
+DECLARE_MULTICAST_DELEGATE_OneParam(FZSOnStartSessionComplete, bool Succes);
+DECLARE_MULTICAST_DELEGATE_OneParam(FZSOnEndSessionComplete, bool Succes);
+DECLARE_MULTICAST_DELEGATE_OneParam(FZSOnDestroySessionComplete, bool Succes);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FZSOnFindSessionsComplete, const TArray<FOnlineSessionSearchResult>& SessionResults, bool Succes);
 DECLARE_MULTICAST_DELEGATE_OneParam(FZSOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
 
@@ -39,16 +39,16 @@ public:
 
 	bool TryTravelToCurrentSession();
 
-	UPROPERTY(BlueprintAssignable)
+	//UPROPERTY(BlueprintAssignable)
 	FZSOnCreateSessionComplete OnCreateSessionCompleteEvent;
-	UPROPERTY(BlueprintAssignable)
+	//UPROPERTY(BlueprintAssignable)
 	FZSOnUpdateSessionComplete OnUpdateSessionCompleteEvent;
 
-	UPROPERTY(BlueprintAssignable)
+	//UPROPERTY(BlueprintAssignable)
 	FZSOnStartSessionComplete OnStartSessionCompleteEvent;
-	UPROPERTY(BlueprintAssignable)
+	//UPROPERTY(BlueprintAssignable)
 	FZSOnEndSessionComplete OnEndSessionCompleteEvent;
-	UPROPERTY(BlueprintAssignable)
+	//UPROPERTY(BlueprintAssignable)
 	FZSOnDestroySessionComplete OnDestroySessionCompleteEvent;
 
 	//UPROPERTY()

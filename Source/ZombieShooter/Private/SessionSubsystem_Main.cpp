@@ -303,6 +303,6 @@ bool USessionSubsystem_Main::TryTravelToCurrentSession()
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, playerController->GetActorNameOrLabel());
 
-	playerController->ClientTravel(connectString, TRAVEL_Absolute);
+	playerController->ClientTravel(connectString, TRAVEL_Relative);
 	return true;
 }

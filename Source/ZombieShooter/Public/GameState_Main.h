@@ -11,5 +11,6 @@ UCLASS()
 class ZOMBIESHOOTER_API AGameState_Main : public AGameState
 {
 	GENERATED_BODY()
+
 	
 };

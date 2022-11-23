@@ -18,7 +18,7 @@ USessionSubsystem_Main::USessionSubsystem_Main()
 
 void USessionSubsystem_Main::CreateSession(int32 NumPublicConnections, bool IsLANMatch)
 {
-	const IOnlineSessionPtr sessionInterface = Online::GetSessionInterface(GetWorld());
+	IOnlineSessionPtr sessionInterface = Online::GetSessionInterface(GetWorld());
 	if (!sessionInterface.IsValid())
 	{
 		OnCreateSessionCompleteEvent.Broadcast(false);
@@ -299,10 +299,6 @@ bool USessionSubsystem_Main::TryTravelToCurrentSession()
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, connectString);
 
 	APlayerController* playerController = GetWorld()->GetFirstPlayerController();
-
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, playerController->GetActorNameOrLabel());
-
-	playerController->ClientTravel(connectString, TRAVEL_Relative);
+	playerController->ClientTravel(connectString, TRAVEL_Absolute, false);
 	return true;
 }

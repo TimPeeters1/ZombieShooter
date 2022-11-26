@@ -31,6 +31,11 @@ void AGameMode_Main::Logout(AController* ExitingPlayer)
 
 APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
+	#if WITH_EDITOR
+	if(bOverrideConnectionFlow)
+		return SpawnGamePawn(NewPlayer);
+	#endif
+
 	if (GameInstance) {
 		switch (GameInstance->GetGameState())
 		{

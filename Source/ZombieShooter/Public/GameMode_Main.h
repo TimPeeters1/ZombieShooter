@@ -33,6 +33,14 @@ public:
 	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		ASpawnManager* SpawnManager;
 
+#if WITH_EDITORONLY_DATA
+	/*
+	* Overrides the server connection flow, and spawns the playerpawn instantly as with a default gamemode.
+	* Works in editor only!
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		bool bOverrideConnectionFlow;
+#endif
 protected:
 	AGameMode_Main();
 

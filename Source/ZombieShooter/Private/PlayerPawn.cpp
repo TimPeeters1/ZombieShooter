@@ -246,9 +246,6 @@ void APlayerPawn::ServerSetInteractingActor_Implementation(AActor* InteractingOb
 {
 	//Serverside Assignment.
 	InteractingActor = InteractingObject;
-
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, "Updated InteractingActor!");
 }
 
 float APlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

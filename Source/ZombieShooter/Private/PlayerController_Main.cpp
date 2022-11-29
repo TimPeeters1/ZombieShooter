@@ -6,14 +6,34 @@
 #include "GameInstance_Main.h"
 #include "GameMode_Main.h"
 
+APlayerController_Main::APlayerController_Main() {
+	GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
+}
+
 void APlayerController_Main::BeginPlay()
 {
-	UGameInstance_Main* GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
 	SessionSubsystem = GameInstance->GetSubsystem<USessionSubsystem_Main>();
 	if (SessionSubsystem) {
 		SessionSubsystem->OnFindSessionsCompleteEvent.AddUObject(this, &APlayerController_Main::OnFoundSessions);
 		SessionSubsystem->OnJoinGameSessionCompleteEvent.AddUObject(this, &APlayerController_Main::OnJoinedSession);
 	}
+}
+
+void APlayerController_Main::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	if (GameInstance) {
+		if (!GameInstance->PlayerPawns.Contains(InPawn))
+			GameInstance->PlayerPawns.Add(InPawn);
+	}
+}
+
+void APlayerController_Main::OnUnPossess()
+{
+	Super::OnUnPossess();
+	if (GameInstance->PlayerPawns.Contains(this->GetPawn()))
+		GameInstance->PlayerPawns.Remove(this->GetPawn());
 }
 
 

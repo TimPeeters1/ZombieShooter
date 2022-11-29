@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerController.h"
 #include "OnlineSessionSettings.h"
 
+#include "GameInstance_Main.h"
 #include "SessionSubsystem_Main.h"
 
 #include "PlayerController_Main.generated.h"
@@ -32,8 +33,14 @@ public:
 	void InitRespawn();
 
 	virtual void BeginPlay() override;
+	void OnPossess(APawn* InPawn) override;
+	void OnUnPossess() override;
 
 private:
+	APlayerController_Main();
+
+	UGameInstance_Main* GameInstance;
 	USessionSubsystem_Main* SessionSubsystem;
+
 	
 };

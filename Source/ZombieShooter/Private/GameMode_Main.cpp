@@ -2,6 +2,8 @@
 
 #include "GameInstance_Main.h"
 
+class ASpawnManager;
+
 AGameMode_Main::AGameMode_Main() {
 	GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (GameInstance)
@@ -18,23 +20,24 @@ void AGameMode_Main::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
 
-	PlayerCharacters.Add(NewPlayer);
+	if (GameInstance)
+		GameInstance->PlayerCharacters.Add(NewPlayer);
 }
 
 void AGameMode_Main::Logout(AController* ExitingPlayer)
 {
 	Super::Logout(ExitingPlayer);
 
-	if (PlayerCharacters.Contains(ExitingPlayer))
-		PlayerCharacters.Remove(ExitingPlayer);
+	if (GameInstance) {
+		if (GameInstance->PlayerCharacters.Contains(ExitingPlayer))
+				GameInstance->PlayerCharacters.Remove(ExitingPlayer);
+	}
 }
 
 APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
-	#if WITH_EDITOR
 	if(bOverrideConnectionFlow)
 		return SpawnGamePawn(NewPlayer);
-	#endif
 
 	if (GameInstance) {
 		switch (GameInstance->GetGameState())
@@ -94,10 +97,17 @@ void AGameMode_Main::StartGame()
 	GetWorld()->ServerTravel(URL, false, false);
 }
 
-
-void AGameMode_Main::On_PreGame_AllPlayersTravelled()
+void AGameMode_Main::OnPlayerPawnSpawned(APawn* NewPawn)
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "All Travelled!");
+	if (!PlayerPawnsInGame.Contains(NewPawn))
+		PlayerPawnsInGame.Add(NewPawn);
+
+	if(GameInstance)
+		if (PlayerPawnsInGame.Num() == GameInstance->PlayerCharacters.Num()) {
+			//if(SpawnManager)
+				//SpawnManager->StartSpawningRoutines();
+		}
 }
+
+
 

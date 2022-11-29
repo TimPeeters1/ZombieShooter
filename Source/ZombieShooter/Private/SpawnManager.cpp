@@ -3,6 +3,8 @@
 
 #include "SpawnManager.h"
 
+
+
 // Sets default values
 ASpawnManager::ASpawnManager()
 {
@@ -21,9 +23,13 @@ void ASpawnManager::BeginPlay()
 		if (!GameMode->SpawnManager)
 			GameMode->SpawnManager = this;
 
+	StartSpawningRoutines();
+}
 
+void ASpawnManager::StartSpawningRoutines()
+{
 	if (UKismetSystemLibrary::IsServer(GetWorld())) {
-		GetWorldTimerManager().SetTimer(ActiveAreaSweepTimer, this, &ASpawnManager::ActiveAreaSweep, ActiveAreaSweepInterval, true, 5.0f);
+		GetWorldTimerManager().SetTimer(ActiveAreaSweepTimer, this, &ASpawnManager::ActiveAreaSweep, ActiveAreaSweepInterval, true, ActiveAreaSweepInterval + 5.0f);
 
 		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, 5.5f + PopulationCheckInterval);
 	}
@@ -57,7 +63,8 @@ void ASpawnManager::CheckPopulation()
 void ASpawnManager::ActiveAreaSweep()
 {
 	AGameMode_Main* GameMode = (AGameMode_Main*)UGameplayStatics::GetGameMode(GetWorld());
-	if (GameMode->PlayerCharacters.IsEmpty()) return;
+
+	if (GameMode->GameInstance->PlayerPawns.IsEmpty()) return;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> traceObjectTypes;
 	traceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
@@ -67,16 +74,16 @@ void ASpawnManager::ActiveAreaSweep()
 
 	TArray<ASpawnArea*> overlappedAreas;
 
-	for (uint8 i = 0; i < GameMode->PlayerCharacters.Num(); i++)
+	for (uint8 i = 0; i < GameMode->GameInstance->PlayerPawns.Num(); i++)
 	{
-		if (!GameMode->PlayerCharacters[i]->GetPawn()) return;
+		if (!GameMode->GameInstance->PlayerPawns[i]) return;
 
 		TArray<AActor*> overlappedActors;
 
 		if (bDrawDebug)
-			DrawDebugSphere(GetWorld(), GameMode->PlayerCharacters[i]->GetPawn()->GetActorLocation(), AreaSweepRange, 26, FColor::Purple, false, 2, 0, 5);
+			DrawDebugSphere(GetWorld(), GameMode->GameInstance->PlayerPawns[i]->GetActorLocation(), AreaSweepRange, 26, FColor::Purple, false, 2, 0, 5);
 
-		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GameMode->PlayerCharacters[i]->GetPawn()->GetActorLocation(), AreaSweepRange,
+		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GameMode->GameInstance->PlayerPawns[i]->GetActorLocation(), AreaSweepRange,
 			traceObjectTypes, ASpawnArea::StaticClass(),
 			ignoredActors, overlappedActors);
 

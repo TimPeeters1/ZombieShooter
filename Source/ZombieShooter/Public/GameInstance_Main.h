@@ -24,6 +24,13 @@ class ZOMBIESHOOTER_API UGameInstance_Main : public UGameInstance
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		TArray<AController*> PlayerCharacters;
+
+	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		TArray<APawn*> PlayerPawns;
+
 protected:
 		EZombieGameState CurrentGameState;
 		uint8 ActivePlayersInSession;

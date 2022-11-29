@@ -20,6 +20,11 @@ class ZOMBIESHOOTER_API AGameMode_Main : public AGameMode
 	GENERATED_BODY()
 
 public:
+	UGameInstance_Main* GameInstance;
+
+	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		ASpawnManager* SpawnManager;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		FName MenuLevel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
@@ -27,29 +32,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		FName GameLevel;
 
-	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		TArray<AController*> PlayerCharacters;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
+		TArray<APawn*> PlayerPawnsInGame;
 
-	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		ASpawnManager* SpawnManager;
-
-#if WITH_EDITORONLY_DATA
 	/*
 	* Overrides the server connection flow, and spawns the playerpawn instantly as with a default gamemode.
-	* Works in editor only!
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 		bool bOverrideConnectionFlow;
-#endif
 protected:
 	AGameMode_Main();
 
-	UGameInstance_Main* GameInstance;
 	USessionSubsystem_Main* SessionSubsystem;
 	int32 MaxNumberOfPlayers = 4;
-	uint8 PlayersInPreGame;
-
-	void On_PreGame_AllPlayersTravelled();
 
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 	virtual void HandleSeamlessTravelPlayer(AController*& Controller) override;
@@ -63,6 +58,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
 		void StartGame();
+
+	void OnPlayerPawnSpawned(APawn* NewPawn);
 
 	virtual void BeginPlay() override;
 

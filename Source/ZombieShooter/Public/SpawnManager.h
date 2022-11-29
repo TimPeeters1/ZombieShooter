@@ -66,6 +66,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	void StartSpawningRoutines();
+
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "CheckPopulation"), Category = "Spawning")
 		void CheckPopulation();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ActiveAreaSweep"), Category = "Spawning")

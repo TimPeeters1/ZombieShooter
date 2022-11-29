@@ -23,19 +23,25 @@ void APlayerController_Main::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	if (GameInstance) {
-		if (!GameInstance->PlayerPawns.Contains(InPawn))
+		if (!GameInstance->PlayerPawns.Contains(InPawn)) {
 			GameInstance->PlayerPawns.Add(InPawn);
+		}
 	}
 }
 
 void APlayerController_Main::OnUnPossess()
 {
 	Super::OnUnPossess();
-	if (GameInstance->PlayerPawns.Contains(this->GetPawn()))
-		GameInstance->PlayerPawns.Remove(this->GetPawn());
-}
 
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
+	if (GameInstance->PlayerPawns.Contains(this->GetPawn())) {
+		GameInstance->PlayerPawns.Remove(this->GetPawn());
+	}
+}
 
 void APlayerController_Main::FindRandomSession(bool isLanSearch)
 {
@@ -56,7 +62,6 @@ void APlayerController_Main::OnFoundSessions(const TArray<FOnlineSessionSearchRe
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "No Session(s) Found!");
 		}
 	}
-
 }
 
 void APlayerController_Main::OnJoinedSession(EOnJoinSessionCompleteResult::Type Result)

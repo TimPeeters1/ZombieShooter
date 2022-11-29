@@ -25,7 +25,7 @@ public:
 		uint8 DesiredEnemyCount = 5;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnEnemies"), Category = "Spawning")
-		void SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn);
+		ACharacter* SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetAreaStatus"), Category = "Spawning|ActiveArea")
 		bool GetAreaStatus();

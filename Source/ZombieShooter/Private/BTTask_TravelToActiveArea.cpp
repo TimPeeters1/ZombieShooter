@@ -1,9 +1,10 @@
 
 #include "BTTask_TravelToActiveArea.h"
-#include "SpawnManager.h"
 #include "Engine/TriggerBox.h"
-
 #include "NavigationSystem.h"
+
+#include "GameInstance_Main.h"
+#include "SpawnManager.h"
 
 UBTTask_TravelToActiveArea::UBTTask_TravelToActiveArea()
 {
@@ -20,10 +21,10 @@ EBTNodeResult::Type UBTTask_TravelToActiveArea::ExecuteTask(UBehaviorTreeCompone
 	if (!UKismetSystemLibrary::IsServer(GetWorld()))
 		return EBTNodeResult::Aborted;
 
-	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GameMode) {
-		if (!GameMode->SpawnManager->ActivePlayerArea.IsEmpty()) {
-			ASpawnArea* NewTravelArea = GameMode->SpawnManager->ActivePlayerArea[FMath::RandRange(0, GameMode->SpawnManager->ActivePlayerArea.Num() - 1)];
+	UGameInstance_Main* GameInstance = (UGameInstance_Main*)UGameplayStatics::GetGameInstance(GetWorld());
+	if (GameInstance) {
+		if (!GameInstance->SpawnManager->ActivePlayerArea.IsEmpty()) {
+			ASpawnArea* NewTravelArea = GameInstance->SpawnManager->ActivePlayerArea[FMath::RandRange(0, GameInstance->SpawnManager->ActivePlayerArea.Num() - 1)];
 
 			FVector origin;
 			FVector extents;

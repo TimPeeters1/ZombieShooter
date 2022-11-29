@@ -1,8 +1,7 @@
 #include "ZombiePawn.h"
 #include "Math/UnrealMathUtility.h"
-#include "GameMode_Main.h"
-#include "SpawnManager.h"
 
+#include "GameMode_Main.h"
 
 // Sets default values
 AZombiePawn::AZombiePawn()
@@ -12,7 +11,6 @@ AZombiePawn::AZombiePawn()
 
 	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
 }
-
 
 float AZombiePawn::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {

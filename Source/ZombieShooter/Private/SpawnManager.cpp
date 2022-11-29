@@ -1,27 +1,17 @@
-
-
-
 #include "SpawnManager.h"
 
-
-
-// Sets default values
-ASpawnManager::ASpawnManager()
-{
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
-
-}
-
-// Called when the game starts or when spawned
 void ASpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GameInstance = (UGameInstance_Main*)UGameplayStatics::GetGameInstance(GetWorld());
+	/*
 	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GameMode)
 		if (!GameMode->SpawnManager)
 			GameMode->SpawnManager = this;
+
+			*/
 
 	StartSpawningRoutines();
 }
@@ -34,7 +24,6 @@ void ASpawnManager::StartSpawningRoutines()
 		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, 5.5f + PopulationCheckInterval);
 	}
 }
-
 
 void ASpawnManager::CheckPopulation()
 {
@@ -51,7 +40,9 @@ void ASpawnManager::CheckPopulation()
 		for (uint8 i = 0; i < AI_Pop_Budget; i++)
 		{
 			uint8 RandomArea = FMath::RandRange(0, ActiveAreaSet.Num() - 1);
-			ActiveAreaSet[RandomArea]->SpawnEnemy(SpawnableEnemies[0]);
+			if (ActiveAreaSet[RandomArea]->SpawnEnemy(SpawnableEnemies[0])) {
+				Current_AI_Population++;
+			}
 		}
 
 		if (GEngine)
@@ -62,9 +53,7 @@ void ASpawnManager::CheckPopulation()
 
 void ASpawnManager::ActiveAreaSweep()
 {
-	AGameMode_Main* GameMode = (AGameMode_Main*)UGameplayStatics::GetGameMode(GetWorld());
-
-	if (GameMode->GameInstance->PlayerPawns.IsEmpty()) return;
+	if (GameInstance->PlayerPawns.IsEmpty()) return;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> traceObjectTypes;
 	traceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
@@ -74,16 +63,16 @@ void ASpawnManager::ActiveAreaSweep()
 
 	TArray<ASpawnArea*> overlappedAreas;
 
-	for (uint8 i = 0; i < GameMode->GameInstance->PlayerPawns.Num(); i++)
+	for (uint8 i = 0; i < GameInstance->PlayerPawns.Num(); i++)
 	{
-		if (!GameMode->GameInstance->PlayerPawns[i]) return;
+		if (!GameInstance->PlayerPawns[i]) return;
 
 		TArray<AActor*> overlappedActors;
 
 		if (bDrawDebug)
-			DrawDebugSphere(GetWorld(), GameMode->GameInstance->PlayerPawns[i]->GetActorLocation(), AreaSweepRange, 26, FColor::Purple, false, 2, 0, 5);
+			DrawDebugSphere(GetWorld(), GameInstance->PlayerPawns[i]->GetActorLocation(), AreaSweepRange, 26, FColor::Purple, false, 2, 0, 5);
 
-		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GameMode->GameInstance->PlayerPawns[i]->GetActorLocation(), AreaSweepRange,
+		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GameInstance->PlayerPawns[i]->GetActorLocation(), AreaSweepRange,
 			traceObjectTypes, ASpawnArea::StaticClass(),
 			ignoredActors, overlappedActors);
 
@@ -154,7 +143,7 @@ void ASpawnManager::DecreaseAI_Population()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
-	if(Current_AI_Population > 0)
+	if (Current_AI_Population > 0)
 		Current_AI_Population--;
 }
 

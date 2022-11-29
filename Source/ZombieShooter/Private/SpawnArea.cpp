@@ -2,7 +2,6 @@
 #include "AI_Controller_Base.h"
 #include "GameFramework/Character.h"
 #include "GameMode_Main.h"
-#include "SpawnManager.h"
 
 void ASpawnArea::BeginPlay()
 {
@@ -37,6 +36,8 @@ void ASpawnArea::OnAreaEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 
 void ASpawnArea::OnPlayerBeginOverlap(APlayerPawn* PlayerActor)
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	if (!Players_ActiveInArea.Contains(PlayerActor)) {
 		Players_ActiveInArea.Add(PlayerActor);
 		bContainsPlayers = true;
@@ -45,6 +46,8 @@ void ASpawnArea::OnPlayerBeginOverlap(APlayerPawn* PlayerActor)
 
 void ASpawnArea::OnPlayerEndOverlap(APlayerPawn* PlayerActor)
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	if (Players_ActiveInArea.Contains(PlayerActor)) {
 		Players_ActiveInArea.Remove(PlayerActor);
 	}
@@ -54,6 +57,8 @@ void ASpawnArea::OnPlayerEndOverlap(APlayerPawn* PlayerActor)
 
 void ASpawnArea::OnAIBeginOverlap(AZombiePawn* AI_Actor)
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	if (!AI_ActiveInArea.Contains(AI_Actor)) {
 		AI_ActiveInArea.Add(AI_Actor);
 	}
@@ -61,12 +66,14 @@ void ASpawnArea::OnAIBeginOverlap(AZombiePawn* AI_Actor)
 
 void ASpawnArea::OnAIEndOverlap(AZombiePawn* AI_Actor)
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	if (AI_ActiveInArea.Contains(AI_Actor)) {
 		AI_ActiveInArea.Remove(AI_Actor);
 	}
 }
 
-void ASpawnArea::SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn)
+ACharacter* ASpawnArea::SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn)
 {
 	if (!SpawnPoints.IsEmpty()) {
 		uint8 RandomSpawnPoint = FMath::RandRange(0, (SpawnPoints.Num() - 1));
@@ -76,17 +83,26 @@ void ASpawnArea::SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn)
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.Name = MakeUniqueObjectName(this, EnemyToSpawn, FName("Zombie_AI"));
 			ACharacter* NewEnemy = GetWorld()->SpawnActor<ACharacter>(EnemyToSpawn, SelectedSpawner->GetSpawnTransform().GetLocation(), FRotator::ZeroRotator);
+			/*
 			if (NewEnemy) {
-				AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-				if (GameMode) {
-					GameMode->SpawnManager->Current_AI_Population++;
+				if (SpawnManagerParent) {
+					SpawnManagerParent->Current_AI_Population++;
 				}
 			}
+			*/
+
+			return NewEnemy;
 		}
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("SPAWNAREA %s: No SpawnObjects Found!"), *this->GetName());
 	}
+
+	//Default Implementation if SpawnObjects returns null.
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Name = MakeUniqueObjectName(this, EnemyToSpawn, FName("Zombie_AI"));
+	ACharacter* NewEnemy = GetWorld()->SpawnActor<ACharacter>(EnemyToSpawn, this->GetActorLocation(), FRotator::ZeroRotator);
+	return NewEnemy;
 }
 
 bool ASpawnArea::GetAreaStatus()

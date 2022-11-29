@@ -22,9 +22,6 @@ class ZOMBIESHOOTER_API AGameMode_Main : public AGameMode
 public:
 	UGameInstance_Main* GameInstance;
 
-	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		ASpawnManager* SpawnManager;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		FName MenuLevel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")

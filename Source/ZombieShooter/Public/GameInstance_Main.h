@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+
 #include "GameInstance_Main.generated.h"
+
+class ASpawnManager;
 
 UENUM(BlueprintType)
 enum class EZombieGameState : uint8
@@ -16,20 +19,22 @@ enum class EZombieGameState : uint8
 	POSTGAME = 5 UMETA(DisplayName = "PostGame"),
 };
 
-/**
- *
- */
 UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API UGameInstance_Main : public UGameInstance
 {
 	GENERATED_BODY()
 
 public:
+	//---Player Related Variables---
 	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		TArray<AController*> PlayerCharacters;
 
 	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		TArray<APawn*> PlayerPawns;
+
+	//---Manager Object Variables---
+	UPROPERTY(Category = "Spawning", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		ASpawnManager* SpawnManager;
 
 protected:
 		EZombieGameState CurrentGameState;

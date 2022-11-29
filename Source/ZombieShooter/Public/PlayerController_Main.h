@@ -41,6 +41,4 @@ private:
 
 	UGameInstance_Main* GameInstance;
 	USessionSubsystem_Main* SessionSubsystem;
-
-	
 };

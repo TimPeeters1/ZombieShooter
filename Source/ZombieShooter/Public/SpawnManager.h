@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "DrawDebugHelpers.h"
-#include "GameMode_Main.h"
+
+#include "GameInstance_Main.h"
+
 #include "PlayerPawn.h"
 #include "SpawnArea.h"
 #include "SpawnObject.h"
+
 
 #include "SpawnManager.generated.h"
 
@@ -18,8 +21,6 @@ class ZOMBIESHOOTER_API ASpawnManager : public AActor
 	GENERATED_BODY()
 
 public:
-	ASpawnManager();
-
 	/*
 	* Max Amount of AI Units that may be present in game at all times. (PERFORMANCE!)
 	*/
@@ -52,6 +53,7 @@ public:
 	UPROPERTY(Category = "Spawning|Active Areas", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		bool bDrawDebug = false;
 
+	//AreaSweep Vars
 	UPROPERTY(Category = "Spawning|Active Areas", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		TArray<ASpawnArea*> ActiveAreaSet;
 
@@ -59,8 +61,9 @@ public:
 		TArray<ASpawnArea*> ActivePlayerArea;
 
 protected:
-	FTimerHandle ActiveAreaSweepTimer;
+	UGameInstance_Main* GameInstance;
 
+	FTimerHandle ActiveAreaSweepTimer;
 	FTimerHandle PopCheckTimer;
 
 	virtual void BeginPlay() override;

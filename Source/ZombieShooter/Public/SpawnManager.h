@@ -69,7 +69,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void StartSpawningRoutines();
+	void StartSpawningRoutines(float StartDelay);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "CheckPopulation"), Category = "Spawning")
 		void CheckPopulation();

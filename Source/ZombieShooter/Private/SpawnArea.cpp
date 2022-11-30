@@ -82,15 +82,10 @@ ACharacter* ASpawnArea::SpawnEnemy(TSubclassOf<class ACharacter> EnemyToSpawn)
 		if (SelectedSpawner) {
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.Name = MakeUniqueObjectName(this, EnemyToSpawn, FName("Zombie_AI"));
-			ACharacter* NewEnemy = GetWorld()->SpawnActor<ACharacter>(EnemyToSpawn, SelectedSpawner->GetSpawnTransform().GetLocation(), FRotator::ZeroRotator);
-			/*
-			if (NewEnemy) {
-				if (SpawnManagerParent) {
-					SpawnManagerParent->Current_AI_Population++;
-				}
-			}
-			*/
 
+			FRotator RandomSpawnRotation = FRotator(0, FMath::RandRange(0.0f, 359.0f), 0);
+
+			ACharacter* NewEnemy = GetWorld()->SpawnActor<ACharacter>(EnemyToSpawn, SelectedSpawner->GetSpawnTransform().GetLocation() + FVector(0,0,3.0), RandomSpawnRotation);
 			return NewEnemy;
 		}
 	}

@@ -38,17 +38,17 @@ protected:
 
 public:
 	UPROPERTY(ReplicatedUsing = OnRep_MagazineSizeUpdate, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
-		uint8 MagazineSize = 10;
+		int32 MagazineSize = 10;
 	UPROPERTY(ReplicatedUsing = OnRep_MaxInventoryAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
-		uint8 MaxInventoryAmmo = 100;
+		int32 MaxInventoryAmmo = 100;
 
 	//Total Ammo in the Weapon's Inventory.
 	UPROPERTY(ReplicatedUsing = OnRep_InventoryAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		uint8 InventoryAmmo;
+		int32 InventoryAmmo;
 
 	//Current Ammo in the Weapon's Magazine (Most important!).
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		uint8 CurrentAmmo;
+		int32 CurrentAmmo;
 
 
 	UFUNCTION()

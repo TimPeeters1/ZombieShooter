@@ -5,23 +5,17 @@ void ASpawnManager::BeginPlay()
 	Super::BeginPlay();
 
 	GameInstance = (UGameInstance_Main*)UGameplayStatics::GetGameInstance(GetWorld());
-	/*
-	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GameMode)
-		if (!GameMode->SpawnManager)
-			GameMode->SpawnManager = this;
 
-			*/
-
-	StartSpawningRoutines();
+	if (GameInstance)
+		GameInstance->SpawnManager = this;
 }
 
-void ASpawnManager::StartSpawningRoutines()
+void ASpawnManager::StartSpawningRoutines(float StartDelay)
 {
 	if (UKismetSystemLibrary::IsServer(GetWorld())) {
-		GetWorldTimerManager().SetTimer(ActiveAreaSweepTimer, this, &ASpawnManager::ActiveAreaSweep, ActiveAreaSweepInterval, true, ActiveAreaSweepInterval + 5.0f);
+		GetWorldTimerManager().SetTimer(ActiveAreaSweepTimer, this, &ASpawnManager::ActiveAreaSweep, ActiveAreaSweepInterval, true, StartDelay);
 
-		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, 5.5f + PopulationCheckInterval);
+		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, StartDelay + 0.1f);
 	}
 }
 

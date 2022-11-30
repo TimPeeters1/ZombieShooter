@@ -44,7 +44,10 @@ protected:
 	int32 MaxNumberOfPlayers = 4;
 
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
-	virtual void HandleSeamlessTravelPlayer(AController*& Controller) override;
+
+
+	FTimerHandle OverrideZombieSpawnTimer;
+	void OverrideZombieSpawn();
 
 public:
 	APawn* SpawnGamePawn(AController* Controller);
@@ -64,4 +67,6 @@ public:
 	virtual void Logout(AController* ExitingPlayer) override;
 
 };
+
+
 

@@ -23,7 +23,7 @@ AAI_Controller_Base::AAI_Controller_Base(FObjectInitializer const& ObjectInitial
 
 	SightPercpetion->SightRadius = 2000.0f;
 	SightPercpetion->LoseSightRadius = 2400.0f;
-	SightPercpetion->PeripheralVisionAngleDegrees = 90.f;
+	SightPercpetion->PeripheralVisionAngleDegrees = 130.f;
 	SightPercpetion->DetectionByAffiliation.bDetectNeutrals = true;
 
 	AIPerceptionComponent->ConfigureSense(*SightPercpetion);

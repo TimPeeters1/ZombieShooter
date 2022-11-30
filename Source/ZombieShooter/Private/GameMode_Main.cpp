@@ -1,6 +1,7 @@
 #include "GameMode_Main.h"
 
 #include "GameInstance_Main.h"
+#include "SpawnManager.h"
 
 class ASpawnManager;
 
@@ -14,6 +15,16 @@ void AGameMode_Main::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (bOverrideConnectionFlow)
+		GetWorldTimerManager().SetTimer(OverrideZombieSpawnTimer, this, &AGameMode_Main::OverrideZombieSpawn, 5.0f, true, 1.0f);
+}
+
+void AGameMode_Main::OverrideZombieSpawn()
+{
+	if (GameInstance->SpawnManager) {
+		GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
+		GetWorldTimerManager().ClearTimer(OverrideZombieSpawnTimer);
+	}
 }
 
 void AGameMode_Main::OnPostLogin(AController* NewPlayer)
@@ -30,14 +41,15 @@ void AGameMode_Main::Logout(AController* ExitingPlayer)
 
 	if (GameInstance) {
 		if (GameInstance->PlayerCharacters.Contains(ExitingPlayer))
-				GameInstance->PlayerCharacters.Remove(ExitingPlayer);
+			GameInstance->PlayerCharacters.Remove(ExitingPlayer);
 	}
 }
 
 APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
-	if(bOverrideConnectionFlow)
+	if (bOverrideConnectionFlow) {
 		return SpawnGamePawn(NewPlayer);
+	}
 
 	if (GameInstance) {
 		switch (GameInstance->GetGameState())
@@ -51,11 +63,6 @@ APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer
 	return NewPawn;
 }
 
-void AGameMode_Main::HandleSeamlessTravelPlayer(AController*& Controller)
-{
-	Super::HandleSeamlessTravelPlayer(Controller);
-}
-
 
 APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 {
@@ -63,6 +70,9 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 
 	APawn* PlayerPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, SpawnTransform);
 	Controller->Possess(PlayerPawn);
+
+	if (!bOverrideConnectionFlow)
+		OnPlayerPawnSpawned(PlayerPawn);
 
 	return PlayerPawn;
 }
@@ -99,14 +109,10 @@ void AGameMode_Main::StartGame()
 
 void AGameMode_Main::OnPlayerPawnSpawned(APawn* NewPawn)
 {
-	if (!PlayerPawnsInGame.Contains(NewPawn))
-		PlayerPawnsInGame.Add(NewPawn);
+	if (NumTravellingPlayers == 0)
+		if (GameInstance->SpawnManager)
+			GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
 
-	if(GameInstance)
-		if (PlayerPawnsInGame.Num() == GameInstance->PlayerCharacters.Num()) {
-			//if(SpawnManager)
-				//SpawnManager->StartSpawningRoutines();
-		}
 }
 
 

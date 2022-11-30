@@ -23,6 +23,8 @@ EBTNodeResult::Type UBTTask_TravelToActiveArea::ExecuteTask(UBehaviorTreeCompone
 
 	UGameInstance_Main* GameInstance = (UGameInstance_Main*)UGameplayStatics::GetGameInstance(GetWorld());
 	if (GameInstance) {
+		if (!GameInstance->SpawnManager) return EBTNodeResult::Failed;
+
 		if (!GameInstance->SpawnManager->ActivePlayerArea.IsEmpty()) {
 			ASpawnArea* NewTravelArea = GameInstance->SpawnManager->ActivePlayerArea[FMath::RandRange(0, GameInstance->SpawnManager->ActivePlayerArea.Num() - 1)];
 

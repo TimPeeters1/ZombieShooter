@@ -45,6 +45,11 @@ void AGameMode_Main::Logout(AController* ExitingPlayer)
 	}
 }
 
+void AGameMode_Main::RestartPlayer(AController* NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+}
+
 APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
 	if (bOverrideConnectionFlow) {
@@ -75,12 +80,6 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 		OnPlayerPawnSpawned(PlayerPawn);
 
 	return PlayerPawn;
-}
-
-void AGameMode_Main::RespawnGamePawn(AController* Controller)
-{
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, Controller->GetName());
 }
 
 void AGameMode_Main::StartLobby(bool isLANSession)

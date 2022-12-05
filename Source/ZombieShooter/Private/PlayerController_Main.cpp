@@ -5,6 +5,7 @@
 
 #include "GameInstance_Main.h"
 #include "GameMode_Main.h"
+#include "Kismet/KismetStringLibrary.h"
 
 APlayerController_Main::APlayerController_Main() {
 	GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -79,6 +80,11 @@ void APlayerController_Main::InitRespawn()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
-	Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()))->RespawnGamePawn(this);
+	GetPawn()->Destroy();
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, UKismetStringLibrary::Conv_BoolToString(UGameplayStatics::GetGameMode(GetWorld())->PlayerCanRestart(this)));
+
+
+
 }
 

@@ -102,13 +102,12 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(HealthComponent)
-		HealthComponent->OnDeath.AddDynamic(this, &APlayerPawn::OnDeath);
-
 	if (IsLocallyControlled())
 		GetMesh()->SetVisibility(false, true);
 	else
 		FP_ArmModel->SetVisibility(false, true);
+
+	HealthComponent->OnDeath.AddUniqueDynamic(this, &APlayerPawn::OnDeath);
 }
 
 
@@ -258,20 +257,17 @@ float APlayerPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 
 void APlayerPawn::OnDeath()
 {
-	if(IsLocallyControlled())
+	if (IsLocallyControlled())
 	{
-		FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FP_PlayerCamera->GetComponentLocation() + FVector(0, 0, 1200.0f), FVector::OneVector);
+		FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, this->GetActorLocation() + FVector(0, 0, 1200.0f), FVector::OneVector);
 
-		APlayerDeathCamera* PlayerDeathCam = GetWorld()->SpawnActorDeferred<APlayerDeathCamera>(APlayerDeathCamera::StaticClass(),
-			SpawnTransform, GetOwner(), GetOwner()->GetInstigator());
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Name = FName(*(this->GetActorNameOrLabel() + "_DeathCam"));
 
-		if (PlayerDeathCam) {
-			PlayerDeathCam->PlayerRef = this;
+		APlayerDeathCamera* PlayerDeathCam = Cast<APlayerDeathCamera>(GetWorld()->SpawnActor(APlayerDeathCamera::StaticClass(), &SpawnTransform, SpawnParams));
 
-			UGameplayStatics::FinishSpawningActor(PlayerDeathCam, PlayerDeathCam->GetTransform());
-
-			UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(PlayerDeathCam, 6.0f, EViewTargetBlendFunction::VTBlend_EaseOut);
-		}
+		if(PlayerDeathCam)
+			PlayerDeathCam->SetCameraPosition(GetActorLocation());
 
 		//Blueprint Assignable Local Death (Hide HUD, Hide FPS Viewmodel etc.)
 		OnPlayerDeathLocal.Broadcast();

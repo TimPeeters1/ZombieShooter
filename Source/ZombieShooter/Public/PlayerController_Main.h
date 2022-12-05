@@ -26,13 +26,14 @@ public:
 	void OnJoinedSession(EOnJoinSessionCompleteResult::Type Result);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, meta = (DisplayName = "RequestRespawn"), Category = "Spawning")
-		void RequestRespawn();
+	void RequestRespawn();
 	void RequestRespawn_Implementation();
 
 	UFUNCTION()
 		void InitRespawn();
 
 	virtual void BeginPlay() override;
+
 	void OnPossess(APawn* InPawn) override;
 	void OnUnPossess() override;
 

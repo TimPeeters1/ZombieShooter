@@ -40,6 +40,8 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
+	if (bActorDied) return;
+
 	Health -= Deduction;
 
 	//Serverside Damage Effect (TEMP)
@@ -49,6 +51,7 @@ void UGenericHealthComponent::ReduceHealth(float Deduction)
 	if (Health <= 0) {
 		Health = 0;
 
+		bActorDied = true;
 		RPC_Death();
 	}
 }

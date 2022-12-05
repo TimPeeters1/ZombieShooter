@@ -37,6 +37,7 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 		bool bOverrideConnectionFlow;
+
 protected:
 	AGameMode_Main();
 
@@ -51,7 +52,6 @@ protected:
 
 public:
 	APawn* SpawnGamePawn(AController* Controller);
-	void RespawnGamePawn(AController* Controller);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Lobby"), Category = "GameState")
 		void StartLobby(bool isLANSession);
@@ -65,6 +65,8 @@ public:
 
 	virtual void OnPostLogin(AController* NewPlayer) override;
 	virtual void Logout(AController* ExitingPlayer) override;
+
+	virtual void RestartPlayer(AController* NewPlayer) override;
 
 };
 

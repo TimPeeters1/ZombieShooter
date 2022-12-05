@@ -21,12 +21,5 @@ class ZOMBIESHOOTER_API APlayerDeathCamera : public ACameraActor
 
 public:
 	APlayerDeathCamera();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		USphereComponent* CollisionComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-		APlayerPawn* PlayerRef;
-private:
-	virtual void BeginPlay() override;
+	void SetCameraPosition(FVector CameraLookAtPos);
 };

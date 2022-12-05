@@ -26,6 +26,10 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_Health, Category = "Health", EditAnywhere, BlueprintReadWrite)
 		float Health;
 
+protected:
+	bool bActorDied;
+
+public:
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);
 

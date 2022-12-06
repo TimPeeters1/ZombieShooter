@@ -102,14 +102,23 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsLocallyControlled())
-		GetMesh()->SetVisibility(false, true);
-	else
-		FP_ArmModel->SetVisibility(false, true);
+	OnSetPlayerViewMode();
 
-	HealthComponent->OnDeath.AddUniqueDynamic(this, &APlayerPawn::OnDeath);
+	if(HealthComponent)
+		HealthComponent->OnDeath.AddUniqueDynamic(this, &APlayerPawn::OnDeath);
 }
 
+void APlayerPawn::OnSetPlayerViewMode()
+{
+	if (IsLocallyControlled()) {
+		GetMesh()->SetVisibility(false, true);
+		FP_ArmModel->SetVisibility(true, true);
+	}
+	else {
+		GetMesh()->SetVisibility(true, true);
+		FP_ArmModel->SetVisibility(false, true);
+	}
+}
 
 // Called every frame
 void APlayerPawn::Tick(float DeltaTime)
@@ -277,3 +286,4 @@ void APlayerPawn::OnDeath()
 	OnPlayerDeathReplicated.Broadcast();
 
 }
+

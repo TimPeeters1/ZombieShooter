@@ -76,6 +76,7 @@ protected:
 
 
 public:
+	void OnSetPlayerViewMode();
 
 	/** Returns Current FP Camera **/
 	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
@@ -108,6 +109,8 @@ protected:
 
 	UFUNCTION()
 	void OnDeath();
+
+
 
 	/*
 	 * Input Logic

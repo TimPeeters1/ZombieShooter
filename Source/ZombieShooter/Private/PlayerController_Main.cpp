@@ -24,6 +24,9 @@ void APlayerController_Main::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	if (Cast<APlayerPawn>(InPawn))
+		Cast<APlayerPawn>(InPawn)->OnSetPlayerViewMode();
+
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	if (GameInstance) {
@@ -81,10 +84,8 @@ void APlayerController_Main::InitRespawn()
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	GetPawn()->Destroy();
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, UKismetStringLibrary::Conv_BoolToString(UGameplayStatics::GetGameMode(GetWorld())->PlayerCanRestart(this)));
-
-
-
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, UKismetStringLibrary::Conv_BoolToString(UGameplayStatics::GetGameMode(GetWorld())->PlayerCanRestart(this)));
+	UGameplayStatics::GetGameMode(GetWorld())->RestartPlayer(this);
 }
 

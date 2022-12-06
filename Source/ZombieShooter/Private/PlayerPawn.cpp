@@ -1,10 +1,11 @@
 
 #include "PlayerPawn.h"
 
+#include "GameMode_Main.h"
 #include "PlayerDeathCamera.h"
 #include "Components/CapsuleComponent.h"
 #include "RepairObjective.h"
-
+#include "GameFramework/GameModeBase.h"
 
 
 // Sets default values
@@ -127,8 +128,6 @@ void APlayerPawn::Tick(float DeltaTime)
 
 	InteractionTrace();
 }
-
-
 
 void APlayerPawn::Move_XAxis(float AxisValue) {
 	AddMovementInput(GetActorRightVector(), AxisValue);

@@ -73,13 +73,18 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 {
 	FTransform SpawnTransform = FindPlayerStart(Controller)->GetTransform();
 
-	APawn* PlayerPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, SpawnTransform);
-	Controller->Possess(PlayerPawn);
+	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, SpawnTransform);
+	Controller->Possess(NewPawn);
 
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(NewPawn);
+	if (PlayerPawn){
+		PlayerPawn->GetHealthComponent()->OnDeath.AddUniqueDynamic(this, &AGameMode_Main::OnPlayerDeath);
+		PlayersAliveInGame.Add(PlayerPawn);
+	}
 	if (!bOverrideConnectionFlow)
-		OnPlayerPawnSpawned(PlayerPawn);
+		OnPlayerPawnSpawned(NewPawn);
 
-	return PlayerPawn;
+	return NewPawn;
 }
 
 void AGameMode_Main::StartLobby(bool isLANSession)
@@ -94,6 +99,8 @@ void AGameMode_Main::StartLobby(bool isLANSession)
 	GetWorld()->ServerTravel(URL, true, false);
 
 	GameInstance->SetGameState(EZombieGameState::LOBBY);
+
+	OnLobbyStart.Broadcast();
 }
 
 void AGameMode_Main::StartGame()
@@ -104,13 +111,41 @@ void AGameMode_Main::StartGame()
 	bUseSeamlessTravel = true;
 	const FString URL = GameLevel.ToString();
 	GetWorld()->ServerTravel(URL, false, false);
+
+	OnGameStart.Broadcast();
+}
+
+void AGameMode_Main::EndGame()
+{
+	GameInstance->SetGameState(EZombieGameState::POSTGAME);
+
+	OnGameEnd.Broadcast();
+}
+
+void AGameMode_Main::OnPlayerDeath()
+{
+	for (uint8 i = 0; i < PlayersAliveInGame.Num(); i++)
+	{
+		if(PlayersAliveInGame[i]->GetHealthComponent()->IsActorDead())
+		{
+			PlayersDeadInGame.Add(PlayersAliveInGame[i]);
+			PlayersAliveInGame.RemoveAt(i);
+		}
+	}
+
+	if(PlayersAliveInGame.IsEmpty())
+	{
+		EndGame();
+	}
 }
 
 void AGameMode_Main::OnPlayerPawnSpawned(APawn* NewPawn)
 {
 	if (NumTravellingPlayers == 0)
-		if (GameInstance->SpawnManager)
+		if (GameInstance->SpawnManager) {
 			GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
+			GameInstance->SetGameState(EZombieGameState::INGAME);
+		}
 
 }
 

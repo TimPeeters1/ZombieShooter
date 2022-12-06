@@ -87,6 +87,11 @@ public:
 	/** Returns FP Audio Component **/
 	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
 
+	 /** Returns Player Health Component **/
+	 class UGenericHealthComponent* GetHealthComponent() { return HealthComponent; }
+	 /** Returns Player Weapon Component **/
+	 class UPlayerWeaponComponent* GetWeaponComponent() { return PlayerWeaponComponent; }
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -109,8 +114,6 @@ protected:
 
 	UFUNCTION()
 	void OnDeath();
-
-
 
 	/*
 	 * Input Logic

@@ -22,6 +22,8 @@ void ASpawnManager::StartSpawningRoutines(float StartDelay)
 void ASpawnManager::CheckPopulation()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+	if (GameInstance->GetGameState() != EZombieGameState::INGAME) return;
+
 	if (ActiveAreaSet.IsEmpty()) return;
 
 	if (GEngine)
@@ -47,6 +49,9 @@ void ASpawnManager::CheckPopulation()
 
 void ASpawnManager::ActiveAreaSweep()
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+	if (GameInstance->GetGameState() != EZombieGameState::INGAME) return;
+
 	if (GameInstance->PlayerPawns.IsEmpty()) return;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> traceObjectTypes;

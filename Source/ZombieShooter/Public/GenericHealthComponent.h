@@ -30,6 +30,9 @@ protected:
 	bool bActorDied;
 
 public:
+	/** Returns Health Status **/
+	bool IsActorDead() { return bActorDied; }
+
 	void AddHealth(float Addition);
 	void ReduceHealth(float Deduction);
 

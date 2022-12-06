@@ -12,9 +12,11 @@
 
 class ASpawnManager;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartLobby);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartGame);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndGame);
 
-
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, ClassGroup = (Custom))
 class ZOMBIESHOOTER_API AGameMode_Main : public AGameMode
 {
 	GENERATED_BODY()
@@ -29,8 +31,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		FName GameLevel;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
-		TArray<APawn*> PlayerPawnsInGame;
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnStartLobby OnLobbyStart;
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnStartGame OnGameStart;
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnEndGame OnGameEnd;
 
 	/*
 	* Overrides the server connection flow, and spawns the playerpawn instantly as with a default gamemode.
@@ -43,6 +49,13 @@ protected:
 
 	USessionSubsystem_Main* SessionSubsystem;
 	int32 MaxNumberOfPlayers = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		TArray<APlayerPawn*> PlayersAliveInGame;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+		TArray<APlayerPawn*> PlayersDeadInGame;
+
 
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
@@ -59,6 +72,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
 		void StartGame();
 
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
+		void EndGame();
+
+	UFUNCTION()
+	void OnPlayerDeath();
+	UFUNCTION()
 	void OnPlayerPawnSpawned(APawn* NewPawn);
 
 	virtual void BeginPlay() override;

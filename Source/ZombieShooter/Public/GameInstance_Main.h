@@ -13,10 +13,10 @@ UENUM(BlueprintType)
 enum class EZombieGameState : uint8
 {
 	DEFAULT = 0 UMETA(DisplayName = "DEFAULT"),
-	LOBBY = 2 UMETA(DisplayName = "Lobby"),
-	PRE_GAME = 3 UMETA(DisplayName = "PreGame"),
-	INGAME = 4 UMETA(DisplayName = "InGame"),
-	POSTGAME = 5 UMETA(DisplayName = "PostGame"),
+	LOBBY = 1 UMETA(DisplayName = "Lobby"),
+	PRE_GAME = 2 UMETA(DisplayName = "PreGame"),
+	INGAME = 3 UMETA(DisplayName = "InGame"),
+	POSTGAME = 4 UMETA(DisplayName = "PostGame"),
 };
 
 UCLASS(Blueprintable)
@@ -27,7 +27,7 @@ class ZOMBIESHOOTER_API UGameInstance_Main : public UGameInstance
 public:
 	//---Player Related Variables---
 	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		TArray<AController*> PlayerCharacters;
+		TArray<AController*> PlayerControllers;
 
 	UPROPERTY(Category = "Players", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		TArray<APawn*> PlayerPawns;

@@ -41,7 +41,7 @@ EBTNodeResult::Type UBTTask_TravelToActiveArea::ExecuteTask(UBehaviorTreeCompone
 			return EBTNodeResult::Succeeded;
 		}
 		/*
-			APawn* PawnRef = GameMode->	GameInstance->PlayerCharacters[FMath::RandRange(0, GameMode->	GameInstance->PlayerCharacters.Num() - 1)]->GetPawn();
+			APawn* PawnRef = GameMode->	GameInstance->PlayerControllers[FMath::RandRange(0, GameMode->	GameInstance->PlayerControllers.Num() - 1)]->GetPawn();
 			if (PawnRef) {
 
 				return EBTNodeResult::Succeeded;

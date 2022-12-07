@@ -32,7 +32,7 @@ void AGameMode_Main::OnPostLogin(AController* NewPlayer)
 	Super::OnPostLogin(NewPlayer);
 
 	if (GameInstance)
-		GameInstance->PlayerCharacters.Add(NewPlayer);
+		GameInstance->PlayerControllers.Add(NewPlayer);
 }
 
 void AGameMode_Main::Logout(AController* ExitingPlayer)
@@ -40,8 +40,8 @@ void AGameMode_Main::Logout(AController* ExitingPlayer)
 	Super::Logout(ExitingPlayer);
 
 	if (GameInstance) {
-		if (GameInstance->PlayerCharacters.Contains(ExitingPlayer))
-			GameInstance->PlayerCharacters.Remove(ExitingPlayer);
+		if (GameInstance->PlayerControllers.Contains(ExitingPlayer))
+			GameInstance->PlayerControllers.Remove(ExitingPlayer);
 	}
 }
 
@@ -115,9 +115,10 @@ void AGameMode_Main::StartGame()
 	OnGameStart.Broadcast();
 }
 
-void AGameMode_Main::EndGame()
+void AGameMode_Main::EndGame(EZombieGameEndGameState EndState)
 {
 	GameInstance->SetGameState(EZombieGameState::POSTGAME);
+	GameEndState = EndState;
 
 	OnGameEnd.Broadcast();
 }
@@ -135,17 +136,22 @@ void AGameMode_Main::OnPlayerDeath()
 
 	if(PlayersAliveInGame.IsEmpty())
 	{
-		EndGame();
+		EndGame(EZombieGameEndGameState::LOST);
 	}
 }
 
 void AGameMode_Main::OnPlayerPawnSpawned(APawn* NewPawn)
 {
-	if (NumTravellingPlayers == 0)
+	
+	if (NumTravellingPlayers <= 0) {
+			GameInstance->SetGameState(EZombieGameState::INGAME);
 		if (GameInstance->SpawnManager) {
 			GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
-			GameInstance->SetGameState(EZombieGameState::INGAME);
 		}
+		else {
+			GetWorldTimerManager().SetTimer(OverrideZombieSpawnTimer, this, &AGameMode_Main::OverrideZombieSpawn, 5.0f, true, 1.0f);
+		}
+	}
 
 }
 

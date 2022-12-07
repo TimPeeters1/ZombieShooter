@@ -58,9 +58,12 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category = "RepairItem")
 		void AddRepairItem(ARepairItem* RepairObject);
-
+	
 	UFUNCTION()
 		void OnRep_RepairAmount();
+
+	UFUNCTION()
+		void OnObjectiveRepaired();
 
 	virtual void BeginPlay() override;
 

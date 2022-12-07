@@ -1,5 +1,7 @@
 
 #include "RepairObjective.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameMode_Main.h"
 
 ARepairObjective::ARepairObjective()
 {
@@ -52,6 +54,13 @@ void ARepairObjective::OnRep_RepairAmount()
 	TextVisualUpdate();
 }
 
+void ARepairObjective::OnObjectiveRepaired()
+{
+	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode)
+		GameMode->EndGame(EZombieGameEndGameState::WON);
+}
+
 
 
 void ARepairObjective::TextVisualUpdate()
@@ -72,5 +81,8 @@ void ARepairObjective::AddRepairItem(ARepairItem* RepairObject)
 		CurrentRepairedAmount++;
 
 		TextVisualUpdate();
+
+		if (CurrentRepairedAmount == RepairItemAmount)
+			OnObjectiveRepaired();
 	}
 }

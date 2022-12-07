@@ -6,7 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "RepairObjective.h"
 #include "GameFramework/GameModeBase.h"
-
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -64,6 +64,9 @@ APlayerPawn::APlayerPawn()
 		HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
 		HealthComponent->SetIsReplicated(true);
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = MaxCrouchSpeed;
 }
 
 // Called to bind functionality to input
@@ -80,6 +83,10 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayerPawn::OnStartJump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayerPawn::OnStopJump);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &APlayerPawn::OnStartSprint);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayerPawn::OnStopSprint);
+
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerPawn::OnPerformInteraction);
 
 	if (!PlayerWeaponComponent) return;
@@ -156,6 +163,40 @@ void APlayerPawn::OnStartJump()
 void APlayerPawn::OnStopJump()
 {
 	StopJumping();
+}
+
+void APlayerPawn::OnStartSprint()
+{
+	if (!bSprinting) {
+		bSprinting = true;
+		GetCharacterMovement()->MaxWalkSpeed = MaxSprintSpeed;
+	}
+	OnStartSprint_Server();
+}
+
+void APlayerPawn::OnStopSprint()
+{
+	if (bSprinting) {
+		bSprinting = false;
+		GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	}
+	OnStopSprint_Server();
+}
+
+void APlayerPawn::OnStartSprint_Server_Implementation()
+{
+	if (!bSprinting) {
+		bSprinting = true;
+		GetCharacterMovement()->MaxWalkSpeed = MaxSprintSpeed;
+	}
+}
+
+void APlayerPawn::OnStopSprint_Server_Implementation()
+{
+	if (bSprinting) {
+		bSprinting = false;
+		GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	}
 }
 
 void APlayerPawn::OnPerformInteraction()

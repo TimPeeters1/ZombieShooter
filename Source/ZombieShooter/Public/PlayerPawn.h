@@ -37,6 +37,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		float LookUp_Rate = 45.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		float MaxWalkSpeed = 450.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		float MaxSprintSpeed = 600.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		float MaxCrouchSpeed = 300.0f;
+
+	UPROPERTY(Category = "Movement", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool bSprinting;
 protected:
 
 	//First Person Camera
@@ -126,6 +135,18 @@ protected:
 
 	void OnStartJump();
 	void OnStopJump();
+
+	void OnStartSprint();
+	void OnStopSprint();
+
+	UFUNCTION(Server, Reliable)
+	void OnStartSprint_Server();
+	void OnStartSprint_Server_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void OnStopSprint_Server();
+	void OnStopSprint_Server_Implementation();
+
 
 	/*
 	 * Interaction Logic

@@ -72,6 +72,7 @@ protected:
 	FTimerHandle OverrideZombieSpawnTimer;
 	void OverrideZombieSpawn();
 
+
 public:
 	APawn* SpawnGamePawn(AController* Controller);
 

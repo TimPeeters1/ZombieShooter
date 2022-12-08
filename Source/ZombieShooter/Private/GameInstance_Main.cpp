@@ -1,8 +1,18 @@
 #include "GameInstance_Main.h"
 
+#include "GameState_Main.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 void UGameInstance_Main::SetGameState(EZombieGameState newState)
 {
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
 	CurrentGameState = newState;
+
+	if (Cast<AGameState_Main>(GetWorld()->GetGameState())){
+		Cast<AGameState_Main>(GetWorld()->GetGameState())->GameState_Replicated = CurrentGameState;
+	}
+
 	HandleGameState();
 }
 

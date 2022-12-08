@@ -1,6 +1,7 @@
 #include "GameMode_Main.h"
 
 #include "GameInstance_Main.h"
+#include "GameState_Main.h"
 #include "SpawnManager.h"
 
 class ASpawnManager;
@@ -120,6 +121,10 @@ void AGameMode_Main::EndGame(EZombieGameEndGameState EndState)
 	GameInstance->SetGameState(EZombieGameState::POSTGAME);
 	GameEndState = EndState;
 
+	if (Cast<AGameState_Main>(GetWorld()->GetGameState())) {
+		Cast<AGameState_Main>(GetWorld()->GetGameState())->GameEndState_Replicated = GameEndState;
+	}
+
 	OnGameEnd.Broadcast();
 }
 
@@ -142,9 +147,9 @@ void AGameMode_Main::OnPlayerDeath()
 
 void AGameMode_Main::OnPlayerPawnSpawned(APawn* NewPawn)
 {
-	
 	if (NumTravellingPlayers <= 0) {
 			GameInstance->SetGameState(EZombieGameState::INGAME);
+
 		if (GameInstance->SpawnManager) {
 			GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
 		}

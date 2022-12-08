@@ -62,6 +62,8 @@ APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer
 		{
 		case EZombieGameState::PRE_GAME:
 			return SpawnGamePawn(NewPlayer);
+		case EZombieGameState::INGAME:
+			return SpawnGamePawn(NewPlayer);
 		}
 	}
 

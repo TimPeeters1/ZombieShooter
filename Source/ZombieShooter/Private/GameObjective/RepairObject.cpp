@@ -1,7 +1,7 @@
 
-#include "GameObjective/RepairItem.h"
+#include "GameObjective/RepairObject.h"
 
-ARepairItem::ARepairItem()
+ARepairObject::ARepairObject()
 {
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
@@ -13,20 +13,20 @@ ARepairItem::ARepairItem()
 		ObjectMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void ARepairItem::OnInteract_Implementation()
+void ARepairObject::OnInteract_Implementation()
 {
 	MC_ServerInteract();
 }
 
-void ARepairItem::StartHover_Implementation()
+void ARepairObject::StartHover_Implementation()
 {
 }
 
-void ARepairItem::StopHover_Implementation()
+void ARepairObject::StopHover_Implementation()
 {
 }
 
-void ARepairItem::MC_ServerInteract_Implementation()
+void ARepairObject::MC_ServerInteract_Implementation()
 {
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);

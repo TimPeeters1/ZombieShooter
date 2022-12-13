@@ -4,7 +4,7 @@
 #include "General/GameMode_Main.h"
 #include "Characters/Player/PlayerDeathCamera.h"
 #include "Components/CapsuleComponent.h"
-#include "GameObjective/RepairObjective.h"
+#include "GameObjective/RepairGoal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -63,6 +63,11 @@ APlayerPawn::APlayerPawn()
 	if (!HealthComponent) {
 		HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
 		HealthComponent->SetIsReplicated(true);
+	}
+
+	if (!InventoryComponent) {
+		InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>("InventoryComponent");
+		InventoryComponent->SetIsReplicated(true);
 	}
 
 	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
@@ -220,16 +225,16 @@ void APlayerPawn::ServerPerformInteraction_Implementation()
 		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
 
 		//TEMP Implemenation for Object Pickups.
-		if (Cast<ARepairItem>(InteractingActor)) {
-			ARepairItem* RepairObject = Cast<ARepairItem>(InteractingActor);
+		if (Cast<ARepairObject>(InteractingActor)) {
+			ARepairObject* RepairObject = Cast<ARepairObject>(InteractingActor);
 			if (!RepairObjectInventory.Contains(RepairObject)) {
 				RepairObjectInventory.Add(RepairObject);
 			}
 		}
-		else if (Cast<ARepairObjective>(InteractingActor)) {
-			ARepairObjective* RepairObjective = Cast<ARepairObjective>(InteractingActor);
+		else if (Cast<ARepairGoal>(InteractingActor)) {
+			ARepairGoal* RepairObjective = Cast<ARepairGoal>(InteractingActor);
 			if (!RepairObjectInventory.IsEmpty()) {
-				RepairObjective->AddRepairItem(RepairObjectInventory[0]);
+				RepairObjective->AddRepairObject(RepairObjectInventory[0]);
 				RepairObjectInventory.RemoveAt(0);
 			}
 		}

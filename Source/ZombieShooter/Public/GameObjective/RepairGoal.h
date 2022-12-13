@@ -6,33 +6,33 @@
 #include "Net/UnrealNetwork.h"
 
 #include "Characters/Player/InteractableObjectInterface.h"
-#include "GameObjective/RepairItem.h"
+#include "GameObjective/RepairObject.h"
 
 #include "Components/TextRenderComponent.h"
 
 
-#include "RepairObjective.generated.h"
+#include "RepairGoal.generated.h"
 
 /**
  *
  */
 UCLASS()
-class ZOMBIESHOOTER_API ARepairObjective : public AActor, public IInteractableObjectInterface
+class ZOMBIESHOOTER_API ARepairGoal : public AActor, public IInteractableObjectInterface
 {
 	GENERATED_BODY()
 
 public:
-	ARepairObjective();
+	ARepairGoal();
 
-	//Amount of RepairItems that need to be added before the objective is completed.
+	//Amount of RepairObjects that need to be added before the objective is completed.
 	UPROPERTY(Replicated, Category = "Interaction", EditAnywhere, BlueprintReadWrite)
-		uint8 RepairItemAmount = 3;
+		uint8 RepairObjectAmount = 3;
 
 	UPROPERTY(ReplicatedUsing = OnRep_RepairAmount, Category = "Interaction", EditAnywhere, BlueprintReadOnly)
 		uint8 CurrentRepairedAmount;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		TArray<ARepairItem*> CollectedRepairItems;
+		TArray<ARepairObject*> CollectedRepairObjects;
 
 protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -56,8 +56,8 @@ protected:
 	void TextVisualUpdate();
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "RepairItem")
-		void AddRepairItem(ARepairItem* RepairObject);
+	UFUNCTION(BlueprintCallable, Category = "RepairObject")
+		void AddRepairObject(ARepairObject* RepairObject);
 	
 	UFUNCTION()
 		void OnRep_RepairAmount();

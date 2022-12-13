@@ -1,5 +1,6 @@
 #pragma once
 
+//Unreal Includes
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -7,11 +8,14 @@
 #include "Components/AudioComponent.h"
 #include "Net/UnrealNetwork.h"
 
+//Character Components
 #include "Characters/Player/InteractableObjectInterface.h"
-#include "GameObjective/RepairItem.h"
-
 #include "Characters/Player/Weapons/PlayerWeaponComponent.h"
+#include "Characters/Player/PlayerInventoryComponent.h"
 #include "Characters/GenericHealthComponent.h"
+
+//Other
+#include "GameObjective/RepairObject.h"
 
 #include "PlayerPawn.generated.h"
 
@@ -71,17 +75,23 @@ protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UGenericHealthComponent* HealthComponent;
 
-	/*Weapon Handling*/
+	/*Weapons*/
 	//Weapon Logic Component
 	UPROPERTY(replicated, Category = "Components|Weapons", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UPlayerWeaponComponent* PlayerWeaponComponent;
+
+	/*Inventory*/
+	//Inventory Component
+	UPROPERTY(replicated, Category = "Components|Inventory", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		UPlayerInventoryComponent* InventoryComponent;
 
 	//Refrence to the Interactable Actor the Player is currently looking at. (InteractionTrace)
 	UPROPERTY(Category = "Interaction", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	AActor* InteractingActor;
 
-	UPROPERTY(Category = "Interaction|Inventory", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<ARepairItem*> RepairObjectInventory;
+	/*TODO Replace with variable in Inventory Component*/
+	UPROPERTY(Category = "Components|Inventory", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<ARepairObject*> RepairObjectInventory;
 
 
 public:

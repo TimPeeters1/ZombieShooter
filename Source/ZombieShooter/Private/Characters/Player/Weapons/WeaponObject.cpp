@@ -30,7 +30,7 @@ void AWeaponObject::OnConstruction(const FTransform& Transform)
 {
 	if (!WeaponData) return;
 
-	WeaponModel->SetStaticMesh(WeaponData->WeaponModel);
+	WeaponModel->SetStaticMesh(WeaponData->WeaponMesh);
 
 	MagazineSize = WeaponData->Weapon_Default_MagazineSize;
 	MaxInventoryAmmo = WeaponData->Weapon_Default_MaxAmmo;
@@ -50,7 +50,7 @@ void AWeaponObject::BeginPlay()
 void AWeaponObject::OnRep_WeaponData()
 {
 	if (!WeaponData) return;
-	WeaponModel->SetStaticMesh(WeaponData->WeaponModel);
+	WeaponModel->SetStaticMesh(WeaponData->WeaponMesh);
 }
 
 void AWeaponObject::OnRep_MagazineSizeUpdate()

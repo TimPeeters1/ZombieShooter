@@ -1,9 +1,9 @@
 
-#include "GameObjective/RepairObjective.h"
+#include "GameObjective/RepairGoal.h"
 #include "Kismet/GameplayStatics.h"
 #include "General/GameMode_Main.h"
 
-ARepairObjective::ARepairObjective()
+ARepairGoal::ARepairGoal()
 {
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
@@ -17,15 +17,15 @@ ARepairObjective::ARepairObjective()
 		RepairProgressText->SetupAttachment(ObjectMesh);
 }
 
-void ARepairObjective::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void ARepairGoal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ARepairObjective, RepairItemAmount);
-	DOREPLIFETIME(ARepairObjective, CurrentRepairedAmount);
+	DOREPLIFETIME(ARepairGoal, RepairObjectAmount);
+	DOREPLIFETIME(ARepairGoal, CurrentRepairedAmount);
 }
 
-void ARepairObjective::BeginPlay()
+void ARepairGoal::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -33,20 +33,20 @@ void ARepairObjective::BeginPlay()
 		TextVisualUpdate();
 }
 
-void ARepairObjective::OnInteract_Implementation()
+void ARepairGoal::OnInteract_Implementation()
 {
 }
 
-void ARepairObjective::StartHover_Implementation()
+void ARepairGoal::StartHover_Implementation()
 {
 
 }
 
-void ARepairObjective::StopHover_Implementation()
+void ARepairGoal::StopHover_Implementation()
 {
 }
 
-void ARepairObjective::OnRep_RepairAmount()
+void ARepairGoal::OnRep_RepairAmount()
 {
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Repair Callback!")));
@@ -54,7 +54,7 @@ void ARepairObjective::OnRep_RepairAmount()
 	TextVisualUpdate();
 }
 
-void ARepairObjective::OnObjectiveRepaired()
+void ARepairGoal::OnObjectiveRepaired()
 {
 	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GameMode)
@@ -63,26 +63,26 @@ void ARepairObjective::OnObjectiveRepaired()
 
 
 
-void ARepairObjective::TextVisualUpdate()
+void ARepairGoal::TextVisualUpdate()
 {
 	if (!RepairProgressText) return;
 
 	TArray< FStringFormatArg > Args;
 	Args.Add(FStringFormatArg(CurrentRepairedAmount));
-	Args.Add(FStringFormatArg(RepairItemAmount));
+	Args.Add(FStringFormatArg(RepairObjectAmount));
 	FString RepairCompletion = FString::Format(TEXT("Repaired: {0}/{1}"), Args);
 	RepairProgressText->SetText(FText::FromString(RepairCompletion));
 }
 
-void ARepairObjective::AddRepairItem(ARepairItem* RepairObject)
+void ARepairGoal::AddRepairObject(ARepairObject* RepairObject)
 {
-	if (!CollectedRepairItems.Contains(RepairObject) && CurrentRepairedAmount < RepairItemAmount) {
-		CollectedRepairItems.Add(RepairObject);
+	if (!CollectedRepairObjects.Contains(RepairObject) && CurrentRepairedAmount < RepairObjectAmount) {
+		CollectedRepairObjects.Add(RepairObject);
 		CurrentRepairedAmount++;
 
 		TextVisualUpdate();
 
-		if (CurrentRepairedAmount == RepairItemAmount)
+		if (CurrentRepairedAmount == RepairObjectAmount)
 			OnObjectiveRepaired();
 	}
 }

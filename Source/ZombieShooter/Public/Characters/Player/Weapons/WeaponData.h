@@ -31,7 +31,7 @@ public:
 		FName WeaponName;
 
 	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
-		UStaticMesh* WeaponModel;
+		UStaticMesh* WeaponMesh;
 	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* WeaponArmMesh;
 

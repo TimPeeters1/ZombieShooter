@@ -86,7 +86,7 @@ void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 		}
 
 		if (ParentPawn->GetWeaponModel()) {
-			ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponModel);
+			ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
 			ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->FP_Model_Transform);
 		}
 

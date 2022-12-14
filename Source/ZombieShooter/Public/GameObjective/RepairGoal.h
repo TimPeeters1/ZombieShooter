@@ -36,29 +36,29 @@ public:
 
 protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* ObjectMesh;
+		USkeletalMeshComponent* ObjectMesh;
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UTextRenderComponent* RepairProgressText;
+		UTextRenderComponent* RepairProgressText;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnInteract();
-		virtual void OnInteract_Implementation() override;
+		void OnInteract(AActor* InteractionInstigator);
+	virtual void OnInteract_Implementation(AActor* InteractionInstigator) override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 		void StartHover();
-		virtual void StartHover_Implementation() override;
+	virtual void StartHover_Implementation() override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 		void StopHover();
-		virtual void StopHover_Implementation() override;
-	
+	virtual void StopHover_Implementation() override;
+
 	//Visuals
 	void TextVisualUpdate();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "RepairObject")
 		void AddRepairObject(ARepairObject* RepairObject);
-	
+
 	UFUNCTION()
 		void OnRep_RepairAmount();
 

@@ -14,7 +14,7 @@ class UInteractableObjectInterface : public UInterface
 };
 
 /**
- * 
+ * Generic Interface for interaction implementation used by APlayerPawn
  */
 class ZOMBIESHOOTER_API IInteractableObjectInterface
 {
@@ -22,7 +22,7 @@ class ZOMBIESHOOTER_API IInteractableObjectInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-	void OnInteract();
+	void OnInteract(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 		void StartHover();

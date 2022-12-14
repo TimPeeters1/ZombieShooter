@@ -10,6 +10,7 @@
 
 #include "PlayerInventoryComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdate)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZOMBIESHOOTER_API UPlayerInventoryComponent : public UActorComponent
@@ -18,11 +19,23 @@ class ZOMBIESHOOTER_API UPlayerInventoryComponent : public UActorComponent
 
 public:	
 	UPlayerInventoryComponent();
-
-protected:
-	UPROPERTY(Replicated, Category = "Inventory|Equipped RepairObject", EditInstanceOnly, BlueprintReadOnly)
+	
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+	FOnInventoryUpdate InventoryUpdate;
+public:	
+	UPROPERTY(ReplicatedUsing = OnInventoryChanged, Category = "Inventory|Equipped RepairObject", EditInstanceOnly, BlueprintReadOnly)
 		TArray<ARepairObject*> EquippedRepairObjects;
 
-public:	
+	UFUNCTION(Server, Reliable)
+	void AddObjectToInventory(ARepairObject* ObjectToAdd);
+	void AddObjectToInventory_Implementation(ARepairObject* ObjectToAdd);
+
+	UFUNCTION(Server, Reliable)
+	void RemoveObjectFromInventory(ARepairObject* ObjectToRemove);
+	void RemoveObjectFromInventory_Implementation(ARepairObject* ObjectToRemove);
+
+	UFUNCTION()
+	void OnInventoryChanged();
+
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

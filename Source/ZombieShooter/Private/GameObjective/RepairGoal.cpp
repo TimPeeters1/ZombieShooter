@@ -33,8 +33,15 @@ void ARepairGoal::BeginPlay()
 		TextVisualUpdate();
 }
 
-void ARepairGoal::OnInteract_Implementation()
+void ARepairGoal::OnInteract_Implementation(AActor* InteractionInstigator)
 {
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
+	if (PlayerPawn) {
+		if (!PlayerPawn->GetInventoryComponent()->EquippedRepairObjects.IsEmpty()) {
+			ARepairObject* RepairObjectRef = PlayerPawn->GetInventoryComponent()->EquippedRepairObjects[0];
+			PlayerPawn->GetInventoryComponent()->RemoveObjectFromInventory(RepairObjectRef);
+		}
+	}
 }
 
 void ARepairGoal::StartHover_Implementation()
@@ -60,8 +67,6 @@ void ARepairGoal::OnObjectiveRepaired()
 	if (GameMode)
 		GameMode->EndGame(EZombieGameEndGameState::WON);
 }
-
-
 
 void ARepairGoal::TextVisualUpdate()
 {

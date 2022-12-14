@@ -33,6 +33,6 @@ public:
 		UStaticMesh* ObjectMesh;
 
 	UPROPERTY(Category = "Visuals|Mesh", EditAnywhere, BlueprintReadWrite)
-		FVector ObjectScale;
+		FVector ObjectScale = FVector::OneVector;
 
 };

@@ -19,8 +19,8 @@ protected:
 	ARepairGoal* RepairGoalParent;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnInteract();
-	virtual void OnInteract_Implementation() override;
+		void OnInteract(AActor* InteractionInstigator);
+	virtual void OnInteract_Implementation(AActor* InteractionInstigator) override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 		void StartHover();

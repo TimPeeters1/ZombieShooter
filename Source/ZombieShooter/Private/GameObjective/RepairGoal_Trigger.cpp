@@ -8,7 +8,7 @@ ARepairGoal_Trigger::ARepairGoal_Trigger()
 
 }
 
-void ARepairGoal_Trigger::OnInteract_Implementation()
+void ARepairGoal_Trigger::OnInteract_Implementation(AActor* InteractionInstigator)
 {
 }
 

@@ -110,6 +110,8 @@ public:
 	 class UGenericHealthComponent* GetHealthComponent() { return HealthComponent; }
 	 /** Returns Player Weapon Component **/
 	 class UPlayerWeaponComponent* GetWeaponComponent() { return PlayerWeaponComponent; }
+	 /** Returns Player Inventory Component **/
+	 class UPlayerInventoryComponent* GetInventoryComponent() { return InventoryComponent; }
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

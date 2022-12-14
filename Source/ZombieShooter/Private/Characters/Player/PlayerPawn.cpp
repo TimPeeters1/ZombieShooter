@@ -211,8 +211,8 @@ void APlayerPawn::OnPerformInteraction()
 
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerPerformInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
-	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
+	//if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
+		//Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
 
 }
 
@@ -221,8 +221,9 @@ void APlayerPawn::ServerPerformInteraction_Implementation()
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	if (InteractingActor) {
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
+		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor, this);
 
+		/*
 		//TEMP Implemenation for Object Pickups.
 		if (Cast<ARepairObject>(InteractingActor)) {
 			ARepairObject* RepairObject = Cast<ARepairObject>(InteractingActor);
@@ -237,6 +238,7 @@ void APlayerPawn::ServerPerformInteraction_Implementation()
 				RepairObjectInventory.RemoveAt(0);
 			}
 		}
+		*/
 	}
 }
 

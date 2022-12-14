@@ -1,5 +1,6 @@
 
 #include "GameObjective/RepairObject.h"
+#include "Characters/Player/PlayerPawn.h"
 
 ARepairObject::ARepairObject()
 {
@@ -10,9 +11,14 @@ ARepairObject::ARepairObject()
 	SetRootComponent(ObjectMesh);
 }
 
-void ARepairObject::OnInteract_Implementation()
+void ARepairObject::OnInteract_Implementation(AActor* InteractionInstigator)
 {
-	MC_ServerInteract();
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
+	if (PlayerPawn) {
+		PlayerPawn->GetInventoryComponent()->AddObjectToInventory(this);
+		MC_ServerInteract();
+	}
+
 }
 
 void ARepairObject::StartHover_Implementation()

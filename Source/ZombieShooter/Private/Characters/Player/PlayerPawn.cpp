@@ -156,7 +156,6 @@ void APlayerPawn::Turn_Character(float AxisValue)
 
 void APlayerPawn::Look_Up(float AxisValue)
 {
-
 	AddControllerPitchInput(AxisValue * LookUp_Rate * FApp::GetDeltaTime());
 }
 
@@ -276,7 +275,6 @@ void APlayerPawn::InteractionTrace()
 			}
 			else if (InteractingActor)
 			{
-
 				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
 				OnStopInteraction.Broadcast();
 
@@ -285,7 +283,6 @@ void APlayerPawn::InteractionTrace()
 			}
 		}
 		else if (InteractingActor) {
-
 			Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
 			OnStopInteraction.Broadcast();
 

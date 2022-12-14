@@ -8,9 +8,6 @@ ARepairObject::ARepairObject()
 
 	ObjectMesh = CreateDefaultSubobject<UStaticMeshComponent>("ObjectMeshComponent", false);
 	SetRootComponent(ObjectMesh);
-
-	if (ObjectMesh)
-		ObjectMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ARepairObject::OnInteract_Implementation()

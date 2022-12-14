@@ -29,7 +29,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		ERepairObjectType ObjectType;
 
-	UPROPERTY(Category = "Visuals", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Visuals|Mesh", EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* ObjectMesh;
-	
+
+	UPROPERTY(Category = "Visuals|Mesh", EditAnywhere, BlueprintReadWrite)
+		FVector ObjectScale;
+
 };

@@ -38,6 +38,6 @@ protected:
 
 public:
 	UFUNCTION(NetMulticast, unreliable)
-		void MC_ServerInteract();
-	void MC_ServerInteract_Implementation();
+		void InteractRPC();
+	void InteractRPC_Implementation();
 };

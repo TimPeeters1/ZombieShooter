@@ -9,8 +9,6 @@ ARepairGoal::ARepairGoal()
 	PrimaryActorTick.bCanEverTick = false;
 
 	ObjectMesh = CreateDefaultSubobject<USkeletalMeshComponent>("ObjectMeshComponent", false);
-	if (ObjectMesh)
-		ObjectMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	RepairProgressText = CreateDefaultSubobject<UTextRenderComponent>("TextRenderComponent", false);
 	if (RepairProgressText)
@@ -21,37 +19,16 @@ void ARepairGoal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ARepairGoal, RepairObjectAmount);
-	DOREPLIFETIME(ARepairGoal, CurrentRepairedAmount);
 }
 
 void ARepairGoal::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(RepairProgressText)
+	if (RepairProgressText)
 		TextVisualUpdate();
 }
 
-void ARepairGoal::OnInteract_Implementation(AActor* InteractionInstigator)
-{
-	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
-	if (PlayerPawn) {
-		if (!PlayerPawn->GetInventoryComponent()->EquippedRepairObjects.IsEmpty()) {
-			ARepairObject* RepairObjectRef = PlayerPawn->GetInventoryComponent()->EquippedRepairObjects[0];
-			PlayerPawn->GetInventoryComponent()->RemoveObjectFromInventory(RepairObjectRef);
-		}
-	}
-}
-
-void ARepairGoal::StartHover_Implementation()
-{
-
-}
-
-void ARepairGoal::StopHover_Implementation()
-{
-}
 
 void ARepairGoal::OnRep_RepairAmount()
 {
@@ -68,26 +45,34 @@ void ARepairGoal::OnObjectiveRepaired()
 		GameMode->EndGame(EZombieGameEndGameState::WON);
 }
 
+void ARepairGoal::OnInteract_Implementation(AActor* InteractionInstigator)
+{
+
+
+}
+
 void ARepairGoal::TextVisualUpdate()
 {
 	if (!RepairProgressText) return;
 
+	/*
 	TArray< FStringFormatArg > Args;
 	Args.Add(FStringFormatArg(CurrentRepairedAmount));
 	Args.Add(FStringFormatArg(RepairObjectAmount));
 	FString RepairCompletion = FString::Format(TEXT("Repaired: {0}/{1}"), Args);
 	RepairProgressText->SetText(FText::FromString(RepairCompletion));
+	*/
 }
 
-void ARepairGoal::AddRepairObject(ARepairObject* RepairObject)
+void ARepairGoal::OnRepairedObject()
 {
-	if (!CollectedRepairObjects.Contains(RepairObject) && CurrentRepairedAmount < RepairObjectAmount) {
-		CollectedRepairObjects.Add(RepairObject);
-		CurrentRepairedAmount++;
-
-		TextVisualUpdate();
-
-		if (CurrentRepairedAmount == RepairObjectAmount)
-			OnObjectiveRepaired();
+	for (uint8 i = 0; i < RequiredRepairObjects.Num(); i++)
+	{
+		if (!RequiredRepairObjects[i]->bRepaired)
+			return;
 	}
+
+	OnObjectiveRepaired();
 }
+
+

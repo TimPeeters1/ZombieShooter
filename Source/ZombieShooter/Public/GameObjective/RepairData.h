@@ -24,7 +24,7 @@ class ZOMBIESHOOTER_API URepairData : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName WeaponName;
+		FName ObjectName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		ERepairObjectType ObjectType;

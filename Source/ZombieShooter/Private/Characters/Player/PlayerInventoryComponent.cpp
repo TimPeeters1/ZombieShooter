@@ -13,16 +13,23 @@ void UPlayerInventoryComponent::AddObjectToInventory_Implementation(ARepairObjec
 {
 	if (!EquippedRepairObjects.Contains(ObjectToAdd))
 		EquippedRepairObjects.Add(ObjectToAdd);
+
+	//Serverside Update
+	InventoryUpdate.Broadcast();
 }
 
 void UPlayerInventoryComponent::RemoveObjectFromInventory_Implementation(ARepairObject* ObjectToRemove)
 {
 	if (EquippedRepairObjects.Contains(ObjectToRemove))
 		EquippedRepairObjects.Remove(ObjectToRemove);
+
+	//Serverside Update
+	InventoryUpdate.Broadcast();
 }
 
 void UPlayerInventoryComponent::OnInventoryChanged()
 {
+	//Clientside Update
 	InventoryUpdate.Broadcast();
 }
 

@@ -5,18 +5,37 @@
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
 
-#include "RepairGoal.h"
+#include "Characters/Player/InteractableObjectInterface.h"
+#include "Components/BoxComponent.h"
 
 #include "RepairGoal_Trigger.generated.h"
 
+class UTextRenderComponent;
+class URepairData;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRepairedObject)
+
 UCLASS()
-class ZOMBIESHOOTER_API ARepairGoal_Trigger : public ATriggerBox, public IInteractableObjectInterface
+class ZOMBIESHOOTER_API ARepairGoal_Trigger : public AActor, public IInteractableObjectInterface
 {
 	GENERATED_BODY()
+
 public:
 	ARepairGoal_Trigger();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		URepairData* ObjectData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* ObjectMesh;
+
+	bool bRepaired;
+
 protected:
-	ARepairGoal* RepairGoalParent;
+	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UBoxComponent* BoxCollision;
+	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UTextRenderComponent* RepairObjectText;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 		void OnInteract(AActor* InteractionInstigator);
@@ -30,6 +49,13 @@ protected:
 		void StopHover();
 	virtual void StopHover_Implementation() override;
 
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+		FOnRepairedObject OnRepaired;
+
 public:
+	UFUNCTION(NetMulticast, Reliable)
+		void OnRepairedObject();
+	void OnRepairedObject_Implementation();
+
 	virtual void BeginPlay() override;
 };

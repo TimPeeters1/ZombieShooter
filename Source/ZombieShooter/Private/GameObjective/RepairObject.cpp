@@ -16,9 +16,8 @@ void ARepairObject::OnInteract_Implementation(AActor* InteractionInstigator)
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
 	if (PlayerPawn) {
 		PlayerPawn->GetInventoryComponent()->AddObjectToInventory(this);
-		MC_ServerInteract();
+		InteractRPC();
 	}
-
 }
 
 void ARepairObject::StartHover_Implementation()
@@ -29,7 +28,7 @@ void ARepairObject::StopHover_Implementation()
 {
 }
 
-void ARepairObject::MC_ServerInteract_Implementation()
+void ARepairObject::InteractRPC_Implementation()
 {
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);

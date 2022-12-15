@@ -50,6 +50,11 @@ void ARepairGoal_Trigger::OnInteract_Implementation(AActor* InteractionInstigato
 		if (DesiredRepairObject != nullptr) {
 			PlayerPawn->GetInventoryComponent()->RemoveObjectFromInventory(DesiredRepairObject);
 			OnRepairedObject();
+
+			if (UKismetSystemLibrary::IsServer(GetWorld()))
+			{
+				
+			}
 		}
 	}
 }
@@ -69,8 +74,9 @@ void ARepairGoal_Trigger::OnRepairedObject_Implementation()
 		bRepaired = true;
 
 		ARepairGoal* RepairGoalParent = Cast<ARepairGoal>(GetAttachParentActor());
-		if (RepairGoalParent)
+		if (RepairGoalParent) {
 			RepairGoalParent->OnRepairedObject();
+		}
 	}
 }
 

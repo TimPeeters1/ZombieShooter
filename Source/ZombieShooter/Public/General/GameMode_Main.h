@@ -10,14 +10,6 @@
 
 #include "GameMode_Main.generated.h"
 
-UENUM(BlueprintType)
-enum class EZombieGameEndGameState : uint8
-{
-	UNDEFINED = 0 UMETA(DisplayName = "Undefined"),
-	WON = 1 UMETA(DisplayName = "Won"),
-	LOST = 2 UMETA(DisplayName = "Lost"),
-};
-
 class ASpawnManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartLobby);
@@ -45,9 +37,6 @@ public:
 	FOnStartGame OnGameStart;
 	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 	FOnEndGame OnGameEnd;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameState")
-		EZombieGameEndGameState GameEndState;
 
 	/*
 	* Overrides the server connection flow, and spawns the playerpawn instantly as with a default gamemode.
@@ -82,8 +71,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
 		void StartGame();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
-		void EndGame(EZombieGameEndGameState EndState);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "End Game"), Category = "GameState")
+		void EndGame();
 
 	UFUNCTION()
 	void OnPlayerDeath();

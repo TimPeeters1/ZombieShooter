@@ -118,17 +118,19 @@ void AGameMode_Main::StartGame()
 	OnGameStart.Broadcast();
 }
 
-void AGameMode_Main::EndGame(EZombieGameEndGameState EndState)
+
+void AGameMode_Main::EndGame()
 {
 	GameInstance->SetGameState(EZombieGameState::POSTGAME);
-	GameEndState = EndState;
+	//GameEndState = EndState;
 
 	if (Cast<AGameState_Main>(GetWorld()->GetGameState())) {
-		Cast<AGameState_Main>(GetWorld()->GetGameState())->GameEndState_Replicated = GameEndState;
+		//Cast<AGameState_Main>(GetWorld()->GetGameState())->GameEndState_Replicated = GameEndState;
 	}
 
 	OnGameEnd.Broadcast();
 }
+
 
 void AGameMode_Main::OnPlayerDeath()
 {

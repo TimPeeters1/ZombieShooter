@@ -7,6 +7,8 @@
 
 #include "RepairData.generated.h"
 
+class UMetaSoundSource;
+
 UENUM(BlueprintType)
 enum class ERepairObjectType : uint8 {
 	UNDEFINED = 0		UMETA(DisplayName = "UNDEFINED"),
@@ -32,7 +34,10 @@ public:
 	UPROPERTY(Category = "Visuals|Mesh", EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* ObjectMesh;
 
-	UPROPERTY(Category = "Visuals|Mesh", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Effects|Mesh", EditAnywhere, BlueprintReadWrite)
 		FVector ObjectScale = FVector::OneVector;
+
+	UPROPERTY(Category = "Effects|Audio", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* RepairAudio;
 
 };

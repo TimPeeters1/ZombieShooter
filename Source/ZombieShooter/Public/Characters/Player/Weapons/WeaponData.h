@@ -59,8 +59,8 @@ public:
 
 	UPROPERTY(Category = "Visuals|VFX", EditAnywhere, BlueprintReadWrite)
 		UNiagaraSystem* MuzzleFlash_VFX;
-	UPROPERTY(Category = "Visuals|Audio", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Effects|Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ShotAudio;
-	UPROPERTY(Category = "Visuals|Audio", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Effects|Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ReloadAudio;
 };

@@ -26,8 +26,8 @@ public:
 	UPROPERTY(ReplicatedUsing = OnReplicatedGameState, EditAnywhere, BlueprintReadOnly)
 		EZombieGameState GameState_Replicated;
 
-	UPROPERTY(ReplicatedUsing = OnReplicatedEndState, EditAnywhere, BlueprintReadOnly)
-		EZombieGameEndGameState GameEndState_Replicated;
+	//UPROPERTY(ReplicatedUsing = OnReplicatedEndState, EditAnywhere, BlueprintReadOnly)
+		//EZombieGameEndGameState GameEndState_Replicated;
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 		FOnGameStateChanged OnGameStateChanged;

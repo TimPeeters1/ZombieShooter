@@ -9,6 +9,14 @@
 
 #include "PlayerController_Main.generated.h"
 
+UENUM(BlueprintType)
+enum class EZombieGameWinState : uint8
+{
+	UNDEFINED = 0 UMETA(DisplayName = "Undefined"),
+	WON = 1 UMETA(DisplayName = "Won"),
+	LOST = 2 UMETA(DisplayName = "Lost"),
+};
+
 /**
  *
  */
@@ -18,6 +26,9 @@ class ZOMBIESHOOTER_API APlayerController_Main : public APlayerController
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EZombieGameWinState PlayerWinState;
+
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Find Random Session"), Category = "Connection")
 		void FindRandomSession(bool isLanSearch);
 
@@ -36,6 +47,8 @@ public:
 
 	void OnPossess(APawn* InPawn) override;
 	void OnUnPossess() override;
+
+
 
 private:
 	APlayerController_Main();

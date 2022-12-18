@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "NavigationSystem.h"
 
 #include "GameObjective/RepairObject.h"
 
@@ -36,6 +37,10 @@ public:
 
 	UFUNCTION()
 	void OnInventoryChanged();
+
+	UFUNCTION(Server, Reliable)
+	void DropFirstItemFromInventory();
+	void DropFirstItemFromInventory_Implementation();
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

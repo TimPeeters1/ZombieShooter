@@ -3,11 +3,11 @@
 #include "Characters/Player/PlayerInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 
+
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {
 	SetIsReplicatedByDefault(true);
 }
-
 
 void UPlayerInventoryComponent::AddObjectToInventory_Implementation(ARepairObject* ObjectToAdd)
 {
@@ -31,6 +31,28 @@ void UPlayerInventoryComponent::OnInventoryChanged()
 {
 	//Clientside Update
 	InventoryUpdate.Broadcast();
+}
+
+void UPlayerInventoryComponent::DropFirstItemFromInventory_Implementation()
+{
+	if (EquippedRepairObjects.IsEmpty()) return;
+
+	UNavigationSystemV1* NavigationSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (!NavigationSystem) return;
+
+	FNavLocation DropLocation;
+	if (NavigationSystem->GetRandomPointInNavigableRadius(GetOwner()->GetActorLocation(), 300.0f, DropLocation)) {
+
+		//DrawDebugPoint(GetWorld(), DropLocation, 5.0f, FColor::Red, false, 5.0f);
+
+		FVector Origin;
+		FVector Extents;
+		EquippedRepairObjects[0]->GetActorBounds(true, Origin, Extents);
+		DropLocation.Location += FVector(0, 0, Extents.Z);
+		EquippedRepairObjects[0]->SetActorLocation(DropLocation);
+		EquippedRepairObjects[0]->OnDequip();
+		RemoveObjectFromInventory(EquippedRepairObjects[0]);
+	}
 }
 
 void UPlayerInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -101,6 +101,9 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnReloadWeapon);
 	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
 	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
+
+	if (!InventoryComponent) return;
+	PlayerInputComponent->BindAction("DropItem", IE_Pressed, InventoryComponent, &UPlayerInventoryComponent::DropFirstItemFromInventory);
 }
 
 void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -322,9 +325,18 @@ void APlayerPawn::OnDeath()
 		if(PlayerDeathCam)
 			PlayerDeathCam->SetCameraPosition(GetActorLocation());
 
+		uint8 ItemCount = InventoryComponent->EquippedRepairObjects.Num();
+		//Drop all Inventory Items on death
+		for (uint8 i = 0; i < ItemCount; i++)
+		{
+			InventoryComponent->DropFirstItemFromInventory();
+		}
+
 		//Blueprint Assignable Local Death (Hide HUD, Hide FPS Viewmodel etc.)
 		OnPlayerDeathLocal.Broadcast();
 	}
+
+	
 
 	//Blueprint Assignable Replicated Death (Enable Ragdoll, Disable Collision, etc.)
 	OnPlayerDeathReplicated.Broadcast();

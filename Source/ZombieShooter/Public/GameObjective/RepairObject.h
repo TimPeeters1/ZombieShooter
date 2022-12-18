@@ -37,7 +37,11 @@ protected:
 	virtual void StopHover_Implementation() override;
 
 public:
-	UFUNCTION(NetMulticast, unreliable)
-		void InteractRPC();
-	void InteractRPC_Implementation();
+	UFUNCTION(NetMulticast, Reliable)
+	void OnEquip();
+	void OnEquip_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void OnDequip();
+	void OnDequip_Implementation();
 };

@@ -8,16 +8,18 @@ public class ZombieShooter : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { 
-            "Core", "CoreUObject", 
+        PublicDependencyModuleNames.AddRange(new string[] {
+            "Core", "CoreUObject",
             "Engine",
             "InputCore",
             "AIModule",
-            "GameplayTasks",    
+            "GameplayTasks",
             "MetasoundEngine",
             "Niagara",
             "OnlineSubsystem",
-            "OnlineSubsystemUtils",});
+            "OnlineSubsystemUtils",
+            "NavigationSystem",
+        });
 
 
         PrivateDependencyModuleNames.AddRange(new string[] { });

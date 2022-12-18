@@ -4,7 +4,8 @@
 
 ARepairObject::ARepairObject()
 {
-	bReplicates = true;
+	SetReplicates(true);
+	SetReplicateMovement(true);
 	PrimaryActorTick.bCanEverTick = false;
 
 	ObjectMesh = CreateDefaultSubobject<UStaticMeshComponent>("ObjectMeshComponent", false);
@@ -16,7 +17,7 @@ void ARepairObject::OnInteract_Implementation(AActor* InteractionInstigator)
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
 	if (PlayerPawn) {
 		PlayerPawn->GetInventoryComponent()->AddObjectToInventory(this);
-		InteractRPC();
+		OnEquip();
 	}
 }
 
@@ -28,10 +29,16 @@ void ARepairObject::StopHover_Implementation()
 {
 }
 
-void ARepairObject::InteractRPC_Implementation()
+void ARepairObject::OnEquip_Implementation()
 {
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
+}
+
+void ARepairObject::OnDequip_Implementation()
+{
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
 }
 
 

@@ -145,7 +145,7 @@ void AGameMode_Main::OnPlayerDeath()
 
 	if(PlayersAliveInGame.IsEmpty())
 	{
-		EndGame(EZombieGameEndGameState::LOST);
+		EndGame();
 	}
 }
 

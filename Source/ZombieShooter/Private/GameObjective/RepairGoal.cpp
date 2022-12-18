@@ -42,7 +42,7 @@ void ARepairGoal::OnObjectiveRepaired()
 {
 	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GameMode)
-		GameMode->EndGame(EZombieGameEndGameState::WON);
+		GameMode->EndGame();
 }
 
 void ARepairGoal::OnInteract_Implementation(AActor* InteractionInstigator)

@@ -49,12 +49,9 @@ void ARepairGoal_Trigger::OnInteract_Implementation(AActor* InteractionInstigato
 
 		if (DesiredRepairObject != nullptr) {
 			PlayerPawn->GetInventoryComponent()->RemoveObjectFromInventory(DesiredRepairObject);
-			OnRepairedObject();
 
-			if (UKismetSystemLibrary::IsServer(GetWorld()))
-			{
-				
-			}
+			if(Cast<APawn>(InteractionInstigator))
+				OnRepairedObject(Cast<APawn>(InteractionInstigator));
 		}
 	}
 }
@@ -67,7 +64,7 @@ void ARepairGoal_Trigger::StopHover_Implementation()
 {
 }
 
-void ARepairGoal_Trigger::OnRepairedObject_Implementation()
+void ARepairGoal_Trigger::OnRepairedObject_Implementation(APawn* InstigatingActor)
 {
 	if (!bRepaired) {
 		OnRepaired.Broadcast();
@@ -75,7 +72,7 @@ void ARepairGoal_Trigger::OnRepairedObject_Implementation()
 
 		ARepairGoal* RepairGoalParent = Cast<ARepairGoal>(GetAttachParentActor());
 		if (RepairGoalParent) {
-			RepairGoalParent->OnRepairedObject();
+			RepairGoalParent->OnRepairedObject(InstigatingActor);
 		}
 	}
 }

@@ -80,7 +80,7 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 	Controller->Possess(NewPawn);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(NewPawn);
-	if (PlayerPawn){
+	if (PlayerPawn) {
 		PlayerPawn->GetHealthComponent()->OnDeath.AddUniqueDynamic(this, &AGameMode_Main::OnPlayerDeath);
 		PlayersAliveInGame.Add(PlayerPawn);
 	}
@@ -119,13 +119,30 @@ void AGameMode_Main::StartGame()
 }
 
 
-void AGameMode_Main::EndGame()
+void AGameMode_Main::EndGameLost()
 {
 	GameInstance->SetGameState(EZombieGameState::POSTGAME);
-	//GameEndState = EndState;
 
-	if (Cast<AGameState_Main>(GetWorld()->GetGameState())) {
-		//Cast<AGameState_Main>(GetWorld()->GetGameState())->GameEndState_Replicated = GameEndState;
+	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
+	{
+		Cast<APlayerController_Main>(GameInstance->PlayerControllers[i])->PlayerEndState = EZombieGameWinState::LOST;
+	}
+
+	OnGameEnd.Broadcast();
+}
+
+void AGameMode_Main::EndGameWin(TArray<APawn*> WinningActors)
+{
+	GameInstance->SetGameState(EZombieGameState::POSTGAME);
+
+	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
+	{
+		Cast<APlayerController_Main>(GameInstance->PlayerControllers[i])->PlayerEndState = EZombieGameWinState::LOST;
+	}
+
+	for (uint8 j = 0; j < WinningActors.Num(); j++)
+	{
+		Cast<APlayerController_Main>(WinningActors[j]->GetController())->PlayerEndState = EZombieGameWinState::WON;
 	}
 
 	OnGameEnd.Broadcast();
@@ -136,23 +153,23 @@ void AGameMode_Main::OnPlayerDeath()
 {
 	for (uint8 i = 0; i < PlayersAliveInGame.Num(); i++)
 	{
-		if(PlayersAliveInGame[i]->GetHealthComponent()->IsActorDead())
+		if (PlayersAliveInGame[i]->GetHealthComponent()->IsActorDead())
 		{
 			PlayersDeadInGame.Add(PlayersAliveInGame[i]);
 			PlayersAliveInGame.RemoveAt(i);
 		}
 	}
 
-	if(PlayersAliveInGame.IsEmpty())
+	if (PlayersAliveInGame.IsEmpty())
 	{
-		EndGame();
+		EndGameLost();
 	}
 }
 
 void AGameMode_Main::OnPlayerPawnSpawned(APawn* NewPawn)
 {
 	if (NumTravellingPlayers <= 0) {
-			GameInstance->SetGameState(EZombieGameState::INGAME);
+		GameInstance->SetGameState(EZombieGameState::INGAME);
 
 		if (GameInstance->SpawnManager) {
 			GameInstance->SpawnManager->StartSpawningRoutines(0.2f);

@@ -20,6 +20,13 @@ void APlayerController_Main::BeginPlay()
 	}
 }
 
+void APlayerController_Main::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayerController_Main, PlayerEndState);
+}
+
 void APlayerController_Main::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

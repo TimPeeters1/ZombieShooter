@@ -54,8 +54,8 @@ protected:
 
 public:
 	UFUNCTION(NetMulticast, Reliable)
-		void OnRepairedObject();
-	void OnRepairedObject_Implementation();
+		void OnRepairedObject(APawn* InstigatingActor);
+	void OnRepairedObject_Implementation(APawn* InstigatingActor);
 
 	virtual void BeginPlay() override;
 };

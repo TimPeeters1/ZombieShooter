@@ -38,13 +38,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "RepairObject")
-		void OnRepairedObject();
+		void OnRepairedObject(APawn* InstigatingActor);
 
 	UFUNCTION()
 		void OnRep_RepairAmount();
-
-	UFUNCTION()
-		void OnObjectiveRepaired();
 
 	virtual void BeginPlay() override;
 

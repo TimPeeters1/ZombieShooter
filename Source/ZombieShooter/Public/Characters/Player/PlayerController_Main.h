@@ -17,17 +17,14 @@ enum class EZombieGameWinState : uint8
 	LOST = 2 UMETA(DisplayName = "Lost"),
 };
 
-/**
- *
- */
 UCLASS()
 class ZOMBIESHOOTER_API APlayerController_Main : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	EZombieGameWinState PlayerWinState;
+	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
+	EZombieGameWinState PlayerEndState = EZombieGameWinState::UNDEFINED;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Find Random Session"), Category = "Connection")
 		void FindRandomSession(bool isLanSearch);
@@ -55,4 +52,6 @@ private:
 
 	UGameInstance_Main* GameInstance;
 	USessionSubsystem_Main* SessionSubsystem;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

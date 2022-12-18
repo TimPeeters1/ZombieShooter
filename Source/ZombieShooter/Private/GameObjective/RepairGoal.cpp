@@ -38,12 +38,6 @@ void ARepairGoal::OnRep_RepairAmount()
 	TextVisualUpdate();
 }
 
-void ARepairGoal::OnObjectiveRepaired()
-{
-	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GameMode)
-		GameMode->EndGame();
-}
 
 void ARepairGoal::OnInteract_Implementation(AActor* InteractionInstigator)
 {
@@ -64,7 +58,7 @@ void ARepairGoal::TextVisualUpdate()
 	*/
 }
 
-void ARepairGoal::OnRepairedObject()
+void ARepairGoal::OnRepairedObject(APawn* InstigatingActor)
 {
 	for (uint8 i = 0; i < RequiredRepairObjects.Num(); i++)
 	{
@@ -72,7 +66,12 @@ void ARepairGoal::OnRepairedObject()
 			return;
 	}
 
-	OnObjectiveRepaired();
+	//Win Condition when all objectives repaired.
+	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
+	TArray<APawn*> WinningActors = { InstigatingActor };
+
+	if (GameMode)
+		GameMode->EndGameWin(WinningActors);
 }
 
 

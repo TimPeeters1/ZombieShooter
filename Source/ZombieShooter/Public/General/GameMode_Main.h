@@ -5,6 +5,7 @@
 #include "GameFramework/GameMode.h"
 
 #include "GameInstance_Main.h"
+#include "Characters/Player/PlayerController_Main.h"
 #include "Characters/Player/PlayerPawn.h"
 #include "SessionSubsystem_Main.h"
 
@@ -71,8 +72,11 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Start Game"), Category = "GameState")
 		void StartGame();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "End Game"), Category = "GameState")
-		void EndGame();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "End Game Lost"), Category = "GameState")
+		void EndGameLost();
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "End Game Won"), Category = "GameState")
+		void EndGameWin(TArray<APawn*> WinningActors);
 
 	UFUNCTION()
 	void OnPlayerDeath();

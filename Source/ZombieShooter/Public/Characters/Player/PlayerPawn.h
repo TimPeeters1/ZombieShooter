@@ -19,9 +19,6 @@
 
 #include "PlayerPawn.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractionStart);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractionStop);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeathLocal);
 
@@ -97,6 +94,14 @@ protected:
 public:
 	void OnSetPlayerViewMode();
 
+	//Callback for IInteractableObjectInterface when starting hover
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnStartHover(const FString& InteractionMessage);
+
+	//Callback for IInteractableObjectInterface when stopping hover
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnStopHover();
+
 	/** Returns Current FP Camera **/
 	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
 	/** Returns Current FP Arm Model **/
@@ -159,7 +164,6 @@ protected:
 	void OnStopSprint_Server();
 	void OnStopSprint_Server_Implementation();
 
-
 	/*
 	 * Interaction Logic
 	 * (Could be moved to actor component in future!)
@@ -176,12 +180,10 @@ protected:
 	void ServerSetInteractingActor(AActor* InteractingObject);
 	void ServerSetInteractingActor_Implementation(AActor* InteractingObject);
 
-	UPROPERTY(BlueprintAssignable)
-	FOnInteractionStart OnStartInteraction;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnInteractionStop OnStopInteraction;
-
+	
+	/*
+	* Delgates exposed for use in blueprints.
+	*/
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerDeathLocal OnPlayerDeathLocal;
 

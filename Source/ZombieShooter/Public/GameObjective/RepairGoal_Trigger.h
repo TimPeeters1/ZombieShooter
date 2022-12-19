@@ -23,6 +23,12 @@ class ZOMBIESHOOTER_API ARepairGoal_Trigger : public AActor, public IInteractabl
 public:
 	ARepairGoal_Trigger();
 
+	/*
+	* Text Displayed to player when hovering over object.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		FString ObjectHoverText = "Press 'E' to Repair";
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		URepairData* ObjectData;
 
@@ -38,16 +44,16 @@ protected:
 		UTextRenderComponent* RepairObjectText;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnInteract(AActor* InteractionInstigator);
-	virtual void OnInteract_Implementation(AActor* InteractionInstigator) override;
+		void OnInteract(AActor* InstigatingActor);
+	virtual void OnInteract_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StartHover();
-	virtual void StartHover_Implementation() override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+		void StartHover(AActor* InstigatingActor);
+	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover();
-	virtual void StopHover_Implementation() override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+		void StopHover(AActor* InstigatingActor);
+	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 		FOnRepairedObject OnRepaired;

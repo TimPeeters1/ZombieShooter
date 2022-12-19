@@ -24,7 +24,7 @@ class ZOMBIESHOOTER_API APlayerController_Main : public APlayerController
 
 public:
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
-	EZombieGameWinState PlayerEndState = EZombieGameWinState::UNDEFINED;
+		EZombieGameWinState PlayerEndState = EZombieGameWinState::UNDEFINED;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Find Random Session"), Category = "Connection")
 		void FindRandomSession(bool isLanSearch);
@@ -34,7 +34,7 @@ public:
 	void OnJoinedSession(EOnJoinSessionCompleteResult::Type Result);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, meta = (DisplayName = "RequestRespawn"), Category = "Spawning")
-	void RequestRespawn();
+		void RequestRespawn();
 	void RequestRespawn_Implementation();
 
 	UFUNCTION()
@@ -44,8 +44,6 @@ public:
 
 	void OnPossess(APawn* InPawn) override;
 	void OnUnPossess() override;
-
-
 
 private:
 	APlayerController_Main();

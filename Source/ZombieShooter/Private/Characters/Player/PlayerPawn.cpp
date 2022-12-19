@@ -214,8 +214,8 @@ void APlayerPawn::OnPerformInteraction()
 
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerPerformInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
-	//if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		//Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor);
+	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
+		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor, this);
 
 }
 
@@ -274,22 +274,20 @@ void APlayerPawn::InteractionTrace()
 					ServerSetInteractingActor(InteractingActor);
 
 					//Start Local Hover FX
-					Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StartHover(InteractingActor);
-					OnStartInteraction.Broadcast();
+					Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StartHover(InteractingActor, this);
 				}
 			}
 			else if (InteractingActor)
 			{
-				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
-				OnStopInteraction.Broadcast();
+				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor, this);
+				//OnStopInteraction.Broadcast();
 
 				ServerSetInteractingActor(nullptr);
 				InteractingActor = nullptr;
 			}
 		}
 		else if (InteractingActor) {
-			Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor);
-			OnStopInteraction.Broadcast();
+			Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor, this);
 
 			ServerSetInteractingActor(nullptr);
 			InteractingActor = nullptr;

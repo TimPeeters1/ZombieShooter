@@ -17,6 +17,12 @@ class ZOMBIESHOOTER_API ARepairObject : public AActor, public IInteractableObjec
 public:
 	ARepairObject();
 
+	/*
+	* Text Displayed to player when hovering over object.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		FString ObjectHoverText = "Press 'E' to Pickup";
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		URepairData* ObjectData;
 
@@ -24,17 +30,17 @@ public:
 		UStaticMeshComponent* ObjectMesh;
 
 protected:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnInteract(AActor* InteractionInstigator);
-	virtual void OnInteract_Implementation(AActor* InteractionInstigator) override;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+		void OnInteract(AActor* InstigatingActor);
+	virtual void OnInteract_Implementation(AActor* InstigatingActor) override;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+		void StartHover(AActor* InstigatingActor);
+	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StartHover();
-	virtual void StartHover_Implementation() override;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover();
-	virtual void StopHover_Implementation() override;
+		void StopHover(AActor* InstigatingActor);
+	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
 
 public:
 	UFUNCTION(NetMulticast, Reliable)

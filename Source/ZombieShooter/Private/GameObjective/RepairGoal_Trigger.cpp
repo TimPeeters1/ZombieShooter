@@ -34,11 +34,11 @@ void ARepairGoal_Trigger::BeginPlay()
 	}
 }
 
-void ARepairGoal_Trigger::OnInteract_Implementation(AActor* InteractionInstigator)
+void ARepairGoal_Trigger::OnInteract_Implementation(AActor* InstigatingActor)
 {
 	if (bRepaired) return;
 
-	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) { 
 		ARepairObject* DesiredRepairObject = nullptr;
 		for (uint8 i = 0; i < PlayerPawn->GetInventoryComponent()->EquippedRepairObjects.Num(); i++)
@@ -50,18 +50,31 @@ void ARepairGoal_Trigger::OnInteract_Implementation(AActor* InteractionInstigato
 		if (DesiredRepairObject != nullptr) {
 			PlayerPawn->GetInventoryComponent()->RemoveObjectFromInventory(DesiredRepairObject);
 
-			if(Cast<APawn>(InteractionInstigator))
-				OnRepairedObject(Cast<APawn>(InteractionInstigator));
+			if(Cast<APawn>(InstigatingActor))
+				OnRepairedObject(Cast<APawn>(InstigatingActor));
 		}
 	}
 }
 
-void ARepairGoal_Trigger::StartHover_Implementation()
+void ARepairGoal_Trigger::StartHover_Implementation(AActor* InstigatingActor)
 {
+	if (bRepaired) {
+		StopHover(InstigatingActor);
+		return;
+	}
+
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
+	if (PlayerPawn) {
+		PlayerPawn->OnStartHover(ObjectHoverText);
+	}
 }
  
-void ARepairGoal_Trigger::StopHover_Implementation()
+void ARepairGoal_Trigger::StopHover_Implementation(AActor* InstigatingActor)
 {
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
+	if (PlayerPawn) {
+		PlayerPawn->OnStopHover();
+	}
 }
 
 void ARepairGoal_Trigger::OnRepairedObject_Implementation(APawn* InstigatingActor)

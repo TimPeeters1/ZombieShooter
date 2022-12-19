@@ -25,7 +25,7 @@ public:
 	void OnInteract(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StartHover();
+		void StartHover(AActor* Instigator);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover();
+		void StopHover(AActor* Instigator);
 };

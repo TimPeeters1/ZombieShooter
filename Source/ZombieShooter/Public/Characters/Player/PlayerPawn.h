@@ -86,11 +86,6 @@ protected:
 	UPROPERTY(Category = "Interaction", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	AActor* InteractingActor;
 
-	/*TODO Replace with variable in Inventory Component*/
-	UPROPERTY(Category = "Components|Inventory", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<ARepairObject*> RepairObjectInventory;
-
-
 public:
 	void OnSetPlayerViewMode();
 

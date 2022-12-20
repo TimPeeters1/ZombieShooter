@@ -28,6 +28,23 @@ void UPlayerWeaponComponent::BeginPlay()
 #pragma region WeaponObjectFunctionality 
 void UPlayerWeaponComponent::SpawnStartWeapons()
 {
+	//TEMP Implementation to set visuals of startweapons before replication of actual weaponobject data. THIS IS DIRTY!
+	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+	if (!ParentPawn) return;
+
+	if (ParentPawn->GetArmModel()) {
+		ParentPawn->GetArmModel()->SetSkeletalMesh(StartingWeapons[0]->WeaponArmMesh, true);
+	}
+
+	if (ParentPawn->GetWeaponModel()) {
+		ParentPawn->GetWeaponModel()->SetRelativeTransform(StartingWeapons[0]->FP_Model_Transform);
+		ParentPawn->GetWeaponModel()->SetStaticMesh(StartingWeapons[0]->WeaponMesh);
+	}
+
+	if (ParentPawn->GetWeaponAudioComponent()) {
+		ParentPawn->GetWeaponAudioComponent()->SetSound(StartingWeapons[0]->ShotAudio);
+	}
+
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	UWorld* World = GetWorld();
@@ -43,29 +60,19 @@ void UPlayerWeaponComponent::SpawnStartWeapons()
 			if (NewWeaponObject) {
 				NewWeaponObject->SetReplicates(true);
 				NewWeaponObject->WeaponData = StartingWeapons[i];
+				NewWeaponObject->OnWeaponSpawned.AddDynamic(this, &UPlayerWeaponComponent::EquipPrimaryWeapon);
 
 				UGameplayStatics::FinishSpawningActor(NewWeaponObject, NewWeaponObject->GetTransform());
 
-				NewWeaponObject->GetRootComponent()->ToggleVisibility(true);
 				EquippedWeapons.Add(NewWeaponObject);
 			}
 		}
-
-		SetEquippedWeapon(0);
-
-		OnReplicatedStartWeapons();
 	}
 }
 
 #pragma endregion  
 
 #pragma region WeaponSwitchFunctionality
-
-void UPlayerWeaponComponent::OnReplicatedStartWeapons_Implementation()
-{
-	SetEquippedWeapon(0);
-}
-
 /*
 Weapon Switching (Inventory) Functionality
 */
@@ -86,11 +93,11 @@ void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
 		}
 
 		if (ParentPawn->GetWeaponModel()) {
-			ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
 			ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->FP_Model_Transform);
+			ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
 		}
 
-		if (ActiveWeapon->WeaponData->ShotAudio) {
+		if (ParentPawn->GetWeaponAudioComponent()) {
 			ParentPawn->GetWeaponAudioComponent()->Stop();
 			ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
 		}

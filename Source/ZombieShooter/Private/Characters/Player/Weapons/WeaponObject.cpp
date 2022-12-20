@@ -12,7 +12,6 @@ AWeaponObject::AWeaponObject()
 	RootComponent = WeaponModel;
 }
 
-
 void AWeaponObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -45,11 +44,11 @@ void AWeaponObject::BeginPlay()
 {
 	Super::BeginPlay();
 	LocalCurrentAmmo = CurrentAmmo;
+	OnWeaponSpawned.Broadcast();
 }
 
 void AWeaponObject::OnRep_WeaponData()
 {
-	if (!WeaponData) return;
 	WeaponModel->SetStaticMesh(WeaponData->WeaponMesh);
 }
 
@@ -63,14 +62,13 @@ void AWeaponObject::OnRep_MaxInventoryAmmoUpdate()
 
 void AWeaponObject::OnRep_InventoryAmmoUpdate()
 {
-	
 }
 
 void AWeaponObject::OnRep_CurrentAmmoUpdate()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Current Ammo: %d"), CurrentAmmo));
-
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Current Ammo: %d"), CurrentAmmo));
+	
 	LocalCurrentAmmo = CurrentAmmo;
 }
 

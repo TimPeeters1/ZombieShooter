@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,6 +9,7 @@
 
 #include "WeaponObject.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSpawned);
 
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API AWeaponObject : public AActor
@@ -30,12 +29,10 @@ public:
 	//Local Ammo Vars will be updated after server callback. To reduce snappy shooting behaviour.
 	UPROPERTY(Category = "Ammo|Local", VisibleAnywhere, BlueprintReadOnly)
 	uint8 LocalCurrentAmmo;
-
 protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
-
 public:
 	UPROPERTY(ReplicatedUsing = OnRep_MagazineSizeUpdate, Category = "Ammo", EditAnywhere, BlueprintReadOnly)
 		int32 MagazineSize = 10;
@@ -50,10 +47,8 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentAmmoUpdate, Category = "Ammo", EditAnywhere, BlueprintReadWrite)
 		int32 CurrentAmmo;
 
-
 	UFUNCTION()
 		void OnRep_WeaponData();
-
 	UFUNCTION()
 		void OnRep_MagazineSizeUpdate();
 	UFUNCTION()
@@ -65,4 +60,7 @@ public:
 		void OnRep_InventoryAmmoUpdate();
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	UPROPERTY()
+		FOnSpawned OnWeaponSpawned;
 };

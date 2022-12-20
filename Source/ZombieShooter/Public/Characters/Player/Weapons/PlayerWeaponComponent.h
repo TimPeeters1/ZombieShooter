@@ -18,9 +18,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent);
 
 class APlayerPawn;
 
-/**
- *
- */
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API UPlayerWeaponComponent : public UActorComponent
 {
@@ -54,17 +51,15 @@ public:
 
 	void SpawnStartWeapons();
 
-	UFUNCTION(Client, Reliable)
-	void OnReplicatedStartWeapons();
-	void OnReplicatedStartWeapons_Implementation();
+	//UFUNCTION(Client, Reliable)
+	//void OnReplicatedStartWeapons();
+	//void OnReplicatedStartWeapons_Implementation();
 
 	void SetEquippedWeapon(uint8 Index);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetEquippedWeapon(uint8 Index);
 	void Server_SetEquippedWeapon_Implementation(uint8 Index);
-
-
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
 		void EquipPrimaryWeapon();

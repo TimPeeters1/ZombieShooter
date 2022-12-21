@@ -26,24 +26,8 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
 		EZombieGameWinState PlayerEndState = EZombieGameWinState::UNDEFINED;
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Find Random Session"), Category = "Connection")
-		void FindRandomSession(bool isLanSearch);
-
-	void OnFoundSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool Successful);
-
-	void OnJoinedSession(EOnJoinSessionCompleteResult::Type Result);
-
-	UFUNCTION(Server, Reliable, BlueprintCallable, meta = (DisplayName = "RequestRespawn"), Category = "Spawning")
-		void RequestRespawn();
-	void RequestRespawn_Implementation();
-
-	UFUNCTION()
-		void InitRespawn();
-
-	virtual void BeginPlay() override;
-
-	void OnPossess(APawn* InPawn) override;
-	void OnUnPossess() override;
+	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
+		uint8 PlayerRemainingLives = 3;
 
 private:
 	APlayerController_Main();
@@ -51,5 +35,28 @@ private:
 	UGameInstance_Main* GameInstance;
 	USessionSubsystem_Main* SessionSubsystem;
 
+	//Unreal Overrides
+	virtual void BeginPlay() override;
+
+	void OnPossess(APawn* InPawn) override;
+	void OnUnPossess() override;
+
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+public:
+	//INGAME Logic
+	UFUNCTION(Server, Reliable, BlueprintCallable, meta = (DisplayName = "RequestRespawn"), Category = "Spawning")
+		void RequestRespawn();
+	void RequestRespawn_Implementation();
+
+	UFUNCTION()
+		void InitRespawn();
+
+	//PRELOBBY Logic
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Find Random Session"), Category = "Connection")
+		void FindRandomSession(bool isLanSearch);
+
+	void OnFoundSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool Successful);
+
+	void OnJoinedSession(EOnJoinSessionCompleteResult::Type Result);
 };

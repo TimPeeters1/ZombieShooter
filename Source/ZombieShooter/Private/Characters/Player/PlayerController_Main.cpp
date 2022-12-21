@@ -12,6 +12,14 @@ APlayerController_Main::APlayerController_Main() {
 	GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
 }
 
+void APlayerController_Main::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayerController_Main, PlayerEndState);
+	DOREPLIFETIME(APlayerController_Main, PlayerRemainingLives);
+}
+
 void APlayerController_Main::BeginPlay()
 {
 	SessionSubsystem = GameInstance->GetSubsystem<USessionSubsystem_Main>();
@@ -19,13 +27,6 @@ void APlayerController_Main::BeginPlay()
 		SessionSubsystem->OnFindSessionsCompleteEvent.AddUObject(this, &APlayerController_Main::OnFoundSessions);
 		SessionSubsystem->OnJoinGameSessionCompleteEvent.AddUObject(this, &APlayerController_Main::OnJoinedSession);
 	}
-}
-
-void APlayerController_Main::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(APlayerController_Main, PlayerEndState);
 }
 
 void APlayerController_Main::OnPossess(APawn* InPawn)
@@ -82,6 +83,7 @@ void APlayerController_Main::OnJoinedSession(EOnJoinSessionCompleteResult::Type 
 		SessionSubsystem->TryTravelToCurrentSession();
 }
 
+
 void APlayerController_Main::RequestRespawn_Implementation()
 {
 	InitRespawn();
@@ -92,8 +94,7 @@ void APlayerController_Main::InitRespawn()
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	GetPawn()->Destroy();
-	//if (GEngine)
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, UKismetStringLibrary::Conv_BoolToString(UGameplayStatics::GetGameMode(GetWorld())->PlayerCanRestart(this)));
+
 	UGameplayStatics::GetGameMode(GetWorld())->RestartPlayer(this);
 }
 

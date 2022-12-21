@@ -120,7 +120,7 @@ void APlayerPawn::BeginPlay()
 
 	OnSetPlayerViewMode();
 
-	if(HealthComponent)
+	if (HealthComponent)
 		HealthComponent->OnDeath.AddUniqueDynamic(this, &APlayerPawn::OnDeath);
 }
 
@@ -320,11 +320,11 @@ void APlayerPawn::OnDeath()
 
 		APlayerDeathCamera* PlayerDeathCam = Cast<APlayerDeathCamera>(GetWorld()->SpawnActor(APlayerDeathCamera::StaticClass(), &SpawnTransform, SpawnParams));
 
-		if(PlayerDeathCam)
+		if (PlayerDeathCam)
 			PlayerDeathCam->SetCameraPosition(GetActorLocation());
 
-		uint8 ItemCount = InventoryComponent->EquippedRepairObjects.Num();
 		//Drop all Inventory Items on death
+		uint8 ItemCount = InventoryComponent->EquippedRepairObjects.Num();
 		for (uint8 i = 0; i < ItemCount; i++)
 		{
 			InventoryComponent->DropFirstItemFromInventory();
@@ -334,7 +334,17 @@ void APlayerPawn::OnDeath()
 		OnPlayerDeathLocal.Broadcast();
 	}
 
-	
+	//Deduct a life from the remaining amount in PlayerController_Main
+	if (UKismetSystemLibrary::IsServer(GetWorld())) {
+		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(GetController());
+		if (PlayerController) {
+			PlayerController->PlayerRemainingLives--;
+			if (PlayerController->PlayerRemainingLives <= 0) {
+				PlayerController->PlayerRemainingLives = 0;
+				PlayerController->PlayerEndState = EZombieGameWinState::LOST;
+			}
+		}
+	}
 
 	//Blueprint Assignable Replicated Death (Enable Ragdoll, Disable Collision, etc.)
 	OnPlayerDeathReplicated.Broadcast();

@@ -17,6 +17,7 @@ void ASpawnManager::StartSpawningRoutines(float StartDelay)
 
 		GetWorldTimerManager().SetTimer(PopCheckTimer, this, &ASpawnManager::CheckPopulation, PopulationCheckInterval, true, StartDelay + 0.1f);
 	}
+
 }
 
 void ASpawnManager::CheckPopulation()
@@ -26,8 +27,8 @@ void ASpawnManager::CheckPopulation()
 
 	if (ActiveAreaSet.IsEmpty()) return;
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Current Population: %d"), Current_AI_Population));
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Current Population: %d"), Current_AI_Population));
 
 
 	if (Current_AI_Population < Max_AI_Population) {
@@ -41,8 +42,8 @@ void ASpawnManager::CheckPopulation()
 			}
 		}
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Populating With %d New Enemies!"), AI_Pop_Budget));
+		//if (GEngine)
+			//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Populating With %d New Enemies!"), AI_Pop_Budget));
 	}
 }
 

@@ -16,15 +16,21 @@ void AGameMode_Main::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (bOverrideConnectionFlow)
+	if (bOverrideConnectionFlow) {
 		GetWorldTimerManager().SetTimer(OverrideZombieSpawnTimer, this, &AGameMode_Main::OverrideZombieSpawn, 5.0f, true, 1.0f);
+	}
 }
 
 void AGameMode_Main::OverrideZombieSpawn()
 {
 	if (GameInstance->SpawnManager) {
+		GameInstance->SetGameState(EZombieGameState::INGAME);
 		GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
 		GetWorldTimerManager().ClearTimer(OverrideZombieSpawnTimer);
+	}
+	else {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "No SpawnManager Assigned!");
 	}
 }
 
@@ -118,14 +124,17 @@ void AGameMode_Main::StartGame()
 	OnGameStart.Broadcast();
 }
 
-
 void AGameMode_Main::EndGameLost()
 {
 	GameInstance->SetGameState(EZombieGameState::POSTGAME);
 
 	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
 	{
-		Cast<APlayerController_Main>(GameInstance->PlayerControllers[i])->PlayerEndState = EZombieGameWinState::LOST;
+		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(GameInstance->PlayerControllers[i]);
+		if (PlayerController) {
+			PlayerController->PlayerEndState = EZombieGameWinState::LOST;
+		}
+		//Cast<APlayerController_Main>(GameInstance->PlayerControllers[i])->PlayerEndState = EZombieGameWinState::LOST;
 	}
 
 	OnGameEnd.Broadcast();
@@ -137,12 +146,18 @@ void AGameMode_Main::EndGameWin(TArray<APawn*> WinningActors)
 
 	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
 	{
-		Cast<APlayerController_Main>(GameInstance->PlayerControllers[i])->PlayerEndState = EZombieGameWinState::LOST;
+		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(GameInstance->PlayerControllers[i]);
+		if (PlayerController) {
+			PlayerController->PlayerEndState = EZombieGameWinState::LOST;
+		}
 	}
 
 	for (uint8 j = 0; j < WinningActors.Num(); j++)
 	{
-		Cast<APlayerController_Main>(WinningActors[j]->GetController())->PlayerEndState = EZombieGameWinState::WON;
+		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(WinningActors[j]->GetController());
+		if (PlayerController) {
+			PlayerController->PlayerEndState = EZombieGameWinState::WON;
+		}
 	}
 
 	OnGameEnd.Broadcast();

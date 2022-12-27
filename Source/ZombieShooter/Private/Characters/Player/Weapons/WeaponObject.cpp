@@ -78,6 +78,8 @@ void AWeaponObject::Equip_Implementation()
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	WeaponModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	OnWeaponPikcup.Broadcast();
 }
 
 void AWeaponObject::Dequip_Implementation()

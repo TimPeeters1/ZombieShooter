@@ -163,7 +163,6 @@ void AGameMode_Main::EndGameWin(TArray<APawn*> WinningActors)
 	OnGameEnd.Broadcast();
 }
 
-
 void AGameMode_Main::OnPlayerDeath()
 {
 	for (uint8 i = 0; i < PlayersAliveInGame.Num(); i++)

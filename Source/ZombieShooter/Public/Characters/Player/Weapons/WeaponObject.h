@@ -11,6 +11,7 @@
 #include "WeaponObject.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSpawned);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickup);
 
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API AWeaponObject : public AActor, public IInteractableObjectInterface
@@ -91,4 +92,7 @@ public:
 
 	UPROPERTY()
 		FOnSpawned OnWeaponSpawned;
+
+	UPROPERTY()
+		FOnPickup OnWeaponPikcup;
 };

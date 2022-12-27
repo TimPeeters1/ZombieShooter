@@ -89,6 +89,10 @@ void AWeaponObject::Dequip_Implementation()
 
 void AWeaponObject::OnInteract_Implementation(AActor* InstigatingActor)
 {
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
+	if (PlayerPawn) {
+		PlayerPawn->GetWeaponComponent()->OnPickupWeapon(this);
+	}
 }
 
 void AWeaponObject::StartHover_Implementation(AActor* InteractionInstigator)

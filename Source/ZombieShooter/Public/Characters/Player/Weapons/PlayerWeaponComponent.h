@@ -32,6 +32,10 @@ protected:
 		TArray<UWeaponData*> StartingWeapons;
 
 	//Equipped Weapon Data
+	UPROPERTY(Category = "Weapons|Equipped Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		uint8 Max_EquippedWeapon_Count = 2;
+
+	//Equipped Weapon Data
 	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
 		TArray<AWeaponObject*> EquippedWeapons;
 
@@ -58,13 +62,16 @@ public:
 
 	UFUNCTION(Server, Reliable)
 		void SetEquippedWeapon_Request(uint8 Index);
-		void SetEquippedWeapon_Request_Implementation(uint8 Index);
+	void SetEquippedWeapon_Request_Implementation(uint8 Index);
 
 	UFUNCTION()
-	void OnRep_ActiveWeapon();
+		void OnRep_ActiveWeapon();
+
+	UFUNCTION()
+	void OnPickupWeapon(AWeaponObject* WeaponToPickup);
 
 	UFUNCTION(Server, Reliable)
-	void UpdateEquippedWeapons();
+		void UpdateEquippedWeapons();
 	void UpdateEquippedWeapons_Implementation();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
@@ -84,18 +91,18 @@ public:
 	//Weapon Functionality
 	UFUNCTION(Server, reliable)
 		void ServerFireWeapon();
-		void ServerFireWeapon_Implementation();
+	void ServerFireWeapon_Implementation();
 
 	UFUNCTION(Server, reliable)
 		void ServerReloadWeapon();
-		void ServerReloadWeapon_Implementation();
+	void ServerReloadWeapon_Implementation();
 
 	UFUNCTION(Server, Reliable)
 		void DropFirstWeaponFromInventory();
-		void DropFirstWeaponFromInventory_Implementation();
+	void DropFirstWeaponFromInventory_Implementation();
 
 	/** Returns Equipped WeaponObjects**/
-	TArray<AWeaponObject*> GetEquippedWeapons() const { return EquippedWeapons;}
+	TArray<AWeaponObject*> GetEquippedWeapons() const { return EquippedWeapons; }
 
 	/** Returns Active WeaponObject**/
 	AWeaponObject* GetActiveWeapon() const { return ActiveWeapon; }

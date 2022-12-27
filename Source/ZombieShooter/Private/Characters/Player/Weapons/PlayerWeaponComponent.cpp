@@ -66,6 +66,7 @@ Weapon Switching (Inventory) Functionality
 void UPlayerWeaponComponent::SetEquippedWeapon_Request_Implementation(uint8 Index)
 {
 	if (EquippedWeapons.IsEmpty()) { return; }
+	if (EquippedWeapons.Num() < (Index + 1)) { return; }
 	if (!EquippedWeapons[Index]) { return; }
 
 	if (ActiveWeapon != EquippedWeapons[Index] && !bIsFiring) {
@@ -99,6 +100,28 @@ void UPlayerWeaponComponent::OnRep_ActiveWeapon()
 		ParentPawn->GetWeaponAudioComponent()->Stop();
 		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
 	}
+}
+
+void UPlayerWeaponComponent::OnPickupWeapon(AWeaponObject* WeaponToPickup)
+{
+	if (EquippedWeapons.Num() == 1) {
+		if (EquippedWeapons[0]->WeaponData->WeaponName == TEXT("None")) {
+			AWeaponObject* ObjectToDestroy = EquippedWeapons[0];
+			EquippedWeapons.Remove(ObjectToDestroy);
+			ObjectToDestroy->Destroy();
+
+			EquippedWeapons.Add(WeaponToPickup);
+			WeaponToPickup->Equip();
+			UpdateEquippedWeapons();
+			return;
+		}
+	}
+
+	if (EquippedWeapons.Num() < Max_EquippedWeapon_Count) {
+		EquippedWeapons.Add(WeaponToPickup);
+		WeaponToPickup->Equip();
+	}
+
 }
 
 void UPlayerWeaponComponent::UpdateEquippedWeapons_Implementation()
@@ -149,7 +172,8 @@ void UPlayerWeaponComponent::DropFirstWeaponFromInventory_Implementation()
 
 		if (!EquippedWeapons.IsEmpty()) {
 			uint8 WeaponIndex = EquippedWeapons.Find(ActiveWeapon);
-			EquippedWeapons.RemoveAt(WeaponIndex);
+			if(EquippedWeapons[WeaponIndex])
+				EquippedWeapons.RemoveAt(WeaponIndex);
 		}
 
 		UpdateEquippedWeapons();

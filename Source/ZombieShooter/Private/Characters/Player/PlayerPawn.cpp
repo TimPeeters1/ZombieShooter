@@ -348,6 +348,11 @@ void APlayerPawn::OnDeath()
 		{
 			InventoryComponent->DropFirstItemFromInventory();
 		}
+		uint8 WeaponCount = PlayerWeaponComponent->GetEquippedWeapons().Num();
+		for (uint8 i = 0; i < WeaponCount; i++)
+		{
+			PlayerWeaponComponent->DropFirstWeaponFromInventory();
+		}
 
 		//Blueprint Assignable Local Death (Hide HUD, Hide FPS Viewmodel etc.)
 		OnPlayerDeathLocal.Broadcast();

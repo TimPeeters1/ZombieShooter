@@ -1,6 +1,6 @@
 
 #include "Characters/Player/Weapons/WeaponObject.h"
-
+#include "Characters/Player/PlayerPawn.h"
 
 // Sets default values
 AWeaponObject::AWeaponObject()
@@ -10,6 +10,7 @@ AWeaponObject::AWeaponObject()
 
 	WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
 	RootComponent = WeaponModel;
+	WeaponModel->SetIsReplicated(true);
 }
 
 void AWeaponObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -71,6 +72,41 @@ void AWeaponObject::OnRep_CurrentAmmoUpdate()
 	
 	LocalCurrentAmmo = CurrentAmmo;
 }
+
+void AWeaponObject::Equip_Implementation()
+{
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	WeaponModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AWeaponObject::Dequip_Implementation()
+{
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+	WeaponModel->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void AWeaponObject::OnInteract_Implementation(AActor* InstigatingActor)
+{
+}
+
+void AWeaponObject::StartHover_Implementation(AActor* InteractionInstigator)
+{
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
+	if (PlayerPawn) {
+		PlayerPawn->OnStartHover(ObjectHoverText);
+	}
+}
+
+void AWeaponObject::StopHover_Implementation(AActor* InteractionInstigator)
+{
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
+	if (PlayerPawn) {
+		PlayerPawn->OnStopHover();
+	}
+}
+
 
 
 

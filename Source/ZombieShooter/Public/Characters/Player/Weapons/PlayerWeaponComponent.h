@@ -36,7 +36,7 @@ protected:
 		TArray<AWeaponObject*> EquippedWeapons;
 
 	//Equipped Weapon Data
-	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing = OnRep_ActiveWeapon, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
 		AWeaponObject* ActiveWeapon;
 
 	FTimerHandle AutomaticFireTimer;
@@ -50,16 +50,22 @@ public:
 		FOnReloadEvent OnReloadEvent;
 
 	void SpawnStartWeapons();
+	AWeaponObject* SpawnWeaponObject(UWeaponData* WeaponData);
 
 	//UFUNCTION(Client, Reliable)
 	//void OnReplicatedStartWeapons();
 	//void OnReplicatedStartWeapons_Implementation();
 
-	void SetEquippedWeapon(uint8 Index);
+	UFUNCTION(Server, Reliable)
+		void SetEquippedWeapon_Request(uint8 Index);
+		void SetEquippedWeapon_Request_Implementation(uint8 Index);
+
+	UFUNCTION()
+	void OnRep_ActiveWeapon();
 
 	UFUNCTION(Server, Reliable)
-	void Server_SetEquippedWeapon(uint8 Index);
-	void Server_SetEquippedWeapon_Implementation(uint8 Index);
+	void UpdateEquippedWeapons();
+	void UpdateEquippedWeapons_Implementation();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
 		void EquipPrimaryWeapon();
@@ -83,6 +89,16 @@ public:
 	UFUNCTION(Server, reliable)
 		void ServerReloadWeapon();
 		void ServerReloadWeapon_Implementation();
+
+	UFUNCTION(Server, Reliable)
+		void DropFirstWeaponFromInventory();
+		void DropFirstWeaponFromInventory_Implementation();
+
+	/** Returns Equipped WeaponObjects**/
+	TArray<AWeaponObject*> GetEquippedWeapons() const { return EquippedWeapons;}
+
+	/** Returns Active WeaponObject**/
+	AWeaponObject* GetActiveWeapon() const { return ActiveWeapon; }
 
 	virtual void BeginPlay() override;
 

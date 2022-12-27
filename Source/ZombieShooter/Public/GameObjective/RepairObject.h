@@ -44,10 +44,10 @@ protected:
 
 public:
 	UFUNCTION(NetMulticast, Reliable)
-	void OnEquip();
-	void OnEquip_Implementation();
+		void Equip();
+	void Equip_Implementation();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void OnDequip();
-	void OnDequip_Implementation();
+		void Dequip();
+	void Dequip_Implementation();
 };

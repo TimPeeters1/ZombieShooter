@@ -15,8 +15,11 @@ APlayerPawn::APlayerPawn()
 	SetReplicates(true);
 	SetReplicateMovement(true);
 
-	if (GetCapsuleComponent())
-		GetCapsuleComponent()->SetCapsuleHalfHeight(100.0f);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(100.0f);
+
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = MaxCrouchSpeed;
 
 	if (!FP_PlayerCamera) {
 		//Init Camera
@@ -69,9 +72,6 @@ APlayerPawn::APlayerPawn()
 		InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>("InventoryComponent");
 		InventoryComponent->SetIsReplicated(true);
 	}
-
-	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
-	GetCharacterMovement()->MaxWalkSpeedCrouched = MaxCrouchSpeed;
 }
 
 // Called to bind functionality to input
@@ -92,6 +92,9 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &APlayerPawn::OnStartSprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayerPawn::OnStopSprint);
 
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APlayerPawn::OnStartCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APlayerPawn::OnStopCrouch);
+
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerPawn::OnPerformInteraction);
 
 	if (!PlayerWeaponComponent) return;
@@ -101,6 +104,8 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnReloadWeapon);
 	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
 	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
+	
+	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::DropFirstWeaponFromInventory);
 
 	if (!InventoryComponent) return;
 	PlayerInputComponent->BindAction("DropItem", IE_Pressed, InventoryComponent, &UPlayerInventoryComponent::DropFirstItemFromInventory);
@@ -170,6 +175,20 @@ void APlayerPawn::OnStartJump()
 void APlayerPawn::OnStopJump()
 {
 	StopJumping();
+}
+
+void APlayerPawn::OnStartCrouch()
+{
+	Crouch();
+	FVector MeshCrouchPosition = GetMesh()->GetRelativeLocation() + GetCharacterMovement()->GetCrouchedHalfHeight();
+	GetMesh()->SetRelativeLocation(MeshCrouchPosition);
+}
+
+void APlayerPawn::OnStopCrouch()
+{
+	UnCrouch();
+	FVector MeshCrouchPosition = GetMesh()->GetRelativeLocation() - GetCharacterMovement()->GetCrouchedHalfHeight();
+	GetMesh()->SetRelativeLocation(MeshCrouchPosition);
 }
 
 void APlayerPawn::OnStartSprint()

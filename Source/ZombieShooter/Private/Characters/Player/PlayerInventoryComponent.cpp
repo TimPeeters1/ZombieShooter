@@ -50,7 +50,7 @@ void UPlayerInventoryComponent::DropFirstItemFromInventory_Implementation()
 		EquippedRepairObjects[0]->GetActorBounds(true, Origin, Extents);
 		DropLocation.Location += FVector(0, 0, Extents.Z);
 		EquippedRepairObjects[0]->SetActorLocation(DropLocation);
-		EquippedRepairObjects[0]->OnDequip();
+		EquippedRepairObjects[0]->Dequip();
 		RemoveObjectFromInventory(EquippedRepairObjects[0]);
 	}
 }

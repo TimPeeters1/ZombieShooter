@@ -145,9 +145,15 @@ protected:
 	void Turn_Character(float AxisValue);
 	void Look_Up(float AxisValue);
 
+	//Jump Functionality
 	void OnStartJump();
 	void OnStopJump();
+	
+	//Crouch Functionality
+	void OnStartCrouch();
+	void OnStopCrouch();
 
+	//Sprint Functionality
 	void OnStartSprint();
 	void OnStopSprint();
 

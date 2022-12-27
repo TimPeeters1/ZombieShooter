@@ -32,9 +32,6 @@ void ARepairGoal::BeginPlay()
 
 void ARepairGoal::OnRep_RepairAmount()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Repair Callback!")));
-
 	TextVisualUpdate();
 }
 

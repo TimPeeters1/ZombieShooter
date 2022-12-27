@@ -18,7 +18,7 @@ void ARepairObject::OnInteract_Implementation(AActor* InstigatingActor)
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
 		PlayerPawn->GetInventoryComponent()->AddObjectToInventory(this);
-		OnEquip();
+		Equip();
 	}
 }
 
@@ -38,13 +38,13 @@ void ARepairObject::StopHover_Implementation(AActor* InstigatingActor)
 	}
 }
 
-void ARepairObject::OnEquip_Implementation()
+void ARepairObject::Equip_Implementation()
 {
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 }
 
-void ARepairObject::OnDequip_Implementation()
+void ARepairObject::Dequip_Implementation()
 {
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);

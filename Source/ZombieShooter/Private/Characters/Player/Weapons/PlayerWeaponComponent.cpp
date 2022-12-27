@@ -28,46 +28,33 @@ void UPlayerWeaponComponent::BeginPlay()
 #pragma region WeaponObjectFunctionality 
 void UPlayerWeaponComponent::SpawnStartWeapons()
 {
-	//TEMP Implementation to set visuals of startweapons before replication of actual weaponobject data. THIS IS DIRTY!
-	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-	if (!ParentPawn) return;
-
-	if (ParentPawn->GetArmModel()) {
-		ParentPawn->GetArmModel()->SetSkeletalMesh(StartingWeapons[0]->WeaponArmMesh, true);
-	}
-
-	if (ParentPawn->GetWeaponModel()) {
-		ParentPawn->GetWeaponModel()->SetRelativeTransform(StartingWeapons[0]->FP_Model_Transform);
-		ParentPawn->GetWeaponModel()->SetStaticMesh(StartingWeapons[0]->WeaponMesh);
-	}
-
-	if (ParentPawn->GetWeaponAudioComponent()) {
-		ParentPawn->GetWeaponAudioComponent()->SetSound(StartingWeapons[0]->ShotAudio);
-	}
-
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
-	UWorld* World = GetWorld();
-	if (World) {
-		for (size_t i = 0; i < StartingWeapons.Num(); i++)
-		{
-			//AWeaponObject* NewWeaponObject = (AWeaponObject*)GetWorld()->SpawnActor(AWeaponObject::StaticClass(), Params);
+	for (uint8 i = 0; i < StartingWeapons.Num(); i++)
+	{
+		//AWeaponObject* NewWeaponObject = (AWeaponObject*)GetWorld()->SpawnActor(AWeaponObject::StaticClass(), Params);
+		AWeaponObject* NewWeaponObject = SpawnWeaponObject(StartingWeapons[i]);
 
-			FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::OneVector);
-			AWeaponObject* NewWeaponObject = (AWeaponObject*)World->SpawnActorDeferred<AWeaponObject>(AWeaponObject::StaticClass(),
-				SpawnTransform, GetOwner(), GetOwner()->GetInstigator());
-
-			if (NewWeaponObject) {
-				NewWeaponObject->SetReplicates(true);
-				NewWeaponObject->WeaponData = StartingWeapons[i];
-				NewWeaponObject->OnWeaponSpawned.AddDynamic(this, &UPlayerWeaponComponent::EquipPrimaryWeapon);
-
-				UGameplayStatics::FinishSpawningActor(NewWeaponObject, NewWeaponObject->GetTransform());
-
-				EquippedWeapons.Add(NewWeaponObject);
-			}
-		}
+		EquippedWeapons.Add(NewWeaponObject);
 	}
+
+	ActiveWeapon = EquippedWeapons[0];
+	OnRep_ActiveWeapon();
+}
+
+AWeaponObject* UPlayerWeaponComponent::SpawnWeaponObject(UWeaponData* WeaponData)
+{
+	FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector::OneVector);
+	AWeaponObject* NewWeaponObject = (AWeaponObject*)GetWorld()->SpawnActorDeferred<AWeaponObject>(AWeaponObject::StaticClass(),
+		SpawnTransform, GetOwner(), GetOwner()->GetInstigator());
+
+	NewWeaponObject->SetReplicates(true);
+	NewWeaponObject->WeaponData = WeaponData;
+	NewWeaponObject->OnWeaponSpawned.AddDynamic(NewWeaponObject, &AWeaponObject::Equip);
+
+	UGameplayStatics::FinishSpawningActor(NewWeaponObject, NewWeaponObject->GetTransform());
+
+	return NewWeaponObject;
 }
 
 #pragma endregion  
@@ -76,55 +63,97 @@ void UPlayerWeaponComponent::SpawnStartWeapons()
 /*
 Weapon Switching (Inventory) Functionality
 */
-void UPlayerWeaponComponent::SetEquippedWeapon(uint8 Index)
-{
-	//Prevents nullptr crash
-	if (EquippedWeapons.IsEmpty()){ return;}
-	if (!EquippedWeapons[Index]) { return; }
-
-	if (ActiveWeapon != EquippedWeapons[Index] && !bIsFiring) {
-		ActiveWeapon = EquippedWeapons[Index];
-
-		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-		if (!ParentPawn) return;
-
-		if (ParentPawn->GetArmModel()) {
-			ParentPawn->GetArmModel()->SetSkeletalMesh(ActiveWeapon->WeaponData->WeaponArmMesh, true);
-		}
-
-		if (ParentPawn->GetWeaponModel()) {
-			ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->FP_Model_Transform);
-			ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
-		}
-
-		if (ParentPawn->GetWeaponAudioComponent()) {
-			ParentPawn->GetWeaponAudioComponent()->Stop();
-			ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
-		}
-
-		bIsFiring = false;
-	}
-
-	Server_SetEquippedWeapon(Index);
-}
-
-
-void UPlayerWeaponComponent::Server_SetEquippedWeapon_Implementation(uint8 Index)
+void UPlayerWeaponComponent::SetEquippedWeapon_Request_Implementation(uint8 Index)
 {
 	if (EquippedWeapons.IsEmpty()) { return; }
 	if (!EquippedWeapons[Index]) { return; }
 
-	ActiveWeapon = EquippedWeapons[Index];
+	if (ActiveWeapon != EquippedWeapons[Index] && !bIsFiring) {
+		ActiveWeapon = EquippedWeapons[Index];
+		bIsFiring = false;
+	}
+
+	OnRep_ActiveWeapon();
+}
+
+void UPlayerWeaponComponent::OnRep_ActiveWeapon()
+{
+	if (!ActiveWeapon) return;
+
+	bIsFiring = false;
+
+	//Set FP Visuals of ActiveWeapon
+	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+	if (!ParentPawn) return;
+
+	if (ParentPawn->GetArmModel()) {
+		ParentPawn->GetArmModel()->SetSkeletalMesh(ActiveWeapon->WeaponData->WeaponArmMesh, true);
+	}
+
+	if (ParentPawn->GetWeaponModel()) {
+		ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->FP_Model_Transform);
+		ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
+	}
+
+	if (ParentPawn->GetWeaponAudioComponent()) {
+		ParentPawn->GetWeaponAudioComponent()->Stop();
+		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
+	}
+}
+
+void UPlayerWeaponComponent::UpdateEquippedWeapons_Implementation()
+{
+	if (EquippedWeapons.IsEmpty()) {
+		//Spawns Local Weapon Object for Empty Weapon, must be destroyed when equipping new item!
+		FStringAssetReference AssetPath("/Game/_GAME/Blueprints/Weapons/DA_Weapon_Empty.DA_Weapon_Empty");
+		UWeaponData* EmptyData = Cast<UWeaponData>(AssetPath.TryLoad());
+		if (EmptyData) {
+			AWeaponObject* NewWeapon = SpawnWeaponObject(EmptyData);
+			EquippedWeapons.Add(NewWeapon);
+			EquipPrimaryWeapon();
+		}
+	}
+	else {
+		EquipPrimaryWeapon();
+	}
 }
 
 void UPlayerWeaponComponent::EquipPrimaryWeapon()
 {
-	SetEquippedWeapon(0);
+	SetEquippedWeapon_Request(0);
 }
 
 void UPlayerWeaponComponent::EquipSecondaryWeapon()
 {
-	SetEquippedWeapon(1);
+	SetEquippedWeapon_Request(1);
+}
+
+void UPlayerWeaponComponent::DropFirstWeaponFromInventory_Implementation()
+{
+	if (!ActiveWeapon) return;
+
+	UNavigationSystemV1* NavigationSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	if (!NavigationSystem) return;
+
+	FNavLocation DropLocation;
+	if (NavigationSystem->GetRandomPointInNavigableRadius(GetOwner()->GetActorLocation(), 300.0f, DropLocation)) {
+
+		//DrawDebugPoint(GetWorld(), DropLocation, 5.0f, FColor::Red, false, 5.0f);
+
+		FVector Origin;
+		FVector Extents;
+		ActiveWeapon->GetActorBounds(true, Origin, Extents);
+		DropLocation.Location += FVector(0, 0, Extents.Z);
+		ActiveWeapon->SetActorLocation(DropLocation);
+		ActiveWeapon->Dequip();
+
+		if (!EquippedWeapons.IsEmpty()) {
+			uint8 WeaponIndex = EquippedWeapons.Find(ActiveWeapon);
+			EquippedWeapons.RemoveAt(WeaponIndex);
+		}
+
+		UpdateEquippedWeapons();
+	}
 }
 
 #pragma endregion 
@@ -280,7 +309,7 @@ void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 		if (ActiveWeapon->InventoryAmmo <= 0) return;
 
 		uint8 ammoToAdd = ActiveWeapon->MagazineSize - ActiveWeapon->CurrentAmmo;
-		
+
 		if (ActiveWeapon->InventoryAmmo >= ammoToAdd) {
 			ActiveWeapon->CurrentAmmo += ammoToAdd;
 			ActiveWeapon->InventoryAmmo -= ammoToAdd;

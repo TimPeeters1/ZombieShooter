@@ -16,29 +16,41 @@ class ZOMBIESHOOTER_API AWeaponPickupPoint : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AWeaponPickupPoint();
 
 protected:
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Visuals", meta = (AllowPrivateAccess = "true"))
-		UStaticMeshComponent* Mesh;
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "WeaponPickupPoint", meta = (AllowPrivateAccess = "true"))
 		AWeaponObject* CurrentWeaponObject;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "WeaponPickupPoint", meta = (AllowPrivateAccess = "true"))
 		TArray<UWeaponData*> SpawnableWeaponTypes;
 
-	virtual void BeginPlay() override;
+	/*Minimal Seconds before a new weapon can spawn.*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "WeaponPickupPoint||Settings", meta = (AllowPrivateAccess = "true"))
+		float MinSpawnDelay = 45.f;
+
+	/*Maximal Seconds before a new weapon can spawn.*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "WeaponPickupPoint||Settings", meta = (AllowPrivateAccess = "true"))
+		float MaxSpawnDelay = 120.f;
+
+	/*Maximal Seconds before a new weapon can spawn.*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Visuals", meta = (AllowPrivateAccess = "true"))
+		float MeshRotationSpeed = 8.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Visuals", meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* Mesh;
+
+	FTimerHandle SpawnTimerHandle;
 
 public:	
+	float GenerateSpawnDelay();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "WeaponPickupPoint")
-		void SpawnWeaponPickup();
-	void SpawnWeaponPickup_Implementation();
+	UFUNCTION()
+	void SpawnWeaponPickup();
 
 	UFUNCTION()
 	void OnPickup();
 
+	virtual void BeginPlay() override;
+	virtual void Tick(float Delta) override;
 };

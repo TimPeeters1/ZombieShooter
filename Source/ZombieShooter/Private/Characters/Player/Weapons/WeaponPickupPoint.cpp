@@ -7,25 +7,41 @@
 // Sets default values
 AWeaponPickupPoint::AWeaponPickupPoint()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
 }
 
 void AWeaponPickupPoint::BeginPlay()
 {
+	Super::BeginPlay();
 	SpawnWeaponPickup();
+
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AWeaponPickupPoint::SpawnWeaponPickup, GenerateSpawnDelay(), false);
 }
 
-void AWeaponPickupPoint::SpawnWeaponPickup_Implementation()
+void AWeaponPickupPoint::Tick(float Delta)
+{
+	Super::Tick(Delta);
+	if (CurrentWeaponObject) {
+		CurrentWeaponObject->AddActorWorldRotation((FRotator(0, MeshRotationSpeed, 0) * Delta));
+	}
+}
+
+float AWeaponPickupPoint::GenerateSpawnDelay()
+{
+	return FMath::RandRange(MinSpawnDelay, MaxSpawnDelay);
+}
+
+void AWeaponPickupPoint::SpawnWeaponPickup()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GameMode && !SpawnableWeaponTypes.IsEmpty()) {
 
-
-		
-		FTransform SpawnTransform = FTransform(GetActorRotation(), GetActorLocation(), FVector::OneVector);
+		FTransform SpawnTransform = FTransform(GetActorRotation(), GetActorLocation() + FVector(0, 0, 90.0f), FVector::OneVector);
 		AWeaponObject* NewWeaponObject = (AWeaponObject*)GetWorld()->SpawnActorDeferred<AWeaponObject>(AWeaponObject::StaticClass(),
 			SpawnTransform);
 
@@ -38,6 +54,8 @@ void AWeaponPickupPoint::SpawnWeaponPickup_Implementation()
 
 		NewWeaponObject->OnWeaponPikcup.AddDynamic(this, &AWeaponPickupPoint::OnPickup);
 		CurrentWeaponObject = NewWeaponObject;
+
+		GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
 	}
 }
 
@@ -46,6 +64,8 @@ void AWeaponPickupPoint::OnPickup()
 	if (CurrentWeaponObject) {
 		CurrentWeaponObject->OnWeaponPikcup.RemoveDynamic(this, &AWeaponPickupPoint::OnPickup);
 		CurrentWeaponObject = nullptr;
+
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AWeaponPickupPoint::SpawnWeaponPickup, GenerateSpawnDelay(), false);
 	}
 }
 

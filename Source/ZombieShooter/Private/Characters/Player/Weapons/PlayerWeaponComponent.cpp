@@ -85,20 +85,12 @@ void UPlayerWeaponComponent::OnRep_ActiveWeapon()
 
 	//Set FP Visuals of ActiveWeapon
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-	if (!ParentPawn) return;
+	if (!ParentPawn) { return; }
 
-	if (ParentPawn->GetArmModel()) {
-		ParentPawn->GetArmModel()->SetSkeletalMesh(ActiveWeapon->WeaponData->WeaponArmMesh, true);
-	}
-
-	if (ParentPawn->GetWeaponModel()) {
-		ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->FP_Model_Transform);
+	if (ParentPawn->GetWeaponModel() && ParentPawn->GetArmModel()) {
 		ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
-	}
-
-	if (ParentPawn->GetWeaponAudioComponent()) {
-		ParentPawn->GetWeaponAudioComponent()->Stop();
-		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
+		ParentPawn->GetWeaponModel()->SetupAttachment(ParentPawn->GetArmModel(), FName("GripPoint"));
+		ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->WeaponMesh_Offset);
 	}
 }
 
@@ -116,7 +108,7 @@ void UPlayerWeaponComponent::OnPickupWeapon(AWeaponObject* WeaponToPickup)
 			return;
 		}
 	}
-
+	 
 	if (EquippedWeapons.Num() < Max_EquippedWeapon_Count) {
 		EquippedWeapons.Add(WeaponToPickup);
 		WeaponToPickup->Equip();
@@ -245,13 +237,6 @@ void UPlayerWeaponComponent::SingleFire()
 
 		//Deduce from local var, to update via RepNotify! (Reduces snappy shooting over network)
 		ActiveWeapon->LocalCurrentAmmo--;
-
-		//Visuals and VFX!
-		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
-		ParentPawn->GetWeaponAudioComponent()->Play();
-
-		if (ActiveWeapon->WeaponData->MuzzleFlash_VFX)
-			UNiagaraFunctionLibrary::SpawnSystemAttached(ActiveWeapon->WeaponData->MuzzleFlash_VFX, ParentPawn->GetWeaponModel(), FName(TEXT("MuzzleFlash")), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 
 		OnFireEvent.Broadcast();
 	}

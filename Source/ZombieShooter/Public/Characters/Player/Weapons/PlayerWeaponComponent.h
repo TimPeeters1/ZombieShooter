@@ -56,10 +56,6 @@ public:
 	void SpawnStartWeapons();
 	AWeaponObject* SpawnWeaponObject(UWeaponData* WeaponData);
 
-	//UFUNCTION(Client, Reliable)
-	//void OnReplicatedStartWeapons();
-	//void OnReplicatedStartWeapons_Implementation();
-
 	UFUNCTION(Server, Reliable)
 		void SetEquippedWeapon_Request(uint8 Index);
 	void SetEquippedWeapon_Request_Implementation(uint8 Index);

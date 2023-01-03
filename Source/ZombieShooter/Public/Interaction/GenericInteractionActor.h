@@ -9,6 +9,11 @@
 
 #include "GenericInteractionActor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartHover);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopHover);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteraction);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHold);
+
 UCLASS()
 class ZOMBIESHOOTER_API AGenericInteractionActor : public AActor, public IInteractableObjectInterface
 {
@@ -17,16 +22,30 @@ class ZOMBIESHOOTER_API AGenericInteractionActor : public AActor, public IIntera
 public:	
 	AGenericInteractionActor();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="InteractionSettings")
+		bool bHolddown;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InteractionSettings")
+		float HoldTime = 2.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "InteractionSettings")
+	FTimerHandle HolddownTimer;
+
 	/*
 	* Text Displayed to player when hovering over object.
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString ObjectHoverText = "Press 'E' to Interact";
 
 protected:
+	bool bIsHolding;
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void OnInteract(AActor* InstigatingActor);
-	virtual void OnInteract_Implementation(AActor* InstigatingActor) override;
+		void OnStartInteract(AActor* InstigatingActor);
+	virtual void OnStartInteract_Implementation(AActor* InstigatingActor) override;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+		void OnStopInteract(AActor* InstigatingActor);
+	virtual void OnStopInteract_Implementation(AActor* InstigatingActor) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
 		void StartHover(AActor* InstigatingActor);
@@ -37,4 +56,16 @@ protected:
 	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
 
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintNativeEvent)
+		void OnCompleteHolddown();
+	void OnCompleteHolddown_Implementation();
+
+	//Delegates
+	FOnStartHover OnStartHover_Event;
+	FOnStopHover OnStopHover_Event;
+	FOnInteraction OnInteraction_Event;
+	FOnHold OnHolddown_Event;
+
 };
+

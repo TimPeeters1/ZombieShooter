@@ -89,7 +89,7 @@ void AWeaponObject::Dequip_Implementation()
 	WeaponModel->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
-void AWeaponObject::OnInteract_Implementation(AActor* InstigatingActor)
+void AWeaponObject::OnStartInteract_Implementation(AActor* InstigatingActor)
 {
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {

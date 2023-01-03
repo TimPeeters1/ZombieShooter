@@ -42,8 +42,8 @@ protected:
 		UTextRenderComponent* RepairProgressText;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnInteract(AActor* InteractionInstigator);
-	virtual void OnInteract_Implementation(AActor* InteractionInstigator) override;
+		void OnStartInteract(AActor* InteractionInstigator);
+	virtual void OnStartInteract_Implementation(AActor* InteractionInstigator) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
 		void StartHover(AActor* InstigatingActor);

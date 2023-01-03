@@ -138,11 +138,16 @@ protected:
 	 * Interaction Logic
 	 * (Could be moved to actor component in future!)
 	 */
-	void OnPerformInteraction();
+	void OnStartInteraction();
+	void OnStopInteraction();
 
 	UFUNCTION(Server, reliable)
-	void ServerPerformInteraction();
-	void ServerPerformInteraction_Implementation();
+	void ServerStartInteraction();
+	void ServerStartInteraction_Implementation();
+
+	UFUNCTION(Server, reliable)
+	void ServerStopInteraction();
+	void ServerStopInteraction_Implementation();
 
 	void InteractionTrace();
 

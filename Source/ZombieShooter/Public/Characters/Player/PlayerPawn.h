@@ -30,6 +30,9 @@ class ZOMBIESHOOTER_API APlayerPawn : public ACharacter
 public:
 	APlayerPawn();
 
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor, BlueprintReadOnly, VisibleAnywhere)
+		FColor PlayerGameColor;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInteraction")
 		float PlayerInteractionRange = 450.0f;
 
@@ -86,40 +89,6 @@ protected:
 	UPROPERTY(Category = "Interaction", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	AActor* InteractingActor;
 
-public:
-	void OnSetPlayerViewMode();
-
-	//Callback for IInteractableObjectInterface when starting hover
-	UFUNCTION(BlueprintImplementableEvent)
-		void OnStartHover(const FString& InteractionMessage);
-
-	//Callback for IInteractableObjectInterface when stopping hover
-	UFUNCTION(BlueprintImplementableEvent)
-		void OnStopHover();
-
-	/** Returns Current FP Camera **/
-	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
-	/** Returns Current FP Arm Model **/
-	 class USkeletalMeshComponent* GetArmModel() { return FP_ArmModel; }
-	/** Returns Current FP Weapon Model **/
-	 class UStaticMeshComponent* GetWeaponModel()  { return FP_WeaponModel; }
-	/** Returns FP Audio Component **/
-	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
-
-	 /** Returns Player Health Component **/
-	 class UGenericHealthComponent* GetHealthComponent() { return HealthComponent; }
-	 /** Returns Player Weapon Component **/
-	 class UPlayerWeaponComponent* GetWeaponComponent() { return PlayerWeaponComponent; }
-	 /** Returns Player Inventory Component **/
-	 class UPlayerInventoryComponent* GetInventoryComponent() { return InventoryComponent; }
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 protected:
 
@@ -180,7 +149,6 @@ protected:
 	UFUNCTION(Server, reliable)
 	void ServerSetInteractingActor(AActor* InteractingObject);
 	void ServerSetInteractingActor_Implementation(AActor* InteractingObject);
-
 	
 	/*
 	* Delgates exposed for use in blueprints.
@@ -191,4 +159,42 @@ protected:
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerDeath OnPlayerDeathReplicated;
 
+public:
+	void OnSetPlayerViewMode();
+
+	//Callback for IInteractableObjectInterface when starting hover
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnStartHover(const FString& InteractionMessage);
+
+	//Callback for IInteractableObjectInterface when stopping hover
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnStopHover();
+
+	//Callback for when PlayerColor is replicated via PlayerController
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnRep_PlayerColor();
+
+	/** Returns Current FP Camera **/
+	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
+	/** Returns Current FP Arm Model **/
+	 class USkeletalMeshComponent* GetArmModel() { return FP_ArmModel; }
+	/** Returns Current FP Weapon Model **/
+	 class UStaticMeshComponent* GetWeaponModel()  { return FP_WeaponModel; }
+	/** Returns FP Audio Component **/
+	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
+
+	 /** Returns Player Health Component **/
+	 class UGenericHealthComponent* GetHealthComponent() { return HealthComponent; }
+	 /** Returns Player Weapon Component **/
+	 class UPlayerWeaponComponent* GetWeaponComponent() { return PlayerWeaponComponent; }
+	 /** Returns Player Inventory Component **/
+	 class UPlayerInventoryComponent* GetInventoryComponent() { return InventoryComponent; }
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

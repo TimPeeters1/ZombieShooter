@@ -116,6 +116,7 @@ void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APlayerPawn, PlayerWeaponComponent);
+	DOREPLIFETIME(APlayerPawn, PlayerGameColor);
 }
 
 

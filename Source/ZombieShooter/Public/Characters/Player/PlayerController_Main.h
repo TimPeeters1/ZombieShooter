@@ -9,6 +9,8 @@
 
 #include "PlayerController_Main.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRepPlayerColor);
+
 UENUM(BlueprintType)
 enum class EZombieGameWinState : uint8
 {
@@ -29,6 +31,8 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
 		uint8 PlayerRemainingLives = 3;
 
+	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
+		FColor PlayerColor;
 private:
 	APlayerController_Main();
 
@@ -40,6 +44,8 @@ private:
 
 	void OnPossess(APawn* InPawn) override;
 	void OnUnPossess() override;
+
+
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 

@@ -42,7 +42,7 @@ public:
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
 		float Weapon_Range = 3000.f;
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
-		float Weapon_Damage = 3000.f;
+		float Weapon_Damage = 10.f;
 
 	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
 		int32 Weapon_Default_MagazineSize;

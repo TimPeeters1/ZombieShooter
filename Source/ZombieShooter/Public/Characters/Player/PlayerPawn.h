@@ -182,11 +182,11 @@ public:
 	/** Returns Current FP Camera **/
 	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
 	/** Returns Current FP Arm Model **/
-	 class USkeletalMeshComponent* GetArmModel() { return FP_ArmModel; }
+	 class USkeletalMeshComponent* GetFP_ArmModel() { return FP_ArmModel; }
 	/** Returns Current FP Weapon Model **/
-	 class UStaticMeshComponent* GetWeaponModel()  { return FP_WeaponModel; }
+	 class UStaticMeshComponent* GetFP_WeaponModel()  { return FP_WeaponModel; }
 	/** Returns FP Audio Component **/
-	 class UAudioComponent* GetWeaponAudioComponent()  { return FP_WeaponAudio; }
+	 class UAudioComponent* GetWeaponAudio()  { return FP_WeaponAudio; }
 
 	 /** Returns Player Health Component **/
 	 class UGenericHealthComponent* GetHealthComponent() { return HealthComponent; }

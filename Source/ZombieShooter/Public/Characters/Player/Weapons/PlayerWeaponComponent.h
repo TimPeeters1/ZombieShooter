@@ -15,6 +15,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwitchWeapon);
 
 class APlayerPawn;
 
@@ -44,6 +45,9 @@ protected:
 		AWeaponObject* ActiveWeapon;
 
 	FTimerHandle AutomaticFireTimer;
+	FTimerHandle ReloadTimer;
+
+	bool bReloading;
 
 public:
 	bool bIsFiring;
@@ -52,6 +56,8 @@ public:
 		FOnFireEvent OnFireEvent;
 	UPROPERTY(BlueprintAssignable)
 		FOnReloadEvent OnReloadEvent;
+	UPROPERTY(BlueprintAssignable)
+		FOnSwitchWeapon OnSwitchWeapon;
 
 	void SpawnStartWeapons();
 	AWeaponObject* SpawnWeaponObject(UWeaponData* WeaponData);
@@ -80,14 +86,28 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
 		void OnFireEnd();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
-		void OnReloadWeapon();
+		void OnReload();
 
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Single Fire"), Category = "WeaponFunctions")
 	void SingleFire();
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Melee Fire"), Category = "WeaponFunctions")
+	void MeleeFire();
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
+	void ReloadWeapon();
+
+	void UnblockFire();
 
 	//Weapon Functionality
 	UFUNCTION(Server, reliable)
 		void ServerFireWeapon();
 	void ServerFireWeapon_Implementation();
+
+	UFUNCTION(Server, reliable)
+		void ServerMeleeWeapon();
+	void ServerMeleeWeapon_Implementation();
 
 	UFUNCTION(Server, reliable)
 		void ServerReloadWeapon();

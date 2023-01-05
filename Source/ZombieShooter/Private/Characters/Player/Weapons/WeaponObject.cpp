@@ -32,8 +32,8 @@ void AWeaponObject::OnConstruction(const FTransform& Transform)
 
 	WeaponModel->SetStaticMesh(WeaponData->WeaponMesh);
 
-	MagazineSize = WeaponData->Weapon_Default_MagazineSize;
-	MaxInventoryAmmo = WeaponData->Weapon_Default_MaxAmmo;
+	MagazineSize = WeaponData->MagazineSize;
+	MaxInventoryAmmo = WeaponData->MaxInventoryAmmo;
 
 	//Init Ammo Variables
 	InventoryAmmo = MaxInventoryAmmo - MagazineSize;

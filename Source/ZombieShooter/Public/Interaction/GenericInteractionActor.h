@@ -62,9 +62,13 @@ protected:
 	void OnCompleteHolddown_Implementation();
 
 	//Delegates
+	UPROPERTY(BlueprintAssignable, Category = "InteractionDelegates")
 	FOnStartHover OnStartHover_Event;
+	UPROPERTY(BlueprintAssignable, Category = "InteractionDelegates")
 	FOnStopHover OnStopHover_Event;
+	UPROPERTY(BlueprintAssignable, Category = "InteractionDelegates")
 	FOnInteraction OnInteraction_Event;
+	UPROPERTY(BlueprintAssignable, Category = "InteractionDelegates")
 	FOnHold OnHolddown_Event;
 
 };

@@ -36,18 +36,18 @@ public:
 	UPROPERTY(Category = "Behaviour", EditAnywhere, BlueprintReadWrite)
 		EWeaponType WeaponBehaviour;
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
-		float Default_ShotDelay = 0.1f; 
+		float ShotInterval = 0.1f; 
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
-		float Default_ReloadTime = 1.0f;
+		float ReloadTime = 1.0f;
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
 		float Weapon_Range = 3000.f;
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
 		float Weapon_Damage = 10.f;
 
 	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		int32 Weapon_Default_MagazineSize;
+		int32 MagazineSize;
 	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		int32 Weapon_Default_MaxAmmo;
+		int32 MaxInventoryAmmo;
 
 	//Animations FP
 	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
@@ -68,6 +68,8 @@ public:
 	//Audio Files
 	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ShotAudio;
+	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* HitAudio;
 	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ReloadAudio;
 };

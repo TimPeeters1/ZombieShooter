@@ -33,8 +33,8 @@ public:
 	void AddAmmoToActor_Implementation(AActor* ActorToAdd);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-	void OnInteract(AActor* InstigatingActor);
-	virtual void OnInteract_Implementation(AActor* InstigatingActor) override;
+	void OnStartInteract(AActor* InstigatingActor);
+	virtual void OnStartInteract_Implementation(AActor* InstigatingActor) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
 	void StartHover(AActor* InstigatingActor);

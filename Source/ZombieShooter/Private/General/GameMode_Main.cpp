@@ -34,12 +34,28 @@ void AGameMode_Main::OverrideZombieSpawn()
 	}
 }
 
+FColor AGameMode_Main::PickPlayerColor_Unique()
+{
+	if (!AvailablePlayerColors.IsEmpty()) {
+		FColor PickedColor = AvailablePlayerColors[FMath::RandRange(0, (AvailablePlayerColors.Num() - 1))];
+		AvailablePlayerColors.Remove(PickedColor);
+		return PickedColor;
+	}
+	return FColor::White;
+}
+
 void AGameMode_Main::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
 
-	if (GameInstance)
+	if (GameInstance) {
 		GameInstance->PlayerControllers.Add(NewPlayer);
+
+		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(NewPlayer);
+		if (PlayerController) {
+			PlayerController->PlayerColor = PickPlayerColor_Unique();
+		}
+	}
 }
 
 void AGameMode_Main::Logout(AController* ExitingPlayer)
@@ -87,9 +103,17 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(NewPawn);
 	if (PlayerPawn) {
-		PlayerPawn->GetHealthComponent()->OnDeath.AddUniqueDynamic(this, &AGameMode_Main::OnPlayerDeath);
 		PlayersAliveInGame.Add(PlayerPawn);
+		PlayerPawn->GetHealthComponent()->OnDeath.AddUniqueDynamic(this, &AGameMode_Main::OnPlayerDeath);
+
+		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(Controller);
+		if (PlayerController) {
+			PlayerPawn->PlayerGameColor = PlayerController->PlayerColor;
+			PlayerPawn->OnRep_PlayerColor();
+		}
 	}
+
+
 	if (!bOverrideConnectionFlow)
 		OnPlayerPawnSpawned(NewPawn);
 

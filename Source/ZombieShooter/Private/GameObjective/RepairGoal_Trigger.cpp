@@ -34,7 +34,7 @@ void ARepairGoal_Trigger::BeginPlay()
 	}
 }
 
-void ARepairGoal_Trigger::OnInteract_Implementation(AActor* InstigatingActor)
+void ARepairGoal_Trigger::OnStartInteract_Implementation(AActor* InstigatingActor)
 {
 	if (bRepaired) return;
 

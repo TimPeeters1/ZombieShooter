@@ -33,7 +33,10 @@ public:
 	/** Returns Health Status **/
 	bool IsActorDead() { return bActorDied; }
 
+	UFUNCTION(BlueprintCallable, Category = "HealthFunctions")
 	void AddHealth(float Addition);
+
+	UFUNCTION(BlueprintCallable, Category = "HealthFunctions")
 	void ReduceHealth(float Deduction);
 
 	UFUNCTION(NetMulticast, Reliable)

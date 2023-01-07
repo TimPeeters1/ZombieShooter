@@ -85,21 +85,15 @@ void UPlayerWeaponComponent::OnRep_ActiveWeapon()
 
 	//Set FP Visuals of ActiveWeapon
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
-	if (!ParentPawn) return;
+	if (!ParentPawn) { return; }
 
-	if (ParentPawn->GetArmModel()) {
-		ParentPawn->GetArmModel()->SetSkeletalMesh(ActiveWeapon->WeaponData->WeaponArmMesh, true);
+	if (ParentPawn->GetFP_WeaponModel() && ParentPawn->GetFP_ArmModel()) {
+		ParentPawn->GetFP_WeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
+		ParentPawn->GetFP_WeaponModel()->SetupAttachment(ParentPawn->GetFP_ArmModel(), FName("GripPoint"));
+		ParentPawn->GetFP_WeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->WeaponMesh_Offset);
 	}
 
-	if (ParentPawn->GetWeaponModel()) {
-		ParentPawn->GetWeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->FP_Model_Transform);
-		ParentPawn->GetWeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
-	}
-
-	if (ParentPawn->GetWeaponAudioComponent()) {
-		ParentPawn->GetWeaponAudioComponent()->Stop();
-		ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
-	}
+	OnSwitchWeapon.Broadcast();
 }
 
 void UPlayerWeaponComponent::OnPickupWeapon(AWeaponObject* WeaponToPickup)
@@ -172,7 +166,7 @@ void UPlayerWeaponComponent::DropFirstWeaponFromInventory_Implementation()
 
 		if (!EquippedWeapons.IsEmpty()) {
 			uint8 WeaponIndex = EquippedWeapons.Find(ActiveWeapon);
-			if(EquippedWeapons[WeaponIndex])
+			if (EquippedWeapons[WeaponIndex])
 				EquippedWeapons.RemoveAt(WeaponIndex);
 		}
 
@@ -189,13 +183,13 @@ Firing Functionality
 void UPlayerWeaponComponent::OnFire()
 {
 	if (!ActiveWeapon) return;
-
-	bIsFiring = true;
+	if (bReloading) return;
 
 	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
 	switch (ActiveType)
 	{
 	case EWeaponType::MELEE:
+		OnFireEvent.Broadcast();
 		break;
 	case EWeaponType::SHOTGUN:
 		break;
@@ -205,11 +199,13 @@ void UPlayerWeaponComponent::OnFire()
 	case EWeaponType::BURSTFIRE:
 		break;
 	case EWeaponType::AUTOFIRE:
-		GetOwner()->GetWorldTimerManager().SetTimer(AutomaticFireTimer, this, &UPlayerWeaponComponent::SingleFire, ActiveWeapon->WeaponData->Default_ShotDelay, true, 0.0f);
+		GetOwner()->GetWorldTimerManager().SetTimer(AutomaticFireTimer, this, &UPlayerWeaponComponent::SingleFire, ActiveWeapon->WeaponData->ShotInterval, true, 0.0f);
 		break;
 	default:
 		break;
 	}
+
+	bIsFiring = true;
 }
 
 void UPlayerWeaponComponent::OnFireEnd()
@@ -239,21 +235,23 @@ void UPlayerWeaponComponent::OnFireEnd()
 
 void UPlayerWeaponComponent::SingleFire()
 {
+	if (bIsFiring) return;
+
 	ServerFireWeapon();
+
 	if (ActiveWeapon->LocalCurrentAmmo > 0) {
-		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 
 		//Deduce from local var, to update via RepNotify! (Reduces snappy shooting over network)
 		ActiveWeapon->LocalCurrentAmmo--;
 
-		//Visuals and VFX!
-		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ShotAudio);
-		ParentPawn->GetWeaponAudioComponent()->Play();
-
-		if (ActiveWeapon->WeaponData->MuzzleFlash_VFX)
-			UNiagaraFunctionLibrary::SpawnSystemAttached(ActiveWeapon->WeaponData->MuzzleFlash_VFX, ParentPawn->GetWeaponModel(), FName(TEXT("MuzzleFlash")), FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
-
 		OnFireEvent.Broadcast();
+	}
+}
+
+void UPlayerWeaponComponent::MeleeFire()
+{
+	if (!bIsFiring) {
+		ServerMeleeWeapon();
 	}
 }
 
@@ -272,8 +270,7 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 		if (ParentPawn->GetFP_Camera()) {
 			FVector StartLoc = ParentPawn->GetFP_Camera()->GetComponentLocation();
 
-			//TODO Add Gun Range
-			FVector ControlRot = ParentPawn->GetControlRotation().Vector() * 10000.0f;
+			FVector ControlRot = ParentPawn->GetControlRotation().Vector() * ActiveWeapon->WeaponData->Weapon_Range;
 			FVector EndLoc = StartLoc + ControlRot;
 
 			FCollisionQueryParams CollisionParams;
@@ -287,8 +284,37 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 				//FString hitRes = HitResult.GetActor()->GetName();
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
 
-				//TODO Add Gun Damage
-				UGameplayStatics::ApplyDamage(HitResult.GetActor(), 10, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+				UGameplayStatics::ApplyDamage(HitResult.GetActor(), ActiveWeapon->WeaponData->Weapon_Damage, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+			}
+		}
+	}
+}
+void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
+{
+	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+
+	if (ParentPawn) {
+		const FVector StartPoint = ParentPawn->GetFP_WeaponModel()->GetSocketLocation("TraceStart");
+		const FVector EndPoint = ParentPawn->GetFP_WeaponModel()->GetSocketLocation("TraceEnd");
+
+		TArray<AActor*> ActorsToIgnore = { this->GetOwner() };
+
+		TArray<FHitResult> HitArray;
+
+		ETraceTypeQuery TraceChannelQuery = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
+
+		const bool Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), StartPoint, EndPoint, 50.0f,
+			TraceChannelQuery, false, ActorsToIgnore,
+			EDrawDebugTrace::None, HitArray, true, FLinearColor::Red, FLinearColor::Green, 5.f);
+
+		if (Hit) {
+			for (const FHitResult HitResult : HitArray)
+			{
+				UGameplayStatics::ApplyDamage(HitResult.GetActor(), ActiveWeapon->WeaponData->Weapon_Damage, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+				UGameplayStatics::SpawnSoundAttached(ActiveWeapon->WeaponData->HitAudio,
+					ParentPawn->GetFP_WeaponModel(), "", FVector(ForceInit),
+					EAttachLocation::SnapToTarget, false,
+					ActiveWeapon->WeaponData->HitAudio->Volume, ActiveWeapon->WeaponData->HitAudio->Pitch);
 			}
 		}
 	}
@@ -299,30 +325,28 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 /*
 Reloading Functionality
 */
-void UPlayerWeaponComponent::OnReloadWeapon()
+void UPlayerWeaponComponent::OnReload()
 {
-	ServerReloadWeapon();
-
 	if (!ActiveWeapon) return;
-	if (bIsFiring) return;
+	if (ActiveWeapon->WeaponData->WeaponBehaviour == EWeaponType::MELEE) return;
+	if (bIsFiring || bReloading) return;
 
-	if (ActiveWeapon->LocalCurrentAmmo >= 0) {
-		APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
+	GetOwner()->GetWorldTimerManager().SetTimer(ReloadTimer, this, &UPlayerWeaponComponent::ReloadWeapon, ActiveWeapon->WeaponData->ReloadTime, false, ActiveWeapon->WeaponData->ReloadTime);
 
-		/*
-		if (ActiveWeapon->InventoryAmmo > ActiveWeapon->MagazineSize)
-			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo - ActiveWeapon->MagazineSize;
-		else
-			ActiveWeapon->CurrentAmmo = ActiveWeapon->InventoryAmmo;
-		*/
+	if (ActiveWeapon->LocalCurrentAmmo >= 0 && ActiveWeapon->LocalCurrentAmmo < ActiveWeapon->WeaponData->MagazineSize) {
+		bReloading = true;
 
-		//Visuals and VFX!
-		//ParentPawn->GetWeaponAudioComponent()->SetSound(ActiveWeapon->WeaponData->ReloadAudio);
-		//ParentPawn->GetWeaponAudioComponent()->Play();
 		OnReloadEvent.Broadcast();
-
 	}
 }
+
+void UPlayerWeaponComponent::ReloadWeapon()
+{
+	GetOwner()->GetWorldTimerManager().ClearTimer(ReloadTimer);
+	ServerReloadWeapon();
+	bReloading = false;
+}
+
 
 void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 {

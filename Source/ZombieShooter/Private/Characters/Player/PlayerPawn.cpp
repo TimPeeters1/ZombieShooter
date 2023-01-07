@@ -95,13 +95,14 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APlayerPawn::OnStartCrouch);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APlayerPawn::OnStopCrouch);
 
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerPawn::OnPerformInteraction);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerPawn::OnStartInteraction);
+	PlayerInputComponent->BindAction("Interact", IE_Released, this, &APlayerPawn::OnStopInteraction);
 
 	if (!PlayerWeaponComponent) return;
 	//Weapon Component
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFireEnd);
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnReloadWeapon);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnReload);
 	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
 	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
 	
@@ -116,6 +117,7 @@ void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APlayerPawn, PlayerWeaponComponent);
+	DOREPLIFETIME(APlayerPawn, PlayerGameColor);
 }
 
 
@@ -225,25 +227,36 @@ void APlayerPawn::OnStopSprint_Server_Implementation()
 	}
 }
 
-void APlayerPawn::OnPerformInteraction()
+void APlayerPawn::OnStartInteraction()
 {
 	if (!IsLocallyControlled()) return;
 
-	ServerPerformInteraction();
+	ServerStartInteraction();
 
-	//This Could be a little overdone, as this is also called from the Server RPC (ServerPerformInteraction). 
+	//This Could be a little overdone, as this is also called from the Server RPC (ServerStartInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
 	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStartInteract(InteractingActor, this);
 
 }
 
-void APlayerPawn::ServerPerformInteraction_Implementation()
+void APlayerPawn::OnStopInteraction() {
+	if (!IsLocallyControlled()) return;
+
+	ServerStopInteraction();
+
+	//This Could be a little overdone, as this is also called from the Server RPC (ServerStopInteraction). 
+	//but as lag would have it, the earlier the actor responds, the better.. right?
+	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
+		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStopInteract(InteractingActor, this);
+}
+
+void APlayerPawn::ServerStartInteraction_Implementation()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	if (InteractingActor) {
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStartInteract(InteractingActor, this);
 
 		/*
 		//TEMP Implemenation for Object Pickups.
@@ -261,6 +274,15 @@ void APlayerPawn::ServerPerformInteraction_Implementation()
 			}
 		}
 		*/
+	}
+}
+
+void APlayerPawn::ServerStopInteraction_Implementation()
+{
+	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
+
+	if (InteractingActor) {
+		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStopInteract(InteractingActor, this);
 	}
 }
 

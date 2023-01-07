@@ -36,7 +36,7 @@ void ARepairGoal::OnRep_RepairAmount()
 }
 
 
-void ARepairGoal::OnInteract_Implementation(AActor* InteractionInstigator)
+void ARepairGoal::OnStartInteract_Implementation(AActor* InteractionInstigator)
 {
 	if (!bRepaired) return;
 

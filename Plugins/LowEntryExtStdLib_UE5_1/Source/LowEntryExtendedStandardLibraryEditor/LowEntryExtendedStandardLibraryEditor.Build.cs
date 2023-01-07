@@ -6,8 +6,9 @@ public class LowEntryExtendedStandardLibraryEditor : ModuleRules
 	public LowEntryExtendedStandardLibraryEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        bUsePrecompiled = true;
 
-		PublicIncludePaths.AddRange(
+        PublicIncludePaths.AddRange(
 			new string[]
 			{
 				Path.Combine(ModuleDirectory, "Public/Module"),

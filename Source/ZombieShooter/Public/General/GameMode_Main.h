@@ -39,6 +39,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 	FOnEndGame OnGameEnd;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PlayerSettings")
+		TArray<FColor> AvailablePlayerColors = { FColor::Orange, FColor::Green, FColor::Yellow, FColor::Purple };
+
 	/*
 	* Overrides the server connection flow, and spawns the playerpawn instantly as with a default gamemode.
 	*/
@@ -62,6 +65,9 @@ protected:
 	FTimerHandle OverrideZombieSpawnTimer;
 	void OverrideZombieSpawn();
 
+	FColor PickPlayerColor_Unique();
+
+	TArray<FColor*> UsedPlayerColors;
 
 public:
 	APawn* SpawnGamePawn(AController* Controller);

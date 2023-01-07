@@ -22,7 +22,10 @@ class ZOMBIESHOOTER_API IInteractableObjectInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-	void OnInteract(AActor* Instigator);
+	void OnStartInteract(AActor* Instigator);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
+		void OnStopInteract(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
 		void StartHover(AActor* Instigator);

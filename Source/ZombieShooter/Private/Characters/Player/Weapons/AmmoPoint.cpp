@@ -32,9 +32,9 @@ void AAmmoPoint::AddAmmoToActor_Implementation(AActor* ActorToAdd)
 		
 }
 
-void AAmmoPoint::OnInteract_Implementation(AActor* InstigatingActor)
+void AAmmoPoint::OnStartInteract_Implementation(AActor* InstigatingActor)
 {
-	IInteractableObjectInterface::OnInteract_Implementation(InstigatingActor);
+	IInteractableObjectInterface::OnStartInteract_Implementation(InstigatingActor);
 	
 	AddAmmoToActor(InstigatingActor);
 }

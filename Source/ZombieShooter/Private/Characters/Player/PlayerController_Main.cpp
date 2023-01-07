@@ -7,7 +7,6 @@
 #include "General/GameMode_Main.h"
 #include "Kismet/KismetStringLibrary.h"
 
-
 APlayerController_Main::APlayerController_Main() {
 	GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
 }
@@ -18,6 +17,7 @@ void APlayerController_Main::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 
 	DOREPLIFETIME(APlayerController_Main, PlayerEndState);
 	DOREPLIFETIME(APlayerController_Main, PlayerRemainingLives);
+	DOREPLIFETIME(APlayerController_Main, PlayerColor);
 }
 
 void APlayerController_Main::BeginPlay()
@@ -55,6 +55,7 @@ void APlayerController_Main::OnUnPossess()
 		GameInstance->PlayerPawns.Remove(this->GetPawn());
 	}
 }
+
 
 void APlayerController_Main::FindRandomSession(bool isLanSearch)
 {

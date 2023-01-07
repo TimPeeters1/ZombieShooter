@@ -1,10 +1,7 @@
 // Project 'Zombie Shooter' -Tim Peeters 2022/23
 
-
 #include "Characters/Player/Weapons/WeaponPickupPoint.h"
 
-
-// Sets default values
 AWeaponPickupPoint::AWeaponPickupPoint()
 {
 	PrimaryActorTick.bCanEverTick = true;

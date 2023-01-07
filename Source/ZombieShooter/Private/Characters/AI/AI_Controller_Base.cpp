@@ -60,6 +60,8 @@ void AAI_Controller_Base::OnPerception(AActor* Actor, FAIStimulus Stimulus)
 	if (DetectedThreats.IsEmpty()) return;
 	if (!DetectedThreats.Contains(Actor)) return;
 
+
+
 	//Set Focus on Actual First Sensed Actor. Only changes when lost sight.
 	//SetFocus(Stimulus.WasSuccessfullySensed() ? Actor : nullptr);
 
@@ -71,9 +73,6 @@ void AAI_Controller_Base::OnPerception(AActor* Actor, FAIStimulus Stimulus)
 
 		//Update Last Know Location in BB
 		BlackboardComponent->SetValueAsVector(FName("TargetLocation"), Actor->GetActorLocation());
-
-		/** Call an event dispatcher to notify observers. */
-
 	}
 	else {
 		Current_AIState = E_AI_State::IDLE;

@@ -13,7 +13,7 @@ ARepairObject::ARepairObject()
 	SetRootComponent(ObjectMesh);
 }
 
-void ARepairObject::OnInteract_Implementation(AActor* InstigatingActor)
+void ARepairObject::OnStartInteract_Implementation(AActor* InstigatingActor)
 {
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {

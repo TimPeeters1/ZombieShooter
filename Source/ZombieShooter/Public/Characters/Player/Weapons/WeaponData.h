@@ -18,9 +18,6 @@ enum class EWeaponType : uint8 {
 	AUTOFIRE = 4     UMETA(DisplayName = "AutomaticFire")
 };
 
-/**
- *
- */
 UCLASS(BlueprintType)
 class UWeaponData : public UDataAsset
 {
@@ -28,39 +25,51 @@ class UWeaponData : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName WeaponName;
+		FName WeaponName;	
 
 	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* WeaponMesh;
 	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
-		USkeletalMesh* WeaponArmMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FTransform FP_Model_Transform;
-
-	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		int32 Weapon_Default_MagazineSize;
-
-	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
-		int32 Weapon_Default_MaxAmmo;
-
-	UPROPERTY(Category = "Behaviour", EditAnywhere, BlueprintReadWrite)
-		EWeaponType WeaponBehaviour;
+		FTransform WeaponMesh_Offset;
 
 	//Behaviour Settings
+	UPROPERTY(Category = "Behaviour", EditAnywhere, BlueprintReadWrite)
+		EWeaponType WeaponBehaviour;
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
-		float Default_ShotDelay = 0.1f; 
+		float ShotInterval = 0.1f; 
 	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
-		float Default_ReloadTime = 1.0f;
+		float ReloadTime = 1.0f;
+	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
+		float Weapon_Range = 3000.f;
+	UPROPERTY(Category = "Behaviour|Settings", EditAnywhere, BlueprintReadWrite)
+		float Weapon_Damage = 10.f;
 
+	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+		int32 MagazineSize;
+	UPROPERTY(Category = "Ammo", EditAnywhere, BlueprintReadWrite)
+		int32 MaxInventoryAmmo;
 
-	UPROPERTY(Category = "Visuals|CameraShake", EditAnywhere, BlueprintReadWrite)
+	//Animations FP
+	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* IdleAnimation;
+	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* AttackAnimation;
+	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* ReloadAnimation;
+	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* EquipAnimation;
+
+	//Camera Effects
+	UPROPERTY(Category = "Visuals", EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<UCameraShakeBase> Shot_CamShake;
+	UPROPERTY(Category = "Visuals", EditAnywhere, BlueprintReadWrite)
+		UNiagaraSystem* MuzzleFlash_FX;
 
-	UPROPERTY(Category = "Visuals|VFX", EditAnywhere, BlueprintReadWrite)
-		UNiagaraSystem* MuzzleFlash_VFX;
-	UPROPERTY(Category = "Effects|Audio", EditAnywhere, BlueprintReadWrite)
+	//Audio Files
+	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ShotAudio;
-	UPROPERTY(Category = "Effects|Audio", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* HitAudio;
+	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
 		UMetaSoundSource* ReloadAudio;
 };

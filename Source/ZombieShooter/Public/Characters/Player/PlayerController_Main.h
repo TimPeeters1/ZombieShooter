@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "OnlineSessionSettings.h"
 
+#include "GameFramework/PlayerStart.h"
+
 #include "General/GameInstance_Main.h"
 #include "General/SessionSubsystem_Main.h"
 
@@ -33,6 +35,9 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
 		FColor PlayerColor;
+
+	/*PlayerStart used by gamemode to respawn. Is only ever assigned serverside!*/
+	APlayerStart* AssignedPlayerStart;
 private:
 	APlayerController_Main();
 

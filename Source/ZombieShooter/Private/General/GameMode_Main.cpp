@@ -4,6 +4,7 @@
 #include "General/GameState_Main.h"
 #include "Spawning/SpawnManager.h"
 
+
 class ASpawnManager;
 
 AGameMode_Main::AGameMode_Main() {
@@ -15,6 +16,11 @@ AGameMode_Main::AGameMode_Main() {
 void AGameMode_Main::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TSubclassOf<APlayerStart> PlayerStartType;
+	PlayerStartType = APlayerStart::StaticClass();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), PlayerStartType, AvailablePlayerStarts);
+	ShuffleArray(AvailablePlayerStarts);
 
 	if (bOverrideConnectionFlow) {
 		GetWorldTimerManager().SetTimer(OverrideZombieSpawnTimer, this, &AGameMode_Main::OverrideZombieSpawn, 5.0f, true, 1.0f);
@@ -54,6 +60,7 @@ void AGameMode_Main::OnPostLogin(AController* NewPlayer)
 		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(NewPlayer);
 		if (PlayerController) {
 			PlayerController->PlayerColor = PickPlayerColor_Unique();
+			PlayerController->AssignedPlayerStart = AssignPlayerStart(NewPlayer);
 		}
 	}
 }
@@ -67,6 +74,24 @@ void AGameMode_Main::Logout(AController* ExitingPlayer)
 			GameInstance->PlayerControllers.Remove(ExitingPlayer);
 	}
 }
+
+APlayerStart* AGameMode_Main::AssignPlayerStart(AController* Controller)
+{
+	if (!AvailablePlayerStarts.IsEmpty()) {
+		if (Cast<APlayerStart>(AvailablePlayerStarts[0])) {
+			APlayerStart* SelectedStart = Cast<APlayerStart>(AvailablePlayerStarts[0]);
+			UsedPlayerStarts.Add(SelectedStart);
+			AvailablePlayerStarts.RemoveAt(0);
+
+			return SelectedStart;
+		}
+		else {
+			return Cast<APlayerStart>(FindPlayerStart(Controller));
+		}
+	}
+	return Cast<APlayerStart>(FindPlayerStart(Controller));
+}
+
 
 void AGameMode_Main::RestartPlayer(AController* NewPlayer)
 {
@@ -93,10 +118,14 @@ APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer
 	return NewPawn;
 }
 
-
 APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 {
-	FTransform SpawnTransform = FindPlayerStart(Controller)->GetTransform();
+	APlayerController_Main* PlayerController = Cast<APlayerController_Main>(Controller);
+	FTransform SpawnTransform = FindPlayerStart(Controller)->GetActorTransform();
+
+	if (PlayerController) {
+		SpawnTransform = PlayerController->AssignedPlayerStart->GetActorTransform();
+	}
 
 	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, SpawnTransform);
 	Controller->Possess(NewPawn);
@@ -106,13 +135,11 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 		PlayersAliveInGame.Add(PlayerPawn);
 		PlayerPawn->GetHealthComponent()->OnDeath.AddUniqueDynamic(this, &AGameMode_Main::OnPlayerDeath);
 
-		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(Controller);
 		if (PlayerController) {
 			PlayerPawn->PlayerGameColor = PlayerController->PlayerColor;
 			PlayerPawn->OnRep_PlayerColor();
 		}
 	}
-
 
 	if (!bOverrideConnectionFlow)
 		OnPlayerPawnSpawned(NewPawn);
@@ -146,6 +173,22 @@ void AGameMode_Main::StartGame()
 	GetWorld()->ServerTravel(URL, false, false);
 
 	OnGameStart.Broadcast();
+}
+
+void AGameMode_Main::ShuffleArray(TArray<AActor*>& inArray)
+{
+	if (inArray.Num() > 0)
+	{
+		int32 LastIndex = inArray.Num() - 1;
+		for (int32 i = 0; i <= LastIndex; ++i)
+		{
+			int32 Index = FMath::RandRange(i, LastIndex);
+			if (i != Index)
+			{
+				inArray.Swap(i, Index);
+			}
+		}
+	}
 }
 
 void AGameMode_Main::EndGameLost()

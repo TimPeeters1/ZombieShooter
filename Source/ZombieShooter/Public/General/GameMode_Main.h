@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameEngine.h"
 #include "GameFramework/GameMode.h"
+#include "GameFramework/PlayerStart.h"
 
 #include "GameInstance_Main.h"
 #include "Characters/Player/PlayerController_Main.h"
@@ -62,12 +63,19 @@ protected:
 
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
+	APlayerStart* AssignPlayerStart(AController* Controller);
+
+	TArray<AActor*> AvailablePlayerStarts;
+	TArray<AActor*> UsedPlayerStarts;
+
 	FTimerHandle OverrideZombieSpawnTimer;
 	void OverrideZombieSpawn();
 
 	FColor PickPlayerColor_Unique();
 
 	TArray<FColor*> UsedPlayerColors;
+
+	void ShuffleArray(TArray<AActor*>& inArray);
 
 public:
 	APawn* SpawnGamePawn(AController* Controller);

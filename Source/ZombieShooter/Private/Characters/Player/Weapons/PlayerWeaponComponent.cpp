@@ -244,8 +244,6 @@ void UPlayerWeaponComponent::OnFireEnd()
 
 void UPlayerWeaponComponent::SingleFire()
 {
-	if (bIsFiring){ return; }
-
 	ServerFireWeapon();
 	
 	if (ActiveWeapon->LocalCurrentAmmo > 0) {

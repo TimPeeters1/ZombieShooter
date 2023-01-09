@@ -16,6 +16,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwitchWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnChangeWeaponInventory);
 
 class APlayerPawn;
 
@@ -37,8 +38,8 @@ protected:
 		uint8 Max_EquippedWeapon_Count = 2;
 
 	//Equipped Weapon Data
-	UPROPERTY(Replicated, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
-		TArray<AWeaponObject*> EquippedWeapons;
+	UPROPERTY(ReplicatedUsing = OnRep_InventoryWeapons, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
+		TArray<AWeaponObject*> InventoryWeapons;
 
 	//Equipped Weapon Data
 	UPROPERTY(ReplicatedUsing = OnRep_ActiveWeapon, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
@@ -50,6 +51,7 @@ protected:
 	bool bReloading;
 
 public:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool bIsFiring;
 
 	UPROPERTY(BlueprintAssignable)
@@ -58,6 +60,9 @@ public:
 		FOnReloadEvent OnReloadEvent;
 	UPROPERTY(BlueprintAssignable)
 		FOnSwitchWeapon OnSwitchWeapon;
+	UPROPERTY(BlueprintAssignable)
+		FOnChangeWeaponInventory OnWeaponInventoryChanged;
+	
 
 	void SpawnStartWeapons();
 	AWeaponObject* SpawnWeaponObject(UWeaponData* WeaponData);
@@ -68,6 +73,9 @@ public:
 
 	UFUNCTION()
 		void OnRep_ActiveWeapon();
+
+	UFUNCTION()
+		void OnRep_InventoryWeapons();
 
 	UFUNCTION()
 	void OnPickupWeapon(AWeaponObject* WeaponToPickup);
@@ -118,7 +126,7 @@ public:
 	void DropFirstWeaponFromInventory_Implementation();
 
 	/** Returns Equipped WeaponObjects**/
-	TArray<AWeaponObject*> GetEquippedWeapons() const { return EquippedWeapons; }
+	TArray<AWeaponObject*> GetEquippedWeapons() const { return InventoryWeapons; }
 
 	/** Returns Active WeaponObject**/
 	AWeaponObject* GetActiveWeapon() const { return ActiveWeapon; }

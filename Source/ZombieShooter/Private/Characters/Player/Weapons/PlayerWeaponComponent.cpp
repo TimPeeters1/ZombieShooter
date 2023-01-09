@@ -14,7 +14,7 @@ void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UPlayerWeaponComponent, EquippedWeapons);
+	DOREPLIFETIME(UPlayerWeaponComponent, InventoryWeapons);
 	DOREPLIFETIME(UPlayerWeaponComponent, ActiveWeapon);
 }
 
@@ -35,10 +35,11 @@ void UPlayerWeaponComponent::SpawnStartWeapons()
 		//AWeaponObject* NewWeaponObject = (AWeaponObject*)GetWorld()->SpawnActor(AWeaponObject::StaticClass(), Params);
 		AWeaponObject* NewWeaponObject = SpawnWeaponObject(StartingWeapons[i]);
 
-		EquippedWeapons.Add(NewWeaponObject);
+		InventoryWeapons.Add(NewWeaponObject);
 	}
 
-	ActiveWeapon = EquippedWeapons[0];
+	ActiveWeapon = InventoryWeapons[0];
+
 	OnRep_ActiveWeapon();
 }
 
@@ -65,74 +66,82 @@ Weapon Switching (Inventory) Functionality
 */
 void UPlayerWeaponComponent::SetEquippedWeapon_Request_Implementation(uint8 Index)
 {
-	if (EquippedWeapons.IsEmpty()) { return; }
-	if (EquippedWeapons.Num() < (Index + 1)) { return; }
-	if (!EquippedWeapons[Index]) { return; }
+	if (InventoryWeapons.IsEmpty()) { return; }
+	if (InventoryWeapons.Num() < (Index + 1)) { return; }
+	if (!InventoryWeapons[Index]) { return; }
 
-	if (ActiveWeapon != EquippedWeapons[Index] && !bIsFiring) {
-		ActiveWeapon = EquippedWeapons[Index];
+	if (ActiveWeapon != InventoryWeapons[Index]) {
+		ActiveWeapon = InventoryWeapons[Index];
 		bIsFiring = false;
+		
+		//Serverside Update (RepNotify won't call on client)
+		OnRep_ActiveWeapon();
 	}
-
-	OnRep_ActiveWeapon();
 }
 
 void UPlayerWeaponComponent::OnRep_ActiveWeapon()
 {
-	if (!ActiveWeapon) return;
-
+	if(!ActiveWeapon){ return; }
+	
 	bIsFiring = false;
-
+	
 	//Set FP Visuals of ActiveWeapon
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 	if (!ParentPawn) { return; }
-
+	
 	if (ParentPawn->GetFP_WeaponModel() && ParentPawn->GetFP_ArmModel()) {
 		ParentPawn->GetFP_WeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
 		ParentPawn->GetFP_WeaponModel()->SetupAttachment(ParentPawn->GetFP_ArmModel(), FName("GripPoint"));
 		ParentPawn->GetFP_WeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->WeaponMesh_Offset);
 	}
-
+	
 	OnSwitchWeapon.Broadcast();
+}
+
+void UPlayerWeaponComponent::OnRep_InventoryWeapons()
+{
+	OnWeaponInventoryChanged.Broadcast();
 }
 
 void UPlayerWeaponComponent::OnPickupWeapon(AWeaponObject* WeaponToPickup)
 {
-	if (EquippedWeapons.Num() == 1) {
-		if (EquippedWeapons[0]->WeaponData->WeaponName == TEXT("None")) {
-			AWeaponObject* ObjectToDestroy = EquippedWeapons[0];
-			EquippedWeapons.Remove(ObjectToDestroy);
+	
+	if (InventoryWeapons.Num() == 1) {
+		if (InventoryWeapons[0]->WeaponData->WeaponName == TEXT("None")) {
+			AWeaponObject* ObjectToDestroy = InventoryWeapons[0];
+			InventoryWeapons.Remove(ObjectToDestroy);
 			ObjectToDestroy->Destroy();
-
-			EquippedWeapons.Add(WeaponToPickup);
+			
+			InventoryWeapons.Add(WeaponToPickup);
 			WeaponToPickup->Equip();
 			UpdateEquippedWeapons();
+			
 			return;
 		}
 	}
-
-	if (EquippedWeapons.Num() < Max_EquippedWeapon_Count) {
-		EquippedWeapons.Add(WeaponToPickup);
+	if (InventoryWeapons.Num() < Max_EquippedWeapon_Count) {
+		InventoryWeapons.Add(WeaponToPickup);
 		WeaponToPickup->Equip();
 	}
-
+	
 }
 
 void UPlayerWeaponComponent::UpdateEquippedWeapons_Implementation()
 {
-	if (EquippedWeapons.IsEmpty()) {
+	if (InventoryWeapons.IsEmpty()) {
 		//Spawns Local Weapon Object for Empty Weapon, must be destroyed when equipping new item!
 		FStringAssetReference AssetPath("/Game/_GAME/Blueprints/Weapons/DA_Weapon_Empty.DA_Weapon_Empty");
 		UWeaponData* EmptyData = Cast<UWeaponData>(AssetPath.TryLoad());
 		if (EmptyData) {
 			AWeaponObject* NewWeapon = SpawnWeaponObject(EmptyData);
-			EquippedWeapons.Add(NewWeapon);
+			InventoryWeapons.Add(NewWeapon);
 			EquipPrimaryWeapon();
 		}
 	}
 	else {
 		EquipPrimaryWeapon();
 	}
+	
 }
 
 void UPlayerWeaponComponent::EquipPrimaryWeapon()
@@ -164,14 +173,14 @@ void UPlayerWeaponComponent::DropFirstWeaponFromInventory_Implementation()
 		ActiveWeapon->SetActorLocation(DropLocation);
 		ActiveWeapon->Dequip();
 
-		if (!EquippedWeapons.IsEmpty()) {
-			uint8 WeaponIndex = EquippedWeapons.Find(ActiveWeapon);
-			if (EquippedWeapons[WeaponIndex])
-				EquippedWeapons.RemoveAt(WeaponIndex);
+		if (!InventoryWeapons.IsEmpty()) {
+			uint8 WeaponIndex = InventoryWeapons.Find(ActiveWeapon);
+			if (InventoryWeapons[WeaponIndex])
+				InventoryWeapons.RemoveAt(WeaponIndex);
 		}
-
-		UpdateEquippedWeapons();
 	}
+
+	UpdateEquippedWeapons();
 }
 
 #pragma endregion 
@@ -184,7 +193,7 @@ void UPlayerWeaponComponent::OnFire()
 {
 	if (!ActiveWeapon) return;
 	if (bReloading) return;
-
+	
 	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
 	switch (ActiveType)
 	{
@@ -213,7 +222,7 @@ void UPlayerWeaponComponent::OnFireEnd()
 	if (!ActiveWeapon) return;
 
 	bIsFiring = false;
-
+	
 	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
 	switch (ActiveType)
 	{
@@ -235,10 +244,10 @@ void UPlayerWeaponComponent::OnFireEnd()
 
 void UPlayerWeaponComponent::SingleFire()
 {
-	if (bIsFiring) return;
+	if (bIsFiring){ return; }
 
 	ServerFireWeapon();
-
+	
 	if (ActiveWeapon->LocalCurrentAmmo > 0) {
 
 		//Deduce from local var, to update via RepNotify! (Reduces snappy shooting over network)

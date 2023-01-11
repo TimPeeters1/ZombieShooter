@@ -124,7 +124,9 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 	FTransform SpawnTransform = FindPlayerStart(Controller)->GetActorTransform();
 
 	if (PlayerController) {
-		SpawnTransform = PlayerController->AssignedPlayerStart->GetActorTransform();
+		if (PlayerController->AssignedPlayerStart) {
+			SpawnTransform = PlayerController->AssignedPlayerStart->GetActorTransform();
+		}
 	}
 
 	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, SpawnTransform);

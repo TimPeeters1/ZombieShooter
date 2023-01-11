@@ -78,7 +78,7 @@ protected:
 	/*Weapons*/
 	//Weapon Logic Component
 	UPROPERTY(replicated, Category = "Components|Weapons", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UPlayerWeaponComponent* PlayerWeaponComponent;
+		UPlayerWeaponComponent* WeaponComponent;
 
 	/*Inventory*/
 	//Inventory Component
@@ -191,7 +191,7 @@ public:
 	 /** Returns Player Health Component **/
 	 class UGenericHealthComponent* GetHealthComponent() { return HealthComponent; }
 	 /** Returns Player Weapon Component **/
-	 class UPlayerWeaponComponent* GetWeaponComponent() { return PlayerWeaponComponent; }
+	 class UPlayerWeaponComponent* GetWeaponComponent() { return WeaponComponent; }
 	 /** Returns Player Inventory Component **/
 	 class UPlayerInventoryComponent* GetInventoryComponent() { return InventoryComponent; }
 

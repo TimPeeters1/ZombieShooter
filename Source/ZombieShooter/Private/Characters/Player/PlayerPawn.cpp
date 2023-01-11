@@ -58,9 +58,9 @@ APlayerPawn::APlayerPawn()
 		FP_WeaponAudio->SetAutoActivate(false);
 	}
 
-	if (!PlayerWeaponComponent) {
-		PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
-		PlayerWeaponComponent->SetIsReplicated(true);
+	if (!WeaponComponent) {
+		WeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+		WeaponComponent->SetIsReplicated(true);
 	}
 
 	if (!HealthComponent) {
@@ -98,15 +98,15 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerPawn::OnStartInteraction);
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &APlayerPawn::OnStopInteraction);
 
-	if (!PlayerWeaponComponent) return;
+	if (!WeaponComponent) return;
 	//Weapon Component
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFire);
-	PlayerInputComponent->BindAction("Fire", IE_Released, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFireEnd);
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnReload);
-	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
-	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::OnFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UPlayerWeaponComponent::OnFireEnd);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::OnReload);
+	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
+	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
 	
-	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::DropFirstWeaponFromInventory);
+	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::DropFirstWeaponFromInventory);
 
 	if (!InventoryComponent) return;
 	PlayerInputComponent->BindAction("DropItem", IE_Pressed, InventoryComponent, &UPlayerInventoryComponent::DropFirstItemFromInventory);
@@ -116,7 +116,8 @@ void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(APlayerPawn, PlayerWeaponComponent);
+	DOREPLIFETIME(APlayerPawn, WeaponComponent);
+	DOREPLIFETIME(APlayerPawn, InventoryComponent);
 	DOREPLIFETIME(APlayerPawn, PlayerGameColor);
 }
 
@@ -370,10 +371,10 @@ void APlayerPawn::OnDeath()
 		{
 			InventoryComponent->DropFirstItemFromInventory();
 		}
-		uint8 WeaponCount = PlayerWeaponComponent->GetEquippedWeapons().Num();
+		uint8 WeaponCount = WeaponComponent->GetEquippedWeapons().Num();
 		for (uint8 i = 0; i < WeaponCount; i++)
 		{
-			PlayerWeaponComponent->DropFirstWeaponFromInventory();
+			WeaponComponent->DropFirstWeaponFromInventory();
 		}
 
 		//Blueprint Assignable Local Death (Hide HUD, Hide FPS Viewmodel etc.)

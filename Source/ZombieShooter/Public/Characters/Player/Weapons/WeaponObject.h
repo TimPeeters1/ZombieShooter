@@ -94,5 +94,5 @@ public:
 		FOnSpawned OnWeaponSpawned;
 
 	UPROPERTY()
-		FOnPickup OnWeaponPikcup;
+		FOnPickup OnWeaponPickup;
 };

@@ -7,6 +7,7 @@ AWeaponObject::AWeaponObject()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
+	bAlwaysRelevant = true;
 
 	WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
 	RootComponent = WeaponModel;
@@ -79,7 +80,7 @@ void AWeaponObject::Equip_Implementation()
 	SetActorEnableCollision(false);
 	WeaponModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	OnWeaponPikcup.Broadcast();
+	OnWeaponPickup.Broadcast();
 }
 
 void AWeaponObject::Dequip_Implementation()

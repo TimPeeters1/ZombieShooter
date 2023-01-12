@@ -7,7 +7,7 @@ public class BlockoutToolsPlugin : ModuleRules
 	public BlockoutToolsPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		bUsePrecompiled = true;
+		bUsePrecompiled = false;
 
         PublicIncludePaths.AddRange(
 			new string[] {

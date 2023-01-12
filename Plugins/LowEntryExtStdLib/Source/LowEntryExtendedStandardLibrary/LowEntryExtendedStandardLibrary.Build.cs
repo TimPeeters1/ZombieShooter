@@ -5,10 +5,10 @@ public class LowEntryExtendedStandardLibrary : ModuleRules
 {
 	public LowEntryExtendedStandardLibrary(ReadOnlyTargetRules Target) : base(Target)
 	{
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        bUsePrecompiled = true;
 
-        PublicIncludePaths.AddRange(
+		PublicIncludePaths.AddRange(
 			new string[]
 			{
 				Path.Combine(ModuleDirectory, "Public/Module"),

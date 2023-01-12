@@ -32,6 +32,10 @@ void AGameMode_Main::OverrideZombieSpawn()
 	if (GameInstance->SpawnManager) {
 		GameInstance->SetGameState(EZombieGameState::INGAME);
 		GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Starting Spawning Routine!");
+
 		GetWorldTimerManager().ClearTimer(OverrideZombieSpawnTimer);
 	}
 	else {
@@ -124,7 +128,9 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 	FTransform SpawnTransform = FindPlayerStart(Controller)->GetActorTransform();
 
 	if (PlayerController) {
-		SpawnTransform = PlayerController->AssignedPlayerStart->GetActorTransform();
+		if (PlayerController->AssignedPlayerStart) {
+			SpawnTransform = PlayerController->AssignedPlayerStart->GetActorTransform();
+		}
 	}
 
 	APawn* NewPawn = GetWorld()->SpawnActor<APawn>(DefaultPawnClass, SpawnTransform);

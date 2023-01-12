@@ -43,7 +43,7 @@ protected:
 	FTimerHandle SpawnTimerHandle;
 
 public:	
-	float GenerateSpawnDelay();
+	float GenerateSpawnDelay();      
 
 	UFUNCTION()
 	void SpawnWeaponPickup();

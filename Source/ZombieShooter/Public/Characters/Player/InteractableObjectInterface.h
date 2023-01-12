@@ -7,7 +7,7 @@
 #include "InteractableObjectInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(BlueprintType)
+UINTERFACE()
 class UInteractableObjectInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -21,14 +21,9 @@ class ZOMBIESHOOTER_API IInteractableObjectInterface
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-	void OnStartInteract(AActor* Instigator);
+	virtual void OnStartInteract(AActor* Instigator);
+	virtual	void OnStopInteract(AActor* Instigator);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnStopInteract(AActor* Instigator);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StartHover(AActor* Instigator);
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover(AActor* Instigator);
+	virtual	void StartHover(AActor* Instigator);
+	virtual	void StopHover(AActor* Instigator);
 };

@@ -90,29 +90,36 @@ void AWeaponObject::Dequip_Implementation()
 	WeaponModel->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
-void AWeaponObject::OnStartInteract_Implementation(AActor* InstigatingActor)
+void AWeaponObject::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
 {
+	AGenericInteractionActor::OnStartInteract_BP_Implementation(InstigatingActor);
+
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
 		PlayerPawn->GetWeaponComponent()->OnPickupWeapon(this);
 	}
 }
 
-void AWeaponObject::StartHover_Implementation(AActor* InteractionInstigator)
+void AWeaponObject::StartHover_BP_Implementation(AActor* InteractionInstigator)
 {
+	AGenericInteractionActor::StartHover_BP_Implementation(InteractionInstigator);
+
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
 	if (PlayerPawn) {
 		PlayerPawn->OnStartHover(ObjectHoverText);
 	}
 }
 
-void AWeaponObject::StopHover_Implementation(AActor* InteractionInstigator)
+void AWeaponObject::StopHover_BP_Implementation(AActor* InteractionInstigator)
 {
+	AGenericInteractionActor::StopHover_BP_Implementation(InteractionInstigator);
+
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
 	if (PlayerPawn) {
 		PlayerPawn->OnStopHover();
 	}
 }
+
 
 
 

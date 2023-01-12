@@ -15,7 +15,31 @@ void AGenericInteractionActor::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AGenericInteractionActor::OnStartInteract_Implementation(AActor* InstigatingActor)
+void AGenericInteractionActor::OnStartInteract(AActor* InstigatingActor)
+{
+	IInteractableObjectInterface::OnStartInteract(InstigatingActor);
+	OnStartInteract_BP(InstigatingActor);
+}
+
+void AGenericInteractionActor::OnStopInteract(AActor* InstigatingActor)
+{
+	IInteractableObjectInterface::OnStopInteract(InstigatingActor);
+	OnStopInteract_BP(InstigatingActor);
+}
+
+void AGenericInteractionActor::StartHover(AActor* InstigatingActor)
+{
+	IInteractableObjectInterface::StartHover(InstigatingActor);
+	StartHover_BP(InstigatingActor);
+}
+
+void AGenericInteractionActor::StopHover(AActor* InstigatingActor)
+{
+	IInteractableObjectInterface::StopHover(InstigatingActor);
+	StopHover_BP(InstigatingActor);
+}
+
+void AGenericInteractionActor::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
 {
 	if (bHolddown) {
 		bIsHolding = true;
@@ -27,7 +51,7 @@ void AGenericInteractionActor::OnStartInteract_Implementation(AActor* Instigatin
 	}
 }
 
-void AGenericInteractionActor::OnStopInteract_Implementation(AActor* InstigatingActor)
+void AGenericInteractionActor::OnStopInteract_BP_Implementation(AActor* InstigatingActor)
 {
 	if (bHolddown) {
 		bIsHolding = false;
@@ -43,7 +67,7 @@ void AGenericInteractionActor::OnCompleteHolddown_Implementation()
 	}
 }
 
-void AGenericInteractionActor::StartHover_Implementation(AActor* InstigatingActor)
+void AGenericInteractionActor::StartHover_BP_Implementation(AActor* InstigatingActor)
 {
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
@@ -51,7 +75,7 @@ void AGenericInteractionActor::StartHover_Implementation(AActor* InstigatingActo
 		OnStartHover_Event.Broadcast();
 	}
 }
-void AGenericInteractionActor::StopHover_Implementation(AActor* InstigatingActor)
+void AGenericInteractionActor::StopHover_BP_Implementation(AActor* InstigatingActor)
 {
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {

@@ -39,21 +39,27 @@ public:
 protected:
 	bool bIsHolding;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void OnStartInteract(AActor* InstigatingActor);
-	virtual void OnStartInteract_Implementation(AActor* InstigatingActor) override;
+	virtual void OnStartInteract(AActor* InstigatingActor) override;
+	virtual void OnStopInteract(AActor* InstigatingActor) override;
+
+	virtual	void StartHover(AActor* InstigatingActor) override;
+	virtual	void StopHover(AActor* InstigatingActor) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void OnStopInteract(AActor* InstigatingActor);
-	virtual void OnStopInteract_Implementation(AActor* InstigatingActor) override;
+		void OnStartInteract_BP(AActor* InstigatingActor);
+	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void StartHover(AActor* InstigatingActor);
-	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
+		void OnStopInteract_BP(AActor* InstigatingActor);
+	virtual void OnStopInteract_BP_Implementation(AActor* InstigatingActor);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
+		void StartHover_BP(AActor* InstigatingActor);
+	virtual void StartHover_BP_Implementation(AActor* InstigatingActor);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover(AActor* InstigatingActor);
-	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
+		void StopHover_BP(AActor* InstigatingActor);
+	virtual void StopHover_BP_Implementation(AActor* InstigatingActor);
 
 	virtual void BeginPlay() override;
 

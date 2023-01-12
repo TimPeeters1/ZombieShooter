@@ -48,9 +48,8 @@ void AWeaponPickupPoint::SpawnWeaponPickup()
 
 		UGameplayStatics::FinishSpawningActor(NewWeaponObject, NewWeaponObject->GetTransform());
 
-		//NewWeaponObject->OnWeaponPikcup.AddDynamic(this, &AWeaponPickupPoint::OnPickup);
+		NewWeaponObject->OnWeaponPickup.AddDynamic(this, &AWeaponPickupPoint::OnPickup);
 		CurrentWeaponObject = NewWeaponObject;
-
 
 		GetWorld()->GetTimerManager().PauseTimer(SpawnTimerHandle);
 	}

@@ -11,6 +11,11 @@ AHealthPickupObject::AHealthPickupObject()
 	RootComponent = Mesh;
 }
 
+void AHealthPickupObject::BeginPlay()
+{
+	OnHealthSpawned.Broadcast();
+}
+
 void AHealthPickupObject::AddHealthToActor_Implementation(AActor* ActorToAdd)
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
@@ -23,6 +28,7 @@ void AHealthPickupObject::AddHealthToActor_Implementation(AActor* ActorToAdd)
 			if (PlayerPawn->GetHealthComponent()->Health < PlayerPawn->GetHealthComponent()->MaxHealth) {
 				PlayerPawn->GetHealthComponent()->AddHealth(HealthToAdd);
 				PlayerPawn->OnStopHover();
+				OnHealthPickup.Broadcast();
 				Destroy();
 			}
 		}

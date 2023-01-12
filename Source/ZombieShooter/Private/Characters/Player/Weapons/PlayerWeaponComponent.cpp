@@ -73,7 +73,7 @@ void UPlayerWeaponComponent::SetEquippedWeapon_Request_Implementation(uint8 Inde
 	if (ActiveWeapon != InventoryWeapons[Index]) {
 		ActiveWeapon = InventoryWeapons[Index];
 		bIsFiring = false;
-		
+
 		//Serverside Update (RepNotify won't call on client)
 		OnRep_ActiveWeapon();
 	}
@@ -84,7 +84,9 @@ void UPlayerWeaponComponent::OnRep_ActiveWeapon()
 	if(!ActiveWeapon){ return; }
 	
 	bIsFiring = false;
-	
+
+	UnBlockFire();
+
 	//Set FP Visuals of ActiveWeapon
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 	if (!ParentPawn) { return; }
@@ -193,6 +195,10 @@ void UPlayerWeaponComponent::OnFire()
 {
 	if (!ActiveWeapon) return;
 	if (bReloading) return;
+
+	if (bFireBlocked) return;
+
+	BlockFire();
 	
 	EWeaponType ActiveType = ActiveWeapon->WeaponData->WeaponBehaviour;
 	switch (ActiveType)
@@ -239,6 +245,22 @@ void UPlayerWeaponComponent::OnFireEnd()
 		break;
 	default:
 		break;
+	}
+}
+
+void UPlayerWeaponComponent::BlockFire()
+{
+	if (!bFireBlocked) {
+		bFireBlocked = true;
+		GetOwner()->GetWorldTimerManager().SetTimer(FireDelayTimer, this, &UPlayerWeaponComponent::UnBlockFire, ActiveWeapon->WeaponData->ShotInterval, false, ActiveWeapon->WeaponData->ShotInterval);
+	}
+}
+
+void UPlayerWeaponComponent::UnBlockFire()
+{
+	if (bFireBlocked) {
+		bFireBlocked = false;
+		GetOwner()->GetWorldTimerManager().ClearTimer(FireDelayTimer);
 	}
 }
 

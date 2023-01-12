@@ -10,8 +10,8 @@
 
 #include "WeaponObject.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSpawned);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickup);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponSpawned);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponPickup);
 
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
 class ZOMBIESHOOTER_API AWeaponObject : public AGenericInteractionActor
@@ -80,8 +80,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	UPROPERTY()
-		FOnSpawned OnWeaponSpawned;
+		FOnWeaponSpawned OnWeaponSpawned;
 
 	UPROPERTY()
-		FOnPickup OnWeaponPickup;
+		FOnWeaponPickup OnWeaponPickup;
 };

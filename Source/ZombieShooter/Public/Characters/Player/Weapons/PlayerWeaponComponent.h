@@ -46,8 +46,13 @@ protected:
 		AWeaponObject* ActiveWeapon;
 
 	FTimerHandle AutomaticFireTimer;
+	FTimerHandle FireDelayTimer;
 	FTimerHandle ReloadTimer;
 
+	void BlockFire();
+	void UnBlockFire();
+
+	bool bFireBlocked;
 	bool bReloading;
 
 public:
@@ -63,7 +68,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FOnChangeWeaponInventory OnWeaponInventoryChanged;
 	
-
 	void SpawnStartWeapons();
 	AWeaponObject* SpawnWeaponObject(UWeaponData* WeaponData);
 

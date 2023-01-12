@@ -42,14 +42,19 @@ void AHealthPickupPoint::SpawnHealthPickup()
 	FTransform SpawnTransform = FTransform(GetActorRotation(), GetActorLocation() + FVector(0, 0, 60.0f), FVector::OneVector);
 
 	CurrentHealthObject = GetWorld()->SpawnActor<AHealthPickupObject>(HealthPickupActor, SpawnTransform, SpawnParams);
+
+	CurrentHealthObject->OnHealthPickup.AddDynamic(this, &AHealthPickupPoint::OnPickup);
+
+	GetWorld()->GetTimerManager().PauseTimer(SpawnTimerHandle);
 }
 
 void AHealthPickupPoint::OnPickup()
 {
 	if (CurrentHealthObject) {
+		CurrentHealthObject->OnHealthPickup.RemoveDynamic(this, &AHealthPickupPoint::OnPickup);
 		CurrentHealthObject = nullptr;
 
-		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AHealthPickupPoint::SpawnHealthPickup, GenerateSpawnDelay(), false);
+		GetWorld()->GetTimerManager().UnPauseTimer(SpawnTimerHandle);
 	}
 }
 

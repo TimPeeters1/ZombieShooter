@@ -4,29 +4,31 @@
 
 #include "CoreMinimal.h"
 
-#include "General/GameMode_Main.h"
-#include "WeaponObject.h"
+#include "HealthPickupObject.h"
 
-#include "WeaponPickupPoint.generated.h"
+#include "HealthPickupPoint.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class ZOMBIESHOOTER_API AWeaponPickupPoint : public AActor
+class ZOMBIESHOOTER_API AHealthPickupPoint : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	AWeaponPickupPoint();
+
+public:
+	AHealthPickupPoint();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PickupPoint", meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<AHealthPickupObject> HealthPickupActor;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "WeaponPickupPoint", meta = (AllowPrivateAccess = "true"))
-		TArray<UWeaponData*> SpawnableWeaponTypes;
-
 	/*Minimal Seconds before a new weapon can spawn.*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "WeaponPickupPoint||Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PickupPoint||Settings", meta = (AllowPrivateAccess = "true"))
 		float MinSpawnDelay = 45.f;
 
 	/*Maximal Seconds before a new weapon can spawn.*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "WeaponPickupPoint||Settings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "PickupPoint||Settings", meta = (AllowPrivateAccess = "true"))
 		float MaxSpawnDelay = 120.f;
 
 	/*Maximal Seconds before a new weapon can spawn.*/
@@ -36,16 +38,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Visuals", meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* Mesh;
 
-	AWeaponObject* CurrentWeaponObject;
+	AHealthPickupObject* CurrentHealthObject;
+
+	float GenerateSpawnDelay();
 	FTimerHandle SpawnTimerHandle;
-	float GenerateSpawnDelay();      
-
-public:	
-	UFUNCTION()
-	void SpawnWeaponPickup();
+private:
 
 	UFUNCTION()
-	void OnPickup();
+		void SpawnHealthPickup();
+
+	UFUNCTION()
+		void OnPickup();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float Delta) override;

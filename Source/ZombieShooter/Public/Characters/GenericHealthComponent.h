@@ -18,7 +18,6 @@ class ZOMBIESHOOTER_API UGenericHealthComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-
 	UGenericHealthComponent();
 
 	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth, Category = "Health", EditAnywhere, BlueprintReadWrite)

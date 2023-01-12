@@ -35,8 +35,7 @@ void AWeaponPickupPoint::SpawnWeaponPickup()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
-	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GameMode && !SpawnableWeaponTypes.IsEmpty()) {
+	if (!SpawnableWeaponTypes.IsEmpty()) {
 
 		FTransform SpawnTransform = FTransform(GetActorRotation(), GetActorLocation() + FVector(0, 0, 90.0f), FVector::OneVector);
 		AWeaponObject* NewWeaponObject = (AWeaponObject*)GetWorld()->SpawnActorDeferred<AWeaponObject>(AWeaponObject::StaticClass(),
@@ -52,7 +51,8 @@ void AWeaponPickupPoint::SpawnWeaponPickup()
 		//NewWeaponObject->OnWeaponPikcup.AddDynamic(this, &AWeaponPickupPoint::OnPickup);
 		CurrentWeaponObject = NewWeaponObject;
 
-		GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
+
+		GetWorld()->GetTimerManager().PauseTimer(SpawnTimerHandle);
 	}
 }
 
@@ -62,7 +62,7 @@ void AWeaponPickupPoint::OnPickup()
 		CurrentWeaponObject->OnWeaponPickup.RemoveDynamic(this, &AWeaponPickupPoint::OnPickup);
 		CurrentWeaponObject = nullptr;
 
-		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AWeaponPickupPoint::SpawnWeaponPickup, GenerateSpawnDelay(), false);
+		GetWorld()->GetTimerManager().UnPauseTimer(SpawnTimerHandle);
 	}
 }
 

@@ -5,7 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-#include "Characters/Player/InteractableObjectInterface.h"
+#include "Interaction/GenericInteractionActor.h"
 #include "WeaponData.h"
 
 #include "WeaponObject.generated.h"
@@ -14,19 +14,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSpawned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickup);
 
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
-class ZOMBIESHOOTER_API AWeaponObject : public AActor, public IInteractableObjectInterface
+class ZOMBIESHOOTER_API AWeaponObject : public AGenericInteractionActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
 	AWeaponObject();
-
-	/*
-	* Text Displayed to player when hovering over object.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		FString ObjectHoverText = "Press 'E' to Pickup";
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponData, Category = "Weapon Data", EditAnywhere, BlueprintReadWrite)
 		UWeaponData* WeaponData;
@@ -39,18 +33,13 @@ public:
 		uint8 LocalCurrentAmmo;
 
 protected:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void OnStartInteract(AActor* InstigatingActor);
-	virtual void OnStartInteract_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void StartHover(AActor* InstigatingActor);
-	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
+	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover(AActor* InstigatingActor);
-	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
+	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
 
+	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
+	
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 

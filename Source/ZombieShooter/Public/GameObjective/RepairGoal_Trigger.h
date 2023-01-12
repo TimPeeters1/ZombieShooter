@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
 
-#include "Characters/Player/InteractableObjectInterface.h"
+#include "Interaction/GenericInteractionActor.h"
+
 #include "Components/BoxComponent.h"
 
 #include "RepairGoal_Trigger.generated.h"
@@ -16,18 +17,12 @@ class URepairData;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRepairedObject)
 
 UCLASS()
-class ZOMBIESHOOTER_API ARepairGoal_Trigger : public AActor, public IInteractableObjectInterface
+class ZOMBIESHOOTER_API ARepairGoal_Trigger : public AGenericInteractionActor
 {
 	GENERATED_BODY()
 
 public:
 	ARepairGoal_Trigger();
-
-	/*
-	* Text Displayed to player when hovering over object.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		FString ObjectHoverText = "Press 'E' to Repair";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		URepairData* ObjectData;
@@ -43,18 +38,11 @@ protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UTextRenderComponent* RepairObjectText;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnStartInteract(AActor* InstigatingActor);
-	virtual void OnStartInteract_Implementation(AActor* InstigatingActor) override;
+	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void StartHover(AActor* InstigatingActor);
-	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void StopHover(AActor* InstigatingActor);
-	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
-
+	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
+	
 	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 		FOnRepairedObject OnRepaired;
 

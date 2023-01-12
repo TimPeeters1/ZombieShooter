@@ -36,38 +36,45 @@ void ARepairGoal::OnRep_RepairAmount()
 }
 
 
-void ARepairGoal::OnStartInteract_Implementation(AActor* InteractionInstigator)
+void ARepairGoal::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
 {
+	AGenericInteractionActor::OnStartInteract_BP_Implementation(InstigatingActor);
+
 	if (!bRepaired) return;
 
 	//Win Condition when all objectives repaired.
 	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	TArray<APawn*> WinningActors = { Cast<APawn>(InteractionInstigator) };
+	TArray<APawn*> WinningActors = { Cast<APawn>(InstigatingActor) };
 
 	if (GameMode)
 		GameMode->EndGameWin(WinningActors);
 }
 
-void ARepairGoal::StartHover_Implementation(AActor* InteractionInstigator)
+void ARepairGoal::StartHover_BP_Implementation(AActor* InstigatingActor)
 {
+	AGenericInteractionActor::StartHover_BP_Implementation(InstigatingActor);
+
 	if (!bRepaired) {
-		StopHover(InteractionInstigator);
+		StopHover(InstigatingActor);
 		return;
 	}
 
-	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
 		PlayerPawn->OnStartHover(ObjectHoverText);
 	}
 }
 
-void ARepairGoal::StopHover_Implementation(AActor* InteractionInstigator)
+void ARepairGoal::StopHover_BP_Implementation(AActor* InstigatingActor)
 {
-	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
+	AGenericInteractionActor::StopHover_BP_Implementation(InstigatingActor);
+
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
 		PlayerPawn->OnStopHover();
 	}
 }
+
 
 void ARepairGoal::TextVisualUpdate()
 {

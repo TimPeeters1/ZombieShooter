@@ -3,12 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Interaction/GenericInteractionActor.h"
+
 #include "Characters/Player/InteractableObjectInterface.h"
 #include "Engine/TriggerBox.h"
+
 #include "AmmoPoint.generated.h"
 
 UCLASS()
-class ZOMBIESHOOTER_API AAmmoPoint : public AActor, public IInteractableObjectInterface
+class ZOMBIESHOOTER_API AAmmoPoint : public AGenericInteractionActor
 {
 	GENERATED_BODY()
 
@@ -18,12 +22,6 @@ private:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Visuals", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;
 
-	/*
-	* Text Displayed to player when hovering over object.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		FString ObjectHoverText = "Press 'E' to Restock Ammo";
-
 public:
 	/** Returns Current StaticMesh **/
 	class UStaticMeshComponent* GetMesh() { return Mesh; }
@@ -31,19 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="AmmoPoint")
 	void AddAmmoToActor(AActor* ActorToAdd);
 	void AddAmmoToActor_Implementation(AActor* ActorToAdd);
+
+	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
+
+	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
 	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-	void OnStartInteract(AActor* InstigatingActor);
-	virtual void OnStartInteract_Implementation(AActor* InstigatingActor) override;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-	void StartHover(AActor* InstigatingActor);
-	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-	void StopHover(AActor* InstigatingActor);
-	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
-
 	/*
 	UFUNCTION()
 	void OnStartOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,

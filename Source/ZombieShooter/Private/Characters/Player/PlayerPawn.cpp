@@ -237,7 +237,7 @@ void APlayerPawn::OnStartInteraction()
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerStartInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
 	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStartInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStartInteract(this);
 
 }
 
@@ -249,7 +249,7 @@ void APlayerPawn::OnStopInteraction() {
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerStopInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
 	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStopInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStopInteract(this);
 }
 
 void APlayerPawn::ServerStartInteraction_Implementation()
@@ -257,7 +257,7 @@ void APlayerPawn::ServerStartInteraction_Implementation()
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	if (InteractingActor) {
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStartInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStartInteract(this);
 
 		/*
 		//TEMP Implemenation for Object Pickups.
@@ -283,7 +283,7 @@ void APlayerPawn::ServerStopInteraction_Implementation()
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	if (InteractingActor) {
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStopInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStopInteract(this);
 	}
 }
 
@@ -316,12 +316,12 @@ void APlayerPawn::InteractionTrace()
 					ServerSetInteractingActor(InteractingActor);
 
 					//Start Local Hover FX
-					Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StartHover(InteractingActor, this);
+					Cast<IInteractableObjectInterface>(InteractingActor)->StartHover(this);
 				}
 			}
 			else if (InteractingActor)
 			{
-				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor, this);
+				Cast<IInteractableObjectInterface>(InteractingActor)->StopHover(this);
 				//OnStopInteraction.Broadcast();
 
 				ServerSetInteractingActor(nullptr);
@@ -329,7 +329,7 @@ void APlayerPawn::InteractionTrace()
 			}
 		}
 		else if (InteractingActor) {
-			Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor, this);
+			Cast<IInteractableObjectInterface>(InteractingActor)->StopHover(this);
 
 			ServerSetInteractingActor(nullptr);
 			InteractingActor = nullptr;

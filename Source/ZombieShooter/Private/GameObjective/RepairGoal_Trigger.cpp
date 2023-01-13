@@ -7,7 +7,7 @@
 
 ARepairGoal_Trigger::ARepairGoal_Trigger()
 {
-	SetReplicates(true);
+	bReplicates = true;
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>("BoxCollision", false);
 	BoxCollision->SetBoxExtent(FVector::OneVector * 50.0f);

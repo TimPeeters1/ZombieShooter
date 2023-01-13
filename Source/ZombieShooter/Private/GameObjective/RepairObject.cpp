@@ -5,7 +5,7 @@
 
 ARepairObject::ARepairObject()
 {
-	SetReplicates(true);
+	bReplicates = true;
 	SetReplicateMovement(true);
 	PrimaryActorTick.bCanEverTick = false;
 

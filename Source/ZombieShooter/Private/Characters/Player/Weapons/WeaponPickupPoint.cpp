@@ -5,6 +5,7 @@
 AWeaponPickupPoint::AWeaponPickupPoint()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
@@ -13,9 +14,8 @@ AWeaponPickupPoint::AWeaponPickupPoint()
 void AWeaponPickupPoint::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnWeaponPickup();
 
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AWeaponPickupPoint::SpawnWeaponPickup, GenerateSpawnDelay(), false);
+	SpawnWeaponPickup();
 }
 
 void AWeaponPickupPoint::Tick(float Delta)
@@ -29,6 +29,13 @@ void AWeaponPickupPoint::Tick(float Delta)
 float AWeaponPickupPoint::GenerateSpawnDelay()
 {
 	return FMath::RandRange(MinSpawnDelay, MaxSpawnDelay);
+}
+
+void AWeaponPickupPoint::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AWeaponPickupPoint, CurrentWeaponObject);
 }
 
 void AWeaponPickupPoint::SpawnWeaponPickup()
@@ -52,6 +59,7 @@ void AWeaponPickupPoint::SpawnWeaponPickup()
 		CurrentWeaponObject = NewWeaponObject;
 
 		GetWorld()->GetTimerManager().PauseTimer(SpawnTimerHandle);
+		GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
 	}
 }
 
@@ -61,7 +69,7 @@ void AWeaponPickupPoint::OnPickup()
 		CurrentWeaponObject->OnWeaponPickup.RemoveDynamic(this, &AWeaponPickupPoint::OnPickup);
 		CurrentWeaponObject = nullptr;
 
-		GetWorld()->GetTimerManager().UnPauseTimer(SpawnTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AWeaponPickupPoint::SpawnWeaponPickup, GenerateSpawnDelay(), false, -1.0f);
 	}
 }
 

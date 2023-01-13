@@ -8,17 +8,11 @@ ARepairGoal::ARepairGoal()
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
 
-	ObjectMesh = CreateDefaultSubobject<USkeletalMeshComponent>("ObjectMeshComponent", false);
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh", false);
 
 	RepairProgressText = CreateDefaultSubobject<UTextRenderComponent>("TextRenderComponent", false);
-	if (RepairProgressText)
-		RepairProgressText->SetupAttachment(ObjectMesh);
-}
-
-void ARepairGoal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	if (Mesh)
+		RepairProgressText->SetupAttachment(Mesh);
 }
 
 void ARepairGoal::BeginPlay()

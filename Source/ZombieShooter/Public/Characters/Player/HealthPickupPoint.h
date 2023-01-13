@@ -38,10 +38,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Visuals", meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* Mesh;
 
-	AHealthPickupObject* CurrentHealthObject;
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "PickupPoint", meta = (AllowPrivateAccess = "true"))
+		AHealthPickupObject* CurrentHealthObject;
 
 	float GenerateSpawnDelay();
 	FTimerHandle SpawnTimerHandle;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 private:
 
 	UFUNCTION()

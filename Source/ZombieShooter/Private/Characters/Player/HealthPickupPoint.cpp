@@ -8,6 +8,7 @@
 AHealthPickupPoint::AHealthPickupPoint()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
@@ -16,9 +17,8 @@ AHealthPickupPoint::AHealthPickupPoint()
 void AHealthPickupPoint::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnHealthPickup();
 
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AHealthPickupPoint::SpawnHealthPickup, GenerateSpawnDelay(), false);
+	SpawnHealthPickup();
 }
 
 void AHealthPickupPoint::Tick(float Delta)
@@ -34,6 +34,13 @@ float AHealthPickupPoint::GenerateSpawnDelay()
 	return FMath::RandRange(MinSpawnDelay, MaxSpawnDelay);
 }
 
+void AHealthPickupPoint::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AHealthPickupPoint, CurrentHealthObject);
+}
+
 void AHealthPickupPoint::SpawnHealthPickup()
 {
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
@@ -46,6 +53,7 @@ void AHealthPickupPoint::SpawnHealthPickup()
 	CurrentHealthObject->OnHealthPickup.AddDynamic(this, &AHealthPickupPoint::OnPickup);
 
 	GetWorld()->GetTimerManager().PauseTimer(SpawnTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
 }
 
 void AHealthPickupPoint::OnPickup()
@@ -54,7 +62,7 @@ void AHealthPickupPoint::OnPickup()
 		CurrentHealthObject->OnHealthPickup.RemoveDynamic(this, &AHealthPickupPoint::OnPickup);
 		CurrentHealthObject = nullptr;
 
-		GetWorld()->GetTimerManager().UnPauseTimer(SpawnTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &AHealthPickupPoint::SpawnHealthPickup, GenerateSpawnDelay(), false, -1.0f);
 	}
 }
 

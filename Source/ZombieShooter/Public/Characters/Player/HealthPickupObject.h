@@ -3,7 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
+
 #include "Interaction/GenericInteractionActor.h"
+
 #include "HealthPickupObject.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthSpawned);
@@ -12,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthPickup);
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AHealthPickupObject : public AGenericInteractionActor
 {
 	GENERATED_BODY()
@@ -39,6 +44,7 @@ public:
 
 	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
 	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
+
 
 	UPROPERTY()
 		FOnHealthSpawned OnHealthSpawned;

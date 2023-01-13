@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -29,10 +27,11 @@ public:
 
 protected:
 	UPROPERTY(Category = "RepairMechanic", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool bRepaired;
+		bool bRepaired;
 
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		USkeletalMeshComponent* ObjectMesh;
+		UStaticMeshComponent* Mesh;
+
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UTextRenderComponent* RepairProgressText;
 
@@ -54,6 +53,4 @@ public:
 		void OnRep_RepairAmount();
 
 	virtual void BeginPlay() override;
-
-	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 };

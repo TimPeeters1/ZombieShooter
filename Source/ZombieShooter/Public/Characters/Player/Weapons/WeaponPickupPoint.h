@@ -36,9 +36,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Visuals", meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* Mesh;
 
-	AWeaponObject* CurrentWeaponObject;
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "PickupPoint", meta = (AllowPrivateAccess = "true"))
+		AWeaponObject* CurrentWeaponObject;
+
 	FTimerHandle SpawnTimerHandle;
-	float GenerateSpawnDelay();      
+	float GenerateSpawnDelay();   
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 public:	
 	UFUNCTION()

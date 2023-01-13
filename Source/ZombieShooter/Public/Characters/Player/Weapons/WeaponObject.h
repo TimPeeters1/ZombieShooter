@@ -13,7 +13,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponSpawned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponPickup);
 
-UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AWeaponObject : public AGenericInteractionActor
 {
 	GENERATED_BODY()

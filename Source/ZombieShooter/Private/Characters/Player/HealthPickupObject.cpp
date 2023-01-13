@@ -7,12 +7,16 @@
 
 AHealthPickupObject::AHealthPickupObject()
 {
+	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
 }
 
 void AHealthPickupObject::BeginPlay()
 {
+	Super::BeginPlay();
 	OnHealthSpawned.Broadcast();
 }
 
@@ -27,9 +31,8 @@ void AHealthPickupObject::AddHealthToActor_Implementation(AActor* ActorToAdd)
 		{
 			if (PlayerPawn->GetHealthComponent()->Health < PlayerPawn->GetHealthComponent()->MaxHealth) {
 				PlayerPawn->GetHealthComponent()->AddHealth(HealthToAdd);
-				PlayerPawn->OnStopHover();
 				OnHealthPickup.Broadcast();
-				Destroy();
+				SetLifeSpan(0.1f);
 			}
 		}
 	}

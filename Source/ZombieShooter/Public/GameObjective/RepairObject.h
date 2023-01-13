@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#include "Interaction/GenericInteractionActor.h"
+
 #include "Characters/Player/InteractableObjectInterface.h"
 #include "GameObjective/RepairData.h"
 
@@ -10,18 +12,12 @@
 
 
 UCLASS()
-class ZOMBIESHOOTER_API ARepairObject : public AActor, public IInteractableObjectInterface
+class ZOMBIESHOOTER_API ARepairObject : public AGenericInteractionActor
 {
 	GENERATED_BODY()
 
 public:
 	ARepairObject();
-
-	/*
-	* Text Displayed to player when hovering over object.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		FString ObjectHoverText = "Press 'E' to Pickup";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		URepairData* ObjectData;
@@ -30,17 +26,11 @@ public:
 		UStaticMeshComponent* ObjectMesh;
 
 protected:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void OnStartInteract(AActor* InstigatingActor);
-	virtual void OnStartInteract_Implementation(AActor* InstigatingActor) override;
+	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void StartHover(AActor* InstigatingActor);
-	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
+	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover(AActor* InstigatingActor);
-	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
+	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
 
 public:
 	UFUNCTION(NetMulticast, Reliable)

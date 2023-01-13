@@ -32,6 +32,10 @@ void AGameMode_Main::OverrideZombieSpawn()
 	if (GameInstance->SpawnManager) {
 		GameInstance->SetGameState(EZombieGameState::INGAME);
 		GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Starting Spawning Routine!");
+
 		GetWorldTimerManager().ClearTimer(OverrideZombieSpawnTimer);
 	}
 	else {

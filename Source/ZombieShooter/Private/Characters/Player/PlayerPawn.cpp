@@ -58,9 +58,9 @@ APlayerPawn::APlayerPawn()
 		FP_WeaponAudio->SetAutoActivate(false);
 	}
 
-	if (!PlayerWeaponComponent) {
-		PlayerWeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
-		PlayerWeaponComponent->SetIsReplicated(true);
+	if (!WeaponComponent) {
+		WeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+		WeaponComponent->SetIsReplicated(true);
 	}
 
 	if (!HealthComponent) {
@@ -98,15 +98,15 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerPawn::OnStartInteraction);
 	PlayerInputComponent->BindAction("Interact", IE_Released, this, &APlayerPawn::OnStopInteraction);
 
-	if (!PlayerWeaponComponent) return;
+	if (!WeaponComponent) return;
 	//Weapon Component
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFire);
-	PlayerInputComponent->BindAction("Fire", IE_Released, PlayerWeaponComponent, &UPlayerWeaponComponent::OnFireEnd);
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::OnReload);
-	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
-	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::OnFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UPlayerWeaponComponent::OnFireEnd);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::OnReload);
+	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
+	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
 	
-	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, PlayerWeaponComponent, &UPlayerWeaponComponent::DropFirstWeaponFromInventory);
+	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::DropFirstWeaponFromInventory);
 
 	if (!InventoryComponent) return;
 	PlayerInputComponent->BindAction("DropItem", IE_Pressed, InventoryComponent, &UPlayerInventoryComponent::DropFirstItemFromInventory);
@@ -116,7 +116,8 @@ void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(APlayerPawn, PlayerWeaponComponent);
+	DOREPLIFETIME(APlayerPawn, WeaponComponent);
+	DOREPLIFETIME(APlayerPawn, InventoryComponent);
 	DOREPLIFETIME(APlayerPawn, PlayerGameColor);
 }
 
@@ -236,7 +237,7 @@ void APlayerPawn::OnStartInteraction()
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerStartInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
 	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStartInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStartInteract(this);
 
 }
 
@@ -248,7 +249,7 @@ void APlayerPawn::OnStopInteraction() {
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerStopInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
 	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStopInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStopInteract(this);
 }
 
 void APlayerPawn::ServerStartInteraction_Implementation()
@@ -256,7 +257,7 @@ void APlayerPawn::ServerStartInteraction_Implementation()
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	if (InteractingActor) {
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStartInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStartInteract(this);
 
 		/*
 		//TEMP Implemenation for Object Pickups.
@@ -282,7 +283,7 @@ void APlayerPawn::ServerStopInteraction_Implementation()
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
 	if (InteractingActor) {
-		Cast<IInteractableObjectInterface>(InteractingActor)->Execute_OnStopInteract(InteractingActor, this);
+		Cast<IInteractableObjectInterface>(InteractingActor)->OnStopInteract(this);
 	}
 }
 
@@ -315,12 +316,12 @@ void APlayerPawn::InteractionTrace()
 					ServerSetInteractingActor(InteractingActor);
 
 					//Start Local Hover FX
-					Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StartHover(InteractingActor, this);
+					Cast<IInteractableObjectInterface>(InteractingActor)->StartHover(this);
 				}
 			}
 			else if (InteractingActor)
 			{
-				Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor, this);
+				Cast<IInteractableObjectInterface>(InteractingActor)->StopHover(this);
 				//OnStopInteraction.Broadcast();
 
 				ServerSetInteractingActor(nullptr);
@@ -328,7 +329,7 @@ void APlayerPawn::InteractionTrace()
 			}
 		}
 		else if (InteractingActor) {
-			Cast<IInteractableObjectInterface>(InteractingActor)->Execute_StopHover(InteractingActor, this);
+			Cast<IInteractableObjectInterface>(InteractingActor)->StopHover(this);
 
 			ServerSetInteractingActor(nullptr);
 			InteractingActor = nullptr;
@@ -370,10 +371,10 @@ void APlayerPawn::OnDeath()
 		{
 			InventoryComponent->DropFirstItemFromInventory();
 		}
-		uint8 WeaponCount = PlayerWeaponComponent->GetEquippedWeapons().Num();
+		uint8 WeaponCount = WeaponComponent->GetEquippedWeapons().Num();
 		for (uint8 i = 0; i < WeaponCount; i++)
 		{
-			PlayerWeaponComponent->DropFirstWeaponFromInventory();
+			WeaponComponent->DropFirstWeaponFromInventory();
 		}
 
 		//Blueprint Assignable Local Death (Hide HUD, Hide FPS Viewmodel etc.)

@@ -31,7 +31,7 @@ public:
 		EZombieGameWinState PlayerEndState = EZombieGameWinState::UNDEFINED;
 
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
-		uint8 PlayerRemainingLives = 3;
+		uint8 PlayerRemainingLives = 5;
 
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
 		FColor PlayerColor;
@@ -49,7 +49,6 @@ private:
 
 	void OnPossess(APawn* InPawn) override;
 	void OnUnPossess() override;
-
 
 
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;

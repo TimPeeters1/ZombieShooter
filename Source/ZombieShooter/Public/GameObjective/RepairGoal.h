@@ -6,25 +6,20 @@
 #include "Net/UnrealNetwork.h"
 #include "Components/TextRenderComponent.h"
 
-#include "Characters/Player/InteractableObjectInterface.h"
+#include "Interaction/GenericInteractionActor.h"
+
 #include "RepairObject.h"
 #include "RepairGoal_Trigger.h"
 
 #include "RepairGoal.generated.h"
 
 UCLASS()
-class ZOMBIESHOOTER_API ARepairGoal : public AActor, public IInteractableObjectInterface
+class ZOMBIESHOOTER_API ARepairGoal : public AGenericInteractionActor
 {
 	GENERATED_BODY()
 
 public:
 	ARepairGoal();
-
-	/*
-	* Text Displayed to player when hovering over object.
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RepairMechanic", meta = (AllowPrivateAccess = "true"))
-		FString ObjectHoverText = "Press 'E' To Enter!";
 
 	UPROPERTY(Category = "RepairMechanic", EditAnywhere, BlueprintReadWrite)
 		TArray<ARepairGoal_Trigger*> RequiredRepairObjects;
@@ -41,17 +36,11 @@ protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UTextRenderComponent* RepairProgressText;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void OnStartInteract(AActor* InteractionInstigator);
-	virtual void OnStartInteract_Implementation(AActor* InteractionInstigator) override;
+	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interaction")
-		void StartHover(AActor* InstigatingActor);
-	virtual void StartHover_Implementation(AActor* InstigatingActor) override;
+	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-		void StopHover(AActor* InstigatingActor);
-	virtual void StopHover_Implementation(AActor* InstigatingActor) override;
+	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
 
 	//Visuals
 	void TextVisualUpdate();

@@ -97,7 +97,7 @@ void UPlayerWeaponComponent::OnRep_ActiveWeapon()
 		ParentPawn->GetFP_WeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->WeaponMesh_Offset);
 	}
 	
-	OnSwitchWeapon.Broadcast();
+	OnSwitchWeapon_FP.Broadcast();
 }
 
 void UPlayerWeaponComponent::OnRep_InventoryWeapons()
@@ -204,7 +204,7 @@ void UPlayerWeaponComponent::OnFire()
 	switch (ActiveType)
 	{
 	case EWeaponType::MELEE:
-		OnFireEvent.Broadcast();
+		OnFireEvent_FP.Broadcast();
 		break;
 	case EWeaponType::SHOTGUN:
 		break;
@@ -264,6 +264,11 @@ void UPlayerWeaponComponent::UnBlockFire()
 	}
 }
 
+void UPlayerWeaponComponent::FireCallback_Implementation()
+{
+	OnFireEvent_TPS.Broadcast();
+}
+
 void UPlayerWeaponComponent::SingleFire()
 {
 	ServerFireWeapon();
@@ -273,7 +278,7 @@ void UPlayerWeaponComponent::SingleFire()
 		//Deduce from local var, to update via RepNotify! (Reduces snappy shooting over network)
 		ActiveWeapon->LocalCurrentAmmo--;
 
-		OnFireEvent.Broadcast();
+		OnFireEvent_FP.Broadcast();
 	}
 }
 
@@ -309,11 +314,14 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 
 			GetWorld()->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Visibility, CollisionParams);
 
+			FireCallback();
+
 			if (HitResult.GetActor()) {
 				//FString hitRes = HitResult.GetActor()->GetName();
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
 
 				UGameplayStatics::ApplyDamage(HitResult.GetActor(), ActiveWeapon->WeaponData->Weapon_Damage, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+		
 			}
 		}
 	}
@@ -336,6 +344,8 @@ void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 			TraceChannelQuery, false, ActorsToIgnore,
 			EDrawDebugTrace::None, HitArray, true, FLinearColor::Red, FLinearColor::Green, 5.f);
 
+		FireCallback();
+
 		if (Hit) {
 			for (const FHitResult HitResult : HitArray)
 			{
@@ -344,6 +354,8 @@ void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 					ParentPawn->GetFP_WeaponModel(), "", FVector(ForceInit),
 					EAttachLocation::SnapToTarget, false,
 					ActiveWeapon->WeaponData->HitAudio->Volume, ActiveWeapon->WeaponData->HitAudio->Pitch);
+
+			
 			}
 		}
 	}
@@ -365,7 +377,7 @@ void UPlayerWeaponComponent::OnReload()
 	if (ActiveWeapon->LocalCurrentAmmo >= 0 && ActiveWeapon->LocalCurrentAmmo < ActiveWeapon->WeaponData->MagazineSize) {
 		bReloading = true;
 
-		OnReloadEvent.Broadcast();
+		OnReloadEvent_FP.Broadcast();
 	}
 }
 
@@ -375,7 +387,6 @@ void UPlayerWeaponComponent::ReloadWeapon()
 	ServerReloadWeapon();
 	bReloading = false;
 }
-
 
 void UPlayerWeaponComponent::ServerReloadWeapon_Implementation()
 {

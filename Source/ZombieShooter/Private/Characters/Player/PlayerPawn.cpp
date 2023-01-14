@@ -260,23 +260,6 @@ void APlayerPawn::ServerStartInteraction_Implementation()
 
 	if (InteractingActor) {
 		Cast<IInteractableObjectInterface>(InteractingActor)->OnStartInteract(this);
-
-		/*
-		//TEMP Implemenation for Object Pickups.
-		if (Cast<ARepairObject>(InteractingActor)) {
-			ARepairObject* RepairObject = Cast<ARepairObject>(InteractingActor);
-			if (!RepairObjectInventory.Contains(RepairObject)) {
-				RepairObjectInventory.Add(RepairObject);
-			}
-		}
-		else if (Cast<ARepairGoal>(InteractingActor)) {
-			ARepairGoal* RepairObjective = Cast<ARepairGoal>(InteractingActor);
-			if (!RepairObjectInventory.IsEmpty()) {
-				RepairObjective->AddRepairObject(RepairObjectInventory[0]);
-				RepairObjectInventory.RemoveAt(0);
-			}
-		}
-		*/
 	}
 }
 

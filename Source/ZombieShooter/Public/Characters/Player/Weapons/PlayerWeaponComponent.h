@@ -13,9 +13,13 @@
 
 #include "PlayerWeaponComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireEvent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwitchWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireEvent_FirstPerson);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFireEvent_ThirdPerson);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent_FirstPerson);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadEvent_ThirdPerson);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwitchWeapon_FirstPerson);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwitchWeapon_ThirdPerson);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnChangeWeaponInventory);
 
 class APlayerPawn;
@@ -28,6 +32,8 @@ class ZOMBIESHOOTER_API UPlayerWeaponComponent : public UActorComponent
 public:
 	UPlayerWeaponComponent();
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+		bool bIsFiring;
 protected:
 	//StartingWeapons
 	UPROPERTY(Category = "Weapons|Equipped Weapons ", EditAnywhere, BlueprintReadWrite)
@@ -45,9 +51,9 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_ActiveWeapon, Category = "Weapons|Equipped Weapons", EditInstanceOnly, BlueprintReadOnly)
 		AWeaponObject* ActiveWeapon;
 
-	FTimerHandle AutomaticFireTimer;
-	FTimerHandle FireDelayTimer;
-	FTimerHandle ReloadTimer;
+	AWeaponObject* SpawnWeaponObject(UWeaponData* WeaponData);
+
+	void SpawnStartWeapons();
 
 	void BlockFire();
 	void UnBlockFire();
@@ -55,64 +61,53 @@ protected:
 	bool bFireBlocked;
 	bool bReloading;
 
+	FTimerHandle AutomaticFireTimer;
+	FTimerHandle FireDelayTimer;
+	FTimerHandle ReloadTimer;
+
+	virtual void BeginPlay() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	bool bIsFiring;
 
-	UPROPERTY(BlueprintAssignable)
-		FOnFireEvent OnFireEvent;
-	UPROPERTY(BlueprintAssignable)
-		FOnReloadEvent OnReloadEvent;
-	UPROPERTY(BlueprintAssignable)
-		FOnSwitchWeapon OnSwitchWeapon;
-	UPROPERTY(BlueprintAssignable)
-		FOnChangeWeaponInventory OnWeaponInventoryChanged;
-	
-	void SpawnStartWeapons();
-	AWeaponObject* SpawnWeaponObject(UWeaponData* WeaponData);
+	/** Returns Equipped WeaponObjects**/
+	TArray<AWeaponObject*> GetEquippedWeapons() const { return InventoryWeapons; }
 
-	UFUNCTION(Server, Reliable)
-		void SetEquippedWeapon_Request(uint8 Index);
-	void SetEquippedWeapon_Request_Implementation(uint8 Index);
+	/** Returns Active WeaponObject**/
+	AWeaponObject* GetActiveWeapon() const { return ActiveWeapon; }
 
-	UFUNCTION()
-		void OnRep_ActiveWeapon();
-
-	UFUNCTION()
-		void OnRep_InventoryWeapons();
-
-	UFUNCTION()
-	void OnPickupWeapon(AWeaponObject* WeaponToPickup);
-
-	UFUNCTION(Server, Reliable)
-		void UpdateEquippedWeapons();
-	void UpdateEquippedWeapons_Implementation();
+	/*
+	* Input Functions (bound in APlayerPawn)
+	*/
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
 		void EquipPrimaryWeapon();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Secondary Weapon"), Category = "WeaponFunctions")
 		void EquipSecondaryWeapon();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnStart"), Category = "WeaponFunctions")
 		void OnFire();
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Fire Weapon"), Category = "WeaponFunctions")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnFireEnd"), Category = "WeaponFunctions")
 		void OnFireEnd();
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnReload"), Category = "WeaponFunctions")
 		void OnReload();
 
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SingleFire"), Category = "WeaponFunctions")
+		void SingleFire();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "MeleeFire"), Category = "WeaponFunctions")
+		void MeleeFire();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Single Fire"), Category = "WeaponFunctions")
-	void SingleFire();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ReloadWeapon"), Category = "WeaponFunctions")
+		void ReloadWeapon();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Melee Fire"), Category = "WeaponFunctions")
-	void MeleeFire();
+	/*
+	* RPC Implementation Client->Server
+	*/
+	UFUNCTION(Server, Reliable)
+		void SetEquippedWeapon_Request(uint8 Index);
+	void SetEquippedWeapon_Request_Implementation(uint8 Index);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Reload Weapon"), Category = "WeaponFunctions")
-	void ReloadWeapon();
-
-	void UnblockFire();
-
-	//Weapon Functionality
 	UFUNCTION(Server, reliable)
 		void ServerFireWeapon();
 	void ServerFireWeapon_Implementation();
@@ -129,15 +124,55 @@ public:
 		void DropFirstWeaponFromInventory();
 	void DropFirstWeaponFromInventory_Implementation();
 
-	/** Returns Equipped WeaponObjects**/
-	TArray<AWeaponObject*> GetEquippedWeapons() const { return InventoryWeapons; }
+	/*
+	* RPC Implementation Server->All Clients
+	*/
 
-	/** Returns Active WeaponObject**/
-	AWeaponObject* GetActiveWeapon() const { return ActiveWeapon; }
+	void FireServer();
 
-	virtual void BeginPlay() override;
+	UFUNCTION(NetMulticast, Reliable)
+		void FireCallback();
+	void FireCallback_Implementation();
 
-	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+	UFUNCTION(Server, Reliable)
+		void UpdateEquippedWeapons();
+	void UpdateEquippedWeapons_Implementation();
+
+
+
+	/*
+	* Replication Notifies
+	*/
+	UFUNCTION()
+		void OnRep_ActiveWeapon();
+
+	UFUNCTION()
+		void OnRep_InventoryWeapons();
+
+	UFUNCTION()
+		void OnPickupWeapon(AWeaponObject* WeaponToPickup);
+
+	/*
+	* First Person Event Delegates
+	*/
+	UPROPERTY(BlueprintAssignable)
+		FOnFireEvent_FirstPerson OnFireEvent_FP;
+	UPROPERTY(BlueprintAssignable)
+		FOnReloadEvent_FirstPerson OnReloadEvent_FP;
+	UPROPERTY(BlueprintAssignable)
+		FOnSwitchWeapon_FirstPerson OnSwitchWeapon_FP;
+	UPROPERTY(BlueprintAssignable)
+		FOnChangeWeaponInventory OnWeaponInventoryChanged;
+
+	/*
+	* Third Person Event Delegates
+	*/
+	UPROPERTY(BlueprintAssignable)
+		FOnFireEvent_ThirdPerson OnFireEvent_TPS;
+	UPROPERTY(BlueprintAssignable)
+		FOnReloadEvent_ThirdPerson OnReloadEvent_TPS;
+	UPROPERTY(BlueprintAssignable)
+		FOnSwitchWeapon_ThirdPerson OnSwitchWeapon_TPS;
 };
 
 

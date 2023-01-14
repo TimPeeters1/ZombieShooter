@@ -326,6 +326,7 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 		}
 	}
 }
+
 void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 {
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
@@ -350,12 +351,6 @@ void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 			for (const FHitResult HitResult : HitArray)
 			{
 				UGameplayStatics::ApplyDamage(HitResult.GetActor(), ActiveWeapon->WeaponData->Weapon_Damage, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
-				UGameplayStatics::SpawnSoundAttached(ActiveWeapon->WeaponData->HitAudio,
-					ParentPawn->GetFP_WeaponModel(), "", FVector(ForceInit),
-					EAttachLocation::SnapToTarget, false,
-					ActiveWeapon->WeaponData->HitAudio->Volume, ActiveWeapon->WeaponData->HitAudio->Pitch);
-
-			
 			}
 		}
 	}
@@ -384,7 +379,9 @@ void UPlayerWeaponComponent::OnReload()
 void UPlayerWeaponComponent::ReloadWeapon()
 {
 	GetOwner()->GetWorldTimerManager().ClearTimer(ReloadTimer);
+
 	ServerReloadWeapon();
+
 	bReloading = false;
 }
 

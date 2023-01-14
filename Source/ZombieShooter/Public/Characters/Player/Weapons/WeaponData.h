@@ -51,13 +51,23 @@ public:
 
 	//Animations FP
 	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
-		UAnimSequenceBase* IdleAnimation;
+		UAnimSequenceBase* IdleAnimation_FP;
 	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
-		UAnimSequenceBase* AttackAnimation;
+		UAnimSequenceBase* AttackAnimation_FP;
 	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
-		UAnimSequenceBase* ReloadAnimation;
+		UAnimSequenceBase* ReloadAnimation_FP;
 	UPROPERTY(Category = "Visuals|Animations|FirstPerson", EditAnywhere, BlueprintReadWrite)
-		UAnimSequenceBase* EquipAnimation;
+		UAnimSequenceBase* EquipAnimation_FP;
+
+	//Animations TPS
+	UPROPERTY(Category = "Visuals|Animations|ThirdPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* IdleAnimation_TPS;
+	UPROPERTY(Category = "Visuals|Animations|ThirdPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* AttackAnimation_TPS;
+	UPROPERTY(Category = "Visuals|Animations|ThirdPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* ReloadAnimation_TPS;
+	UPROPERTY(Category = "Visuals|Animations|ThirdPerson", EditAnywhere, BlueprintReadWrite)
+		UAnimSequenceBase* EquipAnimation_TPS;
 
 	//Camera Effects
 	UPROPERTY(Category = "Visuals", EditAnywhere, BlueprintReadWrite)
@@ -66,10 +76,17 @@ public:
 		UNiagaraSystem* MuzzleFlash_FX;
 
 	//Audio Files
-	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
-		UMetaSoundSource* ShotAudio;
-	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
-		UMetaSoundSource* HitAudio;
-	UPROPERTY(Category = "Audio", EditAnywhere, BlueprintReadWrite)
-		UMetaSoundSource* ReloadAudio;
+	UPROPERTY(Category = "Audio|FirstPerson", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* ShotAudio_FP;
+	UPROPERTY(Category = "Audio|FirstPerson", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* MeleeHitAudio_FP;
+	UPROPERTY(Category = "Audio|FirstPerson", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* ReloadAudio_FP;
+
+	UPROPERTY(Category = "Audio|ThirdPerson", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* ShotAudio_TPS;
+	UPROPERTY(Category = "Audio|ThirdPerson", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* MeleeHitAudio_TPS;
+	UPROPERTY(Category = "Audio|ThirdPerson", EditAnywhere, BlueprintReadWrite)
+		UMetaSoundSource* ReloadAudio_TPS;
 };

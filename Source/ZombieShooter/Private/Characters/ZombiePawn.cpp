@@ -67,7 +67,7 @@ void AZombiePawn::OnZombieAttack_Implementation()
 
 	UAnimInstance* AnimInst = GetMesh()->GetAnimInstance();
 	if (AnimInst)
-		AnimInst->Montage_Play(AttackAnimation[FMath::RandRange(0, (AttackAnimation.Num() - 1))]);
+		AnimInst->Montage_Play(AttackAnimation_FP[FMath::RandRange(0, (AttackAnimation_FP.Num() - 1))]);
 
 }
 

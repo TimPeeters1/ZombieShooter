@@ -23,8 +23,6 @@ float AZombiePawn::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 	DamageEvent.GetBestHitInfo(this, DamageCauser, HitRes, ImpulseDir);
 	ImpulseDir.Normalize();
 
-	MC_TakeDamageFX(HitRes.ImpactPoint, HitRes.ImpactNormal);
-
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
@@ -49,9 +47,6 @@ void AZombiePawn::ZombieAttack_Trace()
 		FLinearColor::Green, FLinearColor::Red, Attack_DebugDrawTime);
 
 	if (HitResult.GetActor()) {
-		FString hitRes = HitResult.GetComponent()->GetName();
-		if (GEngine && Attack_DebugType != EDrawDebugTrace::None)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, hitRes);
 
 		UGameplayStatics::ApplyDamage(HitResult.GetActor(), AttackDamage, GetController(), GetOwner(), UDamageType::StaticClass());
 	}
@@ -71,18 +66,10 @@ void AZombiePawn::OnZombieAttack_Implementation()
 
 }
 
-void AZombiePawn::MC_TakeDamageFX_Implementation(FVector ImpactLocation, FVector ImpactNormal)
-{
-	//DrawDebugPoint(GetWorld(), ImpactLocation, 3.0f, FColor::Green, false, 0.15f);
-	//TEMP Old Particle system!
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BloodSplatter_VFX, ImpactLocation, ImpactNormal.Rotation(), true);
-}
 
-// Called every frame
 void AZombiePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input

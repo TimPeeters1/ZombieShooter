@@ -16,6 +16,8 @@ void UPlayerWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(UPlayerWeaponComponent, InventoryWeapons);
 	DOREPLIFETIME(UPlayerWeaponComponent, ActiveWeapon);
+
+	DOREPLIFETIME(UPlayerWeaponComponent, LastHitResult);
 }
 
 void UPlayerWeaponComponent::BeginPlay()
@@ -61,6 +63,10 @@ AWeaponObject* UPlayerWeaponComponent::SpawnWeaponObject(UWeaponData* WeaponData
 #pragma endregion  
 
 #pragma region WeaponSwitchFunctionality
+void UPlayerWeaponComponent::OnStartMelee_Implementation()
+{
+	FireCallback();
+}
 /*
 Weapon Switching (Inventory) Functionality
 */
@@ -94,15 +100,27 @@ void UPlayerWeaponComponent::OnRep_ActiveWeapon()
 	if (ParentPawn->GetFP_WeaponModel() && ParentPawn->GetFP_ArmModel()) {
 		ParentPawn->GetFP_WeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
 		ParentPawn->GetFP_WeaponModel()->SetupAttachment(ParentPawn->GetFP_ArmModel(), FName("GripPoint"));
-		ParentPawn->GetFP_WeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->WeaponMesh_Offset);
+		ParentPawn->GetFP_WeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->WeaponMesh_Offset_FP);
 	}
-	
+
+	if (ParentPawn->GetMesh() && ParentPawn->GetTPS_WeaponModel()) {
+		ParentPawn->GetTPS_WeaponModel()->SetStaticMesh(ActiveWeapon->WeaponData->WeaponMesh);
+		ParentPawn->GetTPS_WeaponModel()->SetupAttachment(ParentPawn->GetTPS_WeaponModel(), FName("GripPoint"));
+		ParentPawn->GetTPS_WeaponModel()->SetRelativeTransform(ActiveWeapon->WeaponData->WeaponMesh_Offset_TPS);
+	}
+
 	OnSwitchWeapon_FP.Broadcast();
+	OnSwitchWeapon_TPS.Broadcast();
 }
 
 void UPlayerWeaponComponent::OnRep_InventoryWeapons()
 {
 	OnWeaponInventoryChanged.Broadcast();
+}
+
+void UPlayerWeaponComponent::OnRep_HitResult()
+{
+	OnWeaponHit.Broadcast();
 }
 
 void UPlayerWeaponComponent::OnPickupWeapon(AWeaponObject* WeaponToPickup)
@@ -205,6 +223,8 @@ void UPlayerWeaponComponent::OnFire()
 	{
 	case EWeaponType::MELEE:
 		OnFireEvent_FP.Broadcast();
+		//Call to server to trigger TPS Animation via callback.
+		OnStartMelee();
 		break;
 	case EWeaponType::SHOTGUN:
 		break;
@@ -321,7 +341,9 @@ void UPlayerWeaponComponent::ServerFireWeapon_Implementation()
 				//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *hitRes);
 
 				UGameplayStatics::ApplyDamage(HitResult.GetActor(), ActiveWeapon->WeaponData->Weapon_Damage, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
-		
+				LastHitResult = HitResult;
+				
+				OnWeaponHit.Broadcast();
 			}
 		}
 	}
@@ -345,12 +367,12 @@ void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 			TraceChannelQuery, false, ActorsToIgnore,
 			EDrawDebugTrace::None, HitArray, true, FLinearColor::Red, FLinearColor::Green, 5.f);
 
-		FireCallback();
-
 		if (Hit) {
 			for (const FHitResult HitResult : HitArray)
 			{
 				UGameplayStatics::ApplyDamage(HitResult.GetActor(), ActiveWeapon->WeaponData->Weapon_Damage, ParentPawn->GetController(), GetOwner(), UDamageType::StaticClass());
+				LastHitResult = HitResult;
+				OnWeaponHit.Broadcast();
 			}
 		}
 	}

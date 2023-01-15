@@ -21,9 +21,9 @@ AAI_Controller_Base::AAI_Controller_Base(FObjectInitializer const& ObjectInitial
 
 	SightPercpetion = ObjectInitializer.CreateDefaultSubobject<UAISenseConfig_Sight>(this, TEXT("SightConfig"));
 
-	SightPercpetion->SightRadius = 2000.0f;
-	SightPercpetion->LoseSightRadius = 2400.0f;
-	SightPercpetion->PeripheralVisionAngleDegrees = 130.f;
+	SightPercpetion->SightRadius = SightRadius;
+	SightPercpetion->LoseSightRadius = LoseSightRadius;
+	SightPercpetion->PeripheralVisionAngleDegrees = Sight_FOV;
 	SightPercpetion->DetectionByAffiliation.bDetectNeutrals = true;
 
 	AIPerceptionComponent->ConfigureSense(*SightPercpetion);
@@ -59,8 +59,6 @@ void AAI_Controller_Base::OnPerception(AActor* Actor, FAIStimulus Stimulus)
 	AIPerceptionComponent->GetHostileActors(DetectedThreats);
 	if (DetectedThreats.IsEmpty()) return;
 	if (!DetectedThreats.Contains(Actor)) return;
-
-
 
 	//Set Focus on Actual First Sensed Actor. Only changes when lost sight.
 	//SetFocus(Stimulus.WasSuccessfullySensed() ? Actor : nullptr);

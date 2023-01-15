@@ -22,6 +22,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwitchWeapon_ThirdPerson);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnChangeWeaponInventory);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponHit);
+
 class APlayerPawn;
 
 UCLASS(Blueprintable, ClassGroup = "Weapon System", meta = (BlueprintSpawnableComponent))
@@ -80,7 +82,6 @@ public:
 	/*
 	* Input Functions (bound in APlayerPawn)
 	*/
-
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Primary Weapon"), Category = "WeaponFunctions")
 		void EquipPrimaryWeapon();
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Equip Secondary Weapon"), Category = "WeaponFunctions")
@@ -101,9 +102,16 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "ReloadWeapon"), Category = "WeaponFunctions")
 		void ReloadWeapon();
 
+	UPROPERTY(ReplicatedUsing = OnRep_HitResult, BlueprintReadOnly, VisibleAnywhere)
+	FHitResult LastHitResult;
+
 	/*
 	* RPC Implementation Client->Server
 	*/
+	UFUNCTION(Server, Reliable)
+		void OnStartMelee();
+	void OnStartMelee_Implementation();
+
 	UFUNCTION(Server, Reliable)
 		void SetEquippedWeapon_Request(uint8 Index);
 	void SetEquippedWeapon_Request_Implementation(uint8 Index);
@@ -127,9 +135,6 @@ public:
 	/*
 	* RPC Implementation Server->All Clients
 	*/
-
-	void FireServer();
-
 	UFUNCTION(NetMulticast, Reliable)
 		void FireCallback();
 	void FireCallback_Implementation();
@@ -137,7 +142,6 @@ public:
 	UFUNCTION(Server, Reliable)
 		void UpdateEquippedWeapons();
 	void UpdateEquippedWeapons_Implementation();
-
 
 
 	/*
@@ -149,6 +153,12 @@ public:
 	UFUNCTION()
 		void OnRep_InventoryWeapons();
 
+	UFUNCTION()
+		void OnRep_HitResult();
+
+	/*
+	* Inventory Function
+	*/
 	UFUNCTION()
 		void OnPickupWeapon(AWeaponObject* WeaponToPickup);
 
@@ -173,6 +183,10 @@ public:
 		FOnReloadEvent_ThirdPerson OnReloadEvent_TPS;
 	UPROPERTY(BlueprintAssignable)
 		FOnSwitchWeapon_ThirdPerson OnSwitchWeapon_TPS;
+
+	//Hit Object Callback
+	UPROPERTY(BlueprintAssignable)
+		FOnWeaponHit OnWeaponHit;
 };
 
 

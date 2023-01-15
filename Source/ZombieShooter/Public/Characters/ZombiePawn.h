@@ -83,10 +83,6 @@ public:
 	//Called Via OnZombieAttack
 	void ZombieAttack_Trace();
 
-	UFUNCTION(NetMulticast, unreliable)
-	void MC_TakeDamageFX(FVector ImpactLocation, FVector ImpactNormal);
-	void MC_TakeDamageFX_Implementation(FVector ImpactLocation, FVector ImpactNormal);
-
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

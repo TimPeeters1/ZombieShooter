@@ -21,57 +21,42 @@ APlayerPawn::APlayerPawn()
 	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = MaxCrouchSpeed;
 
-	if (!FP_PlayerCamera) {
-		//Init Camera
-		FP_PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
-		FP_PlayerCamera->SetupAttachment(RootComponent);
-		FP_PlayerCamera->SetRelativeLocation(FVector(0, 0, 75.0f));
-		FP_PlayerCamera->bUsePawnControlRotation = true;
-	}
 
-	if (!FP_WeaponSway) {
-		//Init SpringArm and Set Variables to act as WeaponSway Component.
-		FP_WeaponSway = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
-		FP_WeaponSway->SetupAttachment(FP_PlayerCamera);
-		FP_WeaponSway->TargetArmLength = (float)0;
-		FP_WeaponSway->bDoCollisionTest = false;
-		FP_WeaponSway->bInheritRoll = false;
-		FP_WeaponSway->bEnableCameraRotationLag = true;
-		FP_WeaponSway->CameraRotationLagSpeed = (float)30;
-	}
+	//Init Camera
+	FP_PlayerCamera = CreateDefaultSubobject<UCameraComponent>("PlayerCamera");
+	FP_PlayerCamera->SetupAttachment(RootComponent);
+	FP_PlayerCamera->SetRelativeLocation(FVector(0, 0, 75.0f));
+	FP_PlayerCamera->bUsePawnControlRotation = true;
 
-	if (!FP_ArmModel) {
-		FP_ArmModel = CreateDefaultSubobject<USkeletalMeshComponent>("ArmModel");
-		FP_ArmModel->SetupAttachment(FP_WeaponSway);
-		FP_ArmModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	//Init SpringArm and Set Variables to act as WeaponSway Component.
+	FP_WeaponSway = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
+	FP_WeaponSway->SetupAttachment(FP_PlayerCamera);
+	FP_WeaponSway->TargetArmLength = (float)0;
+	FP_WeaponSway->bDoCollisionTest = false;
+	FP_WeaponSway->bInheritRoll = false;
+	FP_WeaponSway->bEnableCameraRotationLag = true;
+	FP_WeaponSway->CameraRotationLagSpeed = (float)30;
 
-	if (!FP_WeaponModel) {
-		FP_WeaponModel = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel");
-		FP_WeaponModel->SetupAttachment(FP_ArmModel, TEXT("GripPoint"));
-		FP_WeaponModel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	ArmModel_FP = CreateDefaultSubobject<USkeletalMeshComponent>("ArmModel_FP");
+	ArmModel_FP->SetupAttachment(FP_WeaponSway);
+	ArmModel_FP->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	if (!FP_WeaponAudio) {
-		FP_WeaponAudio = CreateDefaultSubobject<UAudioComponent>("WeaponAudioComponent");
-		FP_WeaponAudio->SetupAttachment(FP_WeaponModel);
-		FP_WeaponAudio->SetAutoActivate(false);
-	}
+	WeaponModel_FP = CreateDefaultSubobject<UStaticMeshComponent>("WeaponModel_FP");
+	WeaponModel_FP->SetupAttachment(ArmModel_FP, TEXT("GripPoint"));
+	WeaponModel_FP->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	if (!WeaponComponent) {
-		WeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
-		WeaponComponent->SetIsReplicated(true);
-	}
+	WeaponModel_TPS = CreateDefaultSubobject<UStaticMeshComponent>("TPS_WeaponModel");
+	WeaponModel_TPS->SetupAttachment(GetMesh(), TEXT("GripPoint"));
+	WeaponModel_TPS->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	if (!HealthComponent) {
-		HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
-		HealthComponent->SetIsReplicated(true);
-	}
+	WeaponComponent = CreateDefaultSubobject<UPlayerWeaponComponent>("WeaponComponent");
+	WeaponComponent->SetIsReplicated(true);
 
-	if (!InventoryComponent) {
-		InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>("InventoryComponent");
-		InventoryComponent->SetIsReplicated(true);
-	}
+	HealthComponent = CreateDefaultSubobject<UGenericHealthComponent>("HealthComponent");
+	HealthComponent->SetIsReplicated(true);
+
+	InventoryComponent = CreateDefaultSubobject<UPlayerInventoryComponent>("InventoryComponent");
+	InventoryComponent->SetIsReplicated(true);
 }
 
 // Called to bind functionality to input
@@ -105,7 +90,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::OnReload);
 	PlayerInputComponent->BindAction("EquipPrimaryWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::EquipPrimaryWeapon);
 	PlayerInputComponent->BindAction("EquipSecondaryWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::EquipSecondaryWeapon);
-	
+
 	PlayerInputComponent->BindAction("DropWeapon", IE_Pressed, WeaponComponent, &UPlayerWeaponComponent::DropFirstWeaponFromInventory);
 
 	if (!InventoryComponent) return;
@@ -130,23 +115,33 @@ void APlayerPawn::BeginPlay()
 
 	OnSetPlayerViewMode();
 
-	if (HealthComponent)
+	if (HealthComponent) {
 		HealthComponent->OnDeath.AddUniqueDynamic(this, &APlayerPawn::OnDeath);
+	}
 }
 
 void APlayerPawn::OnSetPlayerViewMode()
 {
 	if (IsLocallyControlled()) {
-		GetMesh()->SetVisibility(false, true);
-		FP_ArmModel->SetVisibility(true, true);
+		GetMesh()->SetVisibility(false, false);
+		if (WeaponModel_TPS) {
+			WeaponModel_TPS->SetVisibility(false, true);
+		}
+		if (ArmModel_FP) {
+			ArmModel_FP->SetVisibility(true, true);
+		}
 	}
 	else {
-		GetMesh()->SetVisibility(true, true);
-		FP_ArmModel->SetVisibility(false, true);
+		GetMesh()->SetVisibility(true, false);
+		if (WeaponModel_TPS) {
+			WeaponModel_TPS->SetVisibility(true, true);
+		}
+		if (ArmModel_FP) {
+			ArmModel_FP->SetVisibility(false, true);
+		}
 	}
 }
 
-// Called every frame
 void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

@@ -48,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		float MaxCrouchSpeed = 300.0f;
 
-	UPROPERTY(Replicated, Category = "Movement", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Replicated, Category = "Movement", VisibleAnywhere, BlueprintReadOnly)
 	bool bSprinting;
 
 protected:
@@ -58,18 +58,18 @@ protected:
 		UCameraComponent* FP_PlayerCamera;
 
 	//Camera Arm for Simple Weapon Sway.
-	UPROPERTY(Category = "Components|Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "Components|FirstPerson", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		USpringArmComponent* FP_WeaponSway;
 
 	//First Person Arms Model
-	UPROPERTY(Category = "Components|Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-		USkeletalMeshComponent* FP_ArmModel;
+	UPROPERTY(Category = "Components|FirstPerson", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		USkeletalMeshComponent* ArmModel_FP;
+	UPROPERTY(Category = "Components|FirstPerson", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* WeaponModel_FP;
 
-	UPROPERTY(Category = "Components|Weapons", VisibleDefaultsOnly , BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UStaticMeshComponent* FP_WeaponModel;
-
-	UPROPERTY(Category = "Components|Weapons", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UAudioComponent* FP_WeaponAudio;
+	//Third Person Model
+	UPROPERTY(Category = "Components|ThirdPerson", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		UStaticMeshComponent* WeaponModel_TPS;
 
 	/*Health*/
 	//Health Component
@@ -78,12 +78,12 @@ protected:
 
 	/*Weapons*/
 	//Weapon Logic Component
-	UPROPERTY(replicated, Category = "Components|Weapons", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(replicated, Category = "Components|Weapons", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UPlayerWeaponComponent* WeaponComponent;
 
 	/*Inventory*/
 	//Inventory Component
-	UPROPERTY(replicated, Category = "Components|Inventory", VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(replicated, Category = "Components|Inventory", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UPlayerInventoryComponent* InventoryComponent;
 
 	//Refrence to the Interactable Actor the Player is currently looking at. (InteractionTrace)
@@ -180,14 +180,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void OnRep_PlayerColor();
 
-	/** Returns Current FP Camera **/
+	/** Returns Current First Person Camera **/
 	class UCameraComponent* GetFP_Camera() { return FP_PlayerCamera; }
-	/** Returns Current FP Arm Model **/
-	 class USkeletalMeshComponent* GetFP_ArmModel() { return FP_ArmModel; }
-	/** Returns Current FP Weapon Model **/
-	 class UStaticMeshComponent* GetFP_WeaponModel()  { return FP_WeaponModel; }
-	/** Returns FP Audio Component **/
-	 class UAudioComponent* GetWeaponAudio()  { return FP_WeaponAudio; }
+	/** Returns Current First Person Arm Model **/
+	 class USkeletalMeshComponent* GetFP_ArmModel() { return ArmModel_FP; }
+	/** Returns Current First Person Weapon Model **/
+	 class UStaticMeshComponent* GetFP_WeaponModel()  { return WeaponModel_FP; }
+
+
+	 /** Returns Current Third Person Weapon Model **/
+	 class UStaticMeshComponent* GetTPS_WeaponModel() { return WeaponModel_TPS; }
 
 	 /** Returns Player Health Component **/
 	 class UGenericHealthComponent* GetHealthComponent() { return HealthComponent; }
@@ -196,7 +198,6 @@ public:
 	 /** Returns Player Inventory Component **/
 	 class UPlayerInventoryComponent* GetInventoryComponent() { return InventoryComponent; }
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input

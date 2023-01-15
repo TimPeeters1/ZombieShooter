@@ -29,8 +29,11 @@ public:
 
 	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* WeaponMesh;
+
 	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
-		FTransform WeaponMesh_Offset;
+		FTransform WeaponMesh_Offset_FP;
+	UPROPERTY(Category = "Visuals|Meshes", EditAnywhere, BlueprintReadWrite)
+		FTransform WeaponMesh_Offset_TPS;
 
 	//Behaviour Settings
 	UPROPERTY(Category = "Behaviour", EditAnywhere, BlueprintReadWrite)

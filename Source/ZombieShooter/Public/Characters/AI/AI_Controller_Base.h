@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZombieStateChanged);
 
 UENUM(BlueprintType)
 enum class E_AI_State : uint8 {
-	IDLE = 0 UMETA(DisplayName="Idle"),
+	IDLE = 0 UMETA(DisplayName = "Idle"),
 	ROAMING = 1 UMETA(DisplayName = "Roaming"),
 	FOLLOWING = 2 UMETA(DisplayName = "Following"),
 	TRAVELLING = 3 UMETA(DisplayName = "Travelling"),
@@ -36,9 +36,17 @@ public:
 
 	/** The event delegate that other objects can subscribe to. */
 	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
-	FOnZombieStateChanged ZombieStateChanged;
+		FOnZombieStateChanged ZombieStateChanged;
 
 protected:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Sight", meta = (AllowPrivateAccess = "true"))
+		float SightRadius = 2000.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Sight", meta = (AllowPrivateAccess = "true"))
+		float LoseSightRadius = 1500.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI|Sight", meta = (AllowPrivateAccess = "true"))
+		float Sight_FOV = 120.f;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 		class UBehaviorTreeComponent* BehaviorTreeComponent;

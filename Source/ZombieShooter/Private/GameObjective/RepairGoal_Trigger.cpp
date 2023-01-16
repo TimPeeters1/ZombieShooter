@@ -24,24 +24,23 @@ ARepairGoal_Trigger::ARepairGoal_Trigger()
 void ARepairGoal_Trigger::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ARepairGoal* RepairGoalParent = Cast<ARepairGoal>(GetAttachParentActor());
-	if (RepairGoalParent) {
-		RepairGoalParent->RequiredRepairObjects.Add(this);
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("RepairGoal_Trigger No Parent Found!"));
-	}
 }
 
-void ARepairGoal_Trigger::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
+void ARepairGoal_Trigger::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	AGenericInteractionActor::OnStartInteract_BP_Implementation(InstigatingActor);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARepairGoal_Trigger, bRepaired);
+}
+
+void ARepairGoal_Trigger::OnStartInteract_RPC_Implementation(AActor* InstigatingActor)
+{
+	AGenericInteractionActor::OnStartInteract_RPC_Implementation(InstigatingActor);
 
 	if (bRepaired) return;
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
-	if (PlayerPawn) { 
+	if (PlayerPawn) {
 		ARepairObject* DesiredRepairObject = nullptr;
 		for (uint8 i = 0; i < PlayerPawn->GetInventoryComponent()->EquippedRepairObjects.Num(); i++)
 		{
@@ -50,17 +49,23 @@ void ARepairGoal_Trigger::OnStartInteract_BP_Implementation(AActor* InstigatingA
 		}
 
 		if (DesiredRepairObject != nullptr) {
+
+			if (bHolddown) return;
+
 			PlayerPawn->GetInventoryComponent()->RemoveObjectFromInventory(DesiredRepairObject);
 
-			if(Cast<APawn>(InstigatingActor))
+			if (Cast<APawn>(InstigatingActor))
 				OnRepairedObject(Cast<APawn>(InstigatingActor));
+		}
+		else {
+			OnStopInteract(InstigatingActor);
 		}
 	}
 }
 
-void ARepairGoal_Trigger::StartHover_BP_Implementation(AActor* InstigatingActor)
+void ARepairGoal_Trigger::StartHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StartHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StartHover_RPC_Implementation(InstigatingActor);
 
 	if (bRepaired) {
 		StopHover(InstigatingActor);
@@ -72,10 +77,10 @@ void ARepairGoal_Trigger::StartHover_BP_Implementation(AActor* InstigatingActor)
 		PlayerPawn->OnStartHover(ObjectHoverText);
 	}
 }
- 
-void ARepairGoal_Trigger::StopHover_BP_Implementation(AActor* InstigatingActor)
+
+void ARepairGoal_Trigger::StopHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StopHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StopHover_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
@@ -83,17 +88,51 @@ void ARepairGoal_Trigger::StopHover_BP_Implementation(AActor* InstigatingActor)
 	}
 }
 
-
-void ARepairGoal_Trigger::OnRepairedObject_Implementation(APawn* InstigatingActor)
+void ARepairGoal_Trigger::OnCompleteHolddown_RPC_Implementation(AActor* InstigatingActor)
 {
-	if (!bRepaired) {
-		OnRepaired.Broadcast();
-		bRepaired = true;
+	AGenericInteractionActor::OnCompleteHolddown_RPC_Implementation(InstigatingActor);
 
-		ARepairGoal* RepairGoalParent = Cast<ARepairGoal>(GetAttachParentActor());
-		if (RepairGoalParent) {
-			RepairGoalParent->OnRepairedObject(InstigatingActor);
+	if (!bHolddown) return;
+
+	if (bRepaired) return;
+
+	if (!InstigatingActor) return;
+
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
+	if (PlayerPawn) {
+
+		ARepairObject* DesiredRepairObject = nullptr;
+		for (uint8 i = 0; i < PlayerPawn->GetInventoryComponent()->EquippedRepairObjects.Num(); i++)
+		{
+			if (PlayerPawn->GetInventoryComponent()->EquippedRepairObjects[i]->ObjectData->ObjectType == ObjectData->ObjectType)
+				DesiredRepairObject = PlayerPawn->GetInventoryComponent()->EquippedRepairObjects[i];
+		}
+
+		if (DesiredRepairObject != nullptr) {
+			PlayerPawn->GetInventoryComponent()->RemoveObjectFromInventory(DesiredRepairObject);
+
+			OnRepairedObject(PlayerPawn);
 		}
 	}
 }
+
+void ARepairGoal_Trigger::OnRepairedObject(APawn* InstigatingActor)
+{
+	if (!bRepaired) {
+		ARepairGoal* RepairGoalParent = Cast<ARepairGoal>(GetAttachParentActor());
+		if (RepairGoalParent) {
+			bRepaired = true;
+			RepairGoalParent->OnRepairedVehicle(InstigatingActor);
+		}
+	}
+
+	OnRepaired.Broadcast();
+}
+
+void ARepairGoal_Trigger::OnRep_Repaired()
+{
+	if(bRepaired)
+		OnRepaired.Broadcast();
+}
+
 

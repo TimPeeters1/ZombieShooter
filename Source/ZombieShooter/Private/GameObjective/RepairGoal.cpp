@@ -23,30 +23,31 @@ void ARepairGoal::BeginPlay()
 		TextVisualUpdate();
 }
 
-
-void ARepairGoal::OnRep_RepairAmount()
+void ARepairGoal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	TextVisualUpdate();
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARepairGoal, bRepaired);
 }
 
-
-void ARepairGoal::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
+void ARepairGoal::OnStartInteract_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::OnStartInteract_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::OnStartInteract_RPC_Implementation(InstigatingActor);
 
-	if (!bRepaired) return;
+	if (bRepaired) {
 
-	//Win Condition when all objectives repaired.
-	AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
-	TArray<APawn*> WinningActors = { Cast<APawn>(InstigatingActor) };
+		//Win Condition when all objectives repaired.
+		AGameMode_Main* GameMode = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
+		TArray<APawn*> WinningActors = { Cast<APawn>(InstigatingActor) };
 
-	if (GameMode)
-		GameMode->EndGameWin(WinningActors);
+		if (GameMode)
+			GameMode->EndGameWin(WinningActors);
+	}
 }
 
-void ARepairGoal::StartHover_BP_Implementation(AActor* InstigatingActor)
+void ARepairGoal::StartHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StartHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StartHover_RPC_Implementation(InstigatingActor);
 
 	if (!bRepaired) {
 		StopHover(InstigatingActor);
@@ -59,16 +60,15 @@ void ARepairGoal::StartHover_BP_Implementation(AActor* InstigatingActor)
 	}
 }
 
-void ARepairGoal::StopHover_BP_Implementation(AActor* InstigatingActor)
+void ARepairGoal::StopHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StopHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StopHover_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
 		PlayerPawn->OnStopHover();
 	}
 }
-
 
 void ARepairGoal::TextVisualUpdate()
 {
@@ -88,7 +88,14 @@ void ARepairGoal::TextVisualUpdate()
 	RepairProgressText->SetText(FText::FromString(RepairCompletion));
 }
 
-void ARepairGoal::OnRepairedObject_Implementation(APawn* InstigatingActor)
+void ARepairGoal::OnRep_RepairStatus()
+{
+	TextVisualUpdate();
+	if (bRepaired)
+		StartVehicle();
+}
+
+void ARepairGoal::OnRepairedVehicle(APawn* InstigatingActor)
 {
 	TextVisualUpdate();
 
@@ -99,6 +106,9 @@ void ARepairGoal::OnRepairedObject_Implementation(APawn* InstigatingActor)
 	}
 
 	bRepaired = true;
+	StartVehicle();
 }
+
+
 
 

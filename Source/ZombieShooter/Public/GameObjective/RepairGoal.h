@@ -26,31 +26,33 @@ public:
 		UMetaSoundSource* VehicleRepairSound;
 
 protected:
-	UPROPERTY(Category = "RepairMechanic", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(ReplicatedUsing = OnRep_RepairStatus, BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 		bool bRepaired;
 
-	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Components", meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* Mesh;
 
-	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Components", meta = (AllowPrivateAccess = "true"))
 		UTextRenderComponent* RepairProgressText;
 
-	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void OnStartInteract_RPC_Implementation(AActor* InstigatingActor) override;
 
-	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void StartHover_RPC_Implementation(AActor* InstigatingActor) override;
 
-	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
-
-	//Visuals
-	void TextVisualUpdate();
-
-public:
-	UFUNCTION(BlueprintNativeEvent, Category = "RepairObject")
-		void OnRepairedObject(APawn* InstigatingActor);
-	void OnRepairedObject_Implementation(APawn* InstigatingActor);
-
-	UFUNCTION()
-		void OnRep_RepairAmount();
+	virtual void StopHover_RPC_Implementation(AActor* InstigatingActor) override;
 
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void TextVisualUpdate();
+
+	UFUNCTION()
+	void OnRep_RepairStatus();
+
+public:
+	void OnRepairedVehicle(APawn* InstigatingActor);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "RepairObject")
+		void StartVehicle();
 };

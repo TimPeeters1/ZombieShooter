@@ -233,8 +233,8 @@ void APlayerPawn::OnStartInteraction()
 
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerStartInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
-	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->OnStartInteract(this);
+	//if (InteractingActor)
+		//Cast<IInteractableObjectInterface>(InteractingActor)->OnStartInteract(this);
 
 }
 
@@ -245,8 +245,8 @@ void APlayerPawn::OnStopInteraction() {
 
 	//This Could be a little overdone, as this is also called from the Server RPC (ServerStopInteraction). 
 	//but as lag would have it, the earlier the actor responds, the better.. right?
-	if (InteractingActor && !UKismetSystemLibrary::IsServer(GetWorld()))
-		Cast<IInteractableObjectInterface>(InteractingActor)->OnStopInteract(this);
+	//if (InteractingActor)
+		//Cast<IInteractableObjectInterface>(InteractingActor)->OnStopInteract(this);
 }
 
 void APlayerPawn::ServerStartInteraction_Implementation()

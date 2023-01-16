@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthSpawned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthPickup);
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class ZOMBIESHOOTER_API AHealthPickupObject : public AGenericInteractionActor
@@ -26,7 +26,7 @@ private:
 	AHealthPickupObject();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Visuals", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* Mesh;
+		UStaticMeshComponent* Mesh;
 
 	virtual void BeginPlay() override;
 public:
@@ -40,10 +40,10 @@ public:
 		void AddHealthToActor(AActor* ActorToAdd);
 	void AddHealthToActor_Implementation(AActor* ActorToAdd);
 
-	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void OnStartInteract_RPC_Implementation(AActor* InstigatingActor) override;
 
-	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
-	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void StartHover_RPC_Implementation(AActor* InstigatingActor) override;
+	virtual void StopHover_RPC_Implementation(AActor* InstigatingActor) override;
 
 
 	UPROPERTY()

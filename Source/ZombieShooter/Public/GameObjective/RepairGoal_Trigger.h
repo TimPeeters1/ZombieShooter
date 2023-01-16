@@ -30,6 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* ObjectMesh;
 
+	UPROPERTY(ReplicatedUsing = OnRep_Repaired, BlueprintReadOnly, EditAnywhere)
 	bool bRepaired;
 
 protected:
@@ -38,18 +39,22 @@ protected:
 	UPROPERTY(Category = "Components", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UTextRenderComponent* RepairObjectText;
 
-	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
+	UFUNCTION()
+	void OnRepairedObject(APawn* InstigatingActor);
 
-	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
-	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
-	
-	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
-		FOnRepairedObject OnRepaired;
+	UFUNCTION()
+	void OnRep_Repaired();
 
-public:
-	UFUNCTION(NetMulticast, Reliable)
-		void OnRepairedObject(APawn* InstigatingActor);
-	void OnRepairedObject_Implementation(APawn* InstigatingActor);
+	virtual void OnStartInteract_RPC_Implementation(AActor* InstigatingActor) override;
+
+	virtual void StartHover_RPC_Implementation(AActor* InstigatingActor) override;
+	virtual void StopHover_RPC_Implementation(AActor* InstigatingActor) override;
+
+	virtual void OnCompleteHolddown_RPC_Implementation(AActor* InstigatingActor) override;
 
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
+		FOnRepairedObject OnRepaired;
 };

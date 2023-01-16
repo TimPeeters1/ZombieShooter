@@ -90,9 +90,9 @@ void AWeaponObject::Dequip_Implementation()
 	WeaponModel->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
-void AWeaponObject::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
+void AWeaponObject::OnStartInteract_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::OnStartInteract_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::OnStartInteract_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
@@ -100,9 +100,9 @@ void AWeaponObject::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
 	}
 }
 
-void AWeaponObject::StartHover_BP_Implementation(AActor* InteractionInstigator)
+void AWeaponObject::StartHover_RPC_Implementation(AActor* InteractionInstigator)
 {
-	AGenericInteractionActor::StartHover_BP_Implementation(InteractionInstigator);
+	AGenericInteractionActor::StartHover_RPC_Implementation(InteractionInstigator);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
 	if (PlayerPawn) {
@@ -110,9 +110,9 @@ void AWeaponObject::StartHover_BP_Implementation(AActor* InteractionInstigator)
 	}
 }
 
-void AWeaponObject::StopHover_BP_Implementation(AActor* InteractionInstigator)
+void AWeaponObject::StopHover_RPC_Implementation(AActor* InteractionInstigator)
 {
-	AGenericInteractionActor::StopHover_BP_Implementation(InteractionInstigator);
+	AGenericInteractionActor::StopHover_RPC_Implementation(InteractionInstigator);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InteractionInstigator);
 	if (PlayerPawn) {

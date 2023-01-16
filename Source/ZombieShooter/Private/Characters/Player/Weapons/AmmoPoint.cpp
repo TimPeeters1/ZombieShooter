@@ -32,16 +32,16 @@ void AAmmoPoint::AddAmmoToActor_Implementation(AActor* ActorToAdd)
 		
 }
 
-void AAmmoPoint::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
+void AAmmoPoint::OnStartInteract_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::OnStartInteract_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::OnStartInteract_RPC_Implementation(InstigatingActor);
 	
 	AddAmmoToActor(InstigatingActor);
 }
 
-void AAmmoPoint::StartHover_BP_Implementation(AActor* InstigatingActor)
+void AAmmoPoint::StartHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StartHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StartHover_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
@@ -49,9 +49,9 @@ void AAmmoPoint::StartHover_BP_Implementation(AActor* InstigatingActor)
 	}
 }
 
-void AAmmoPoint::StopHover_BP_Implementation(AActor* InstigatingActor)
+void AAmmoPoint::StopHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StopHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StopHover_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {

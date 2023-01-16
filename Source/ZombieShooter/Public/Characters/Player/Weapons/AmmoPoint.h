@@ -30,10 +30,10 @@ public:
 	void AddAmmoToActor(AActor* ActorToAdd);
 	void AddAmmoToActor_Implementation(AActor* ActorToAdd);
 
-	virtual void OnStartInteract_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void OnStartInteract_RPC_Implementation(AActor* InstigatingActor) override;
 
-	virtual void StartHover_BP_Implementation(AActor* InstigatingActor) override;
-	virtual void StopHover_BP_Implementation(AActor* InstigatingActor) override;
+	virtual void StartHover_RPC_Implementation(AActor* InstigatingActor) override;
+	virtual void StopHover_RPC_Implementation(AActor* InstigatingActor) override;
 	
 	/*
 	UFUNCTION()

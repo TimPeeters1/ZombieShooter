@@ -26,4 +26,5 @@ public:
 
 	virtual	void StartHover(AActor* Instigator);
 	virtual	void StopHover(AActor* Instigator);
+
 };

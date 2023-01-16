@@ -13,9 +13,9 @@ ARepairObject::ARepairObject()
 	SetRootComponent(ObjectMesh);
 }
 
-void ARepairObject::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
+void ARepairObject::OnStartInteract_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::OnStartInteract_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::OnStartInteract_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
@@ -24,9 +24,9 @@ void ARepairObject::OnStartInteract_BP_Implementation(AActor* InstigatingActor)
 	}
 }
 
-void ARepairObject::StartHover_BP_Implementation(AActor* InstigatingActor)
+void ARepairObject::StartHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StartHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StartHover_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {
@@ -34,9 +34,9 @@ void ARepairObject::StartHover_BP_Implementation(AActor* InstigatingActor)
 	}
 }
 
-void ARepairObject::StopHover_BP_Implementation(AActor* InstigatingActor)
+void ARepairObject::StopHover_RPC_Implementation(AActor* InstigatingActor)
 {
-	AGenericInteractionActor::StopHover_BP_Implementation(InstigatingActor);
+	AGenericInteractionActor::StopHover_RPC_Implementation(InstigatingActor);
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(InstigatingActor);
 	if (PlayerPawn) {

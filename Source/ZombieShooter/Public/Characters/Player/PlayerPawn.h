@@ -50,11 +50,14 @@ public:
 
 	UPROPERTY(Replicated, Category = "Movement", VisibleAnywhere, BlueprintReadOnly)
 	bool bSprinting;
-
+	
+	UPROPERTY(Replicated, Category = "Movement", VisibleAnywhere, BlueprintReadOnly)
+	FRotator CameraRotation;
+	
 protected:
 
 	//First Person Camera
-	UPROPERTY(Category = "Components|Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Replicated, Category = "Components|Character", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UCameraComponent* FP_PlayerCamera;
 
 	//Camera Arm for Simple Weapon Sway.
@@ -168,6 +171,7 @@ protected:
 public:
 	void OnSetPlayerViewMode();
 
+	
 	//Callback for IInteractableObjectInterface when starting hover
 	UFUNCTION(BlueprintImplementableEvent)
 		void OnStartHover(const FString& InteractionMessage);

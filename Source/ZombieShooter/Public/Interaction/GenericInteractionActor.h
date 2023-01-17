@@ -21,7 +21,12 @@ class ZOMBIESHOOTER_API AGenericInteractionActor : public AActor, public IIntera
 
 public:
 	AGenericInteractionActor();
-
+	/*
+	* Text Displayed to player when hovering over object.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "InteractionSettings")
+	FString ObjectHoverText = "Press 'E' to Interact";
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InteractionSettings")
 		bool bHolddown;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InteractionSettings")
@@ -32,11 +37,7 @@ public:
 
 	FTimerDelegate HolddownDelegate;
 
-	/*
-	* Text Displayed to player when hovering over object.
-	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		FString ObjectHoverText = "Press 'E' to Interact";
+
 
 protected:
 	bool bIsHolding;

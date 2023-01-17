@@ -297,8 +297,12 @@ void UPlayerWeaponComponent::SingleFire()
 
 		//Deduce from local var, to update via RepNotify! (Reduces snappy shooting over network)
 		ActiveWeapon->LocalCurrentAmmo--;
-
+		
 		OnFireEvent_FP.Broadcast();
+	}else
+	{
+		bIsFiring = false;
+		OnReload();
 	}
 }
 
@@ -388,12 +392,14 @@ void UPlayerWeaponComponent::OnReload()
 	if (!ActiveWeapon) return;
 	if (ActiveWeapon->WeaponData->WeaponBehaviour == EWeaponType::MELEE) return;
 	if (bIsFiring || bReloading) return;
-
+	
+	if(ActiveWeapon->InventoryAmmo <= 0) return;
+	
 	GetOwner()->GetWorldTimerManager().SetTimer(ReloadTimer, this, &UPlayerWeaponComponent::ReloadWeapon, ActiveWeapon->WeaponData->ReloadTime, false, ActiveWeapon->WeaponData->ReloadTime);
 
 	if (ActiveWeapon->LocalCurrentAmmo >= 0 && ActiveWeapon->LocalCurrentAmmo < ActiveWeapon->WeaponData->MagazineSize) {
 		bReloading = true;
-
+		
 		OnReloadEvent_FP.Broadcast();
 	}
 }

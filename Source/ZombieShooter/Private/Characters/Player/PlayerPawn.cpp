@@ -103,9 +103,11 @@ void APlayerPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 
 	DOREPLIFETIME(APlayerPawn, WeaponComponent);
 	DOREPLIFETIME(APlayerPawn, InventoryComponent);
+	DOREPLIFETIME(APlayerPawn, FP_PlayerCamera);
 	DOREPLIFETIME(APlayerPawn, PlayerGameColor);
 
 	DOREPLIFETIME(APlayerPawn, bSprinting);
+	DOREPLIFETIME(APlayerPawn, CameraRotation);
 }
 
 
@@ -145,7 +147,11 @@ void APlayerPawn::OnSetPlayerViewMode()
 void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if(UKismetSystemLibrary::IsServer(GetWorld()))
+	{
+		CameraRotation = GetControlRotation();
+	}
+	
 	InteractionTrace();
 }
 
@@ -165,6 +171,7 @@ void APlayerPawn::Turn_Character(float AxisValue)
 void APlayerPawn::Look_Up(float AxisValue)
 {
 	AddControllerPitchInput(AxisValue * LookUp_Rate * FApp::GetDeltaTime());
+
 }
 
 void APlayerPawn::OnStartJump()

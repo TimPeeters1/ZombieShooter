@@ -11,7 +11,7 @@
 
 #include "PlayerController_Main.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRepPlayerColor);
+
 
 UENUM(BlueprintType)
 enum class EZombieGameWinState : uint8
@@ -26,32 +26,16 @@ class ZOMBIESHOOTER_API APlayerController_Main : public APlayerController
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
-		EZombieGameWinState PlayerEndState = EZombieGameWinState::UNDEFINED;
-
-	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
-		uint8 PlayerRemainingLives = 5;
-
-	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere)
-		FColor PlayerColor;
-
-	/*PlayerStart used by gamemode to respawn. Is only ever assigned serverside!*/
-	APlayerStart* AssignedPlayerStart;
 private:
 	APlayerController_Main();
 
 	UGameInstance_Main* GameInstance;
 	USessionSubsystem_Main* SessionSubsystem;
 
-	//Unreal Overrides
 	virtual void BeginPlay() override;
 
 	void OnPossess(APawn* InPawn) override;
 	void OnUnPossess() override;
-
-
-	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 public:
 	//INGAME Logic

@@ -92,8 +92,6 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "End Game Won"), Category = "GameState")
 		void EndGameWin(TArray<APawn*> WinningActors);
 
-
-
 	UFUNCTION()
 	void OnPlayerDeath();
 	UFUNCTION()

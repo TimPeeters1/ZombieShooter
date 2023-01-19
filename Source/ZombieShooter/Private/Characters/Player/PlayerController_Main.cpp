@@ -11,14 +11,6 @@ APlayerController_Main::APlayerController_Main() {
 	GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
 }
 
-void APlayerController_Main::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(APlayerController_Main, PlayerEndState);
-	DOREPLIFETIME(APlayerController_Main, PlayerRemainingLives);
-	DOREPLIFETIME(APlayerController_Main, PlayerColor);
-}
 
 void APlayerController_Main::BeginPlay()
 {

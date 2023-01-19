@@ -55,5 +55,6 @@ void AGameState_Main::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AGameState_Main, GameState_Replicated);
+	DOREPLIFETIME(AGameState_Main, LobbyPlayerNameList);
 	//DOREPLIFETIME(AGameState_Main, GameEndState_Replicated);
 }

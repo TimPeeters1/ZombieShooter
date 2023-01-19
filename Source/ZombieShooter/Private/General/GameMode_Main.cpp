@@ -2,6 +2,8 @@
 
 #include "General/GameInstance_Main.h"
 #include "General/GameState_Main.h"
+#include "PlayerState_Main.h"
+
 #include "Spawning/SpawnManager.h"
 
 
@@ -61,10 +63,16 @@ void AGameMode_Main::OnPostLogin(AController* NewPlayer)
 	if (GameInstance) {
 		GameInstance->PlayerControllers.Add(NewPlayer);
 
-		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(NewPlayer);
-		if (PlayerController) {
-			PlayerController->PlayerColor = PickPlayerColor_Unique();
-			PlayerController->AssignedPlayerStart = AssignPlayerStart(NewPlayer);
+		APlayerState_Main* PlayerState = NewPlayer->GetPlayerState<APlayerState_Main>();
+		if (PlayerState) {
+			PlayerState->SetPlayerName_Custom("Player" + FString::FromInt(GameInstance->PlayerControllers.Num() - 1));
+
+			PlayerState->PlayerColor = PickPlayerColor_Unique();
+
+			PlayerState->AssignedPlayerStart = AssignPlayerStart(NewPlayer);
+			//PlayerController->PlayerName = "Player" + FString::FromInt(GameInstance->PlayerControllers.Num() - 1);
+			//PlayerController->PlayerColor = ;
+
 		}
 	}
 }
@@ -124,12 +132,12 @@ APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer
 
 APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 {
-	APlayerController_Main* PlayerController = Cast<APlayerController_Main>(Controller);
+	APlayerState_Main* PlayerState_Main = Controller->GetPlayerState<APlayerState_Main>();
 	FTransform SpawnTransform = FindPlayerStart(Controller)->GetActorTransform();
 
-	if (PlayerController) {
-		if (PlayerController->AssignedPlayerStart) {
-			SpawnTransform = PlayerController->AssignedPlayerStart->GetActorTransform();
+	if (PlayerState_Main) {
+		if (PlayerState_Main->AssignedPlayerStart) {
+			SpawnTransform = PlayerState_Main->AssignedPlayerStart->GetActorTransform();
 		}
 	}
 
@@ -141,8 +149,8 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 		PlayersAliveInGame.Add(PlayerPawn);
 		PlayerPawn->GetHealthComponent()->OnDeath.AddUniqueDynamic(this, &AGameMode_Main::OnPlayerDeath);
 
-		if (PlayerController) {
-			PlayerPawn->PlayerGameColor = PlayerController->PlayerColor;
+		if (PlayerState_Main) {
+			PlayerPawn->PlayerGameColor = PlayerState_Main->PlayerColor;
 			PlayerPawn->OnRep_PlayerColor();
 		}
 	}
@@ -203,9 +211,9 @@ void AGameMode_Main::EndGameLost()
 
 	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
 	{
-		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(GameInstance->PlayerControllers[i]);
-		if (PlayerController) {
-			PlayerController->PlayerEndState = EZombieGameWinState::LOST;
+		APlayerState_Main* PlayerState = GameInstance->PlayerControllers[i]->GetPlayerState<APlayerState_Main>();
+		if (PlayerState) {
+			PlayerState->PlayerEndState = EZombieGameWinState::LOST;
 		}
 		//Cast<APlayerController_Main>(GameInstance->PlayerControllers[i])->PlayerEndState = EZombieGameWinState::LOST;
 	}
@@ -219,17 +227,17 @@ void AGameMode_Main::EndGameWin(TArray<APawn*> WinningActors)
 
 	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
 	{
-		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(GameInstance->PlayerControllers[i]);
-		if (PlayerController) {
-			PlayerController->PlayerEndState = EZombieGameWinState::LOST;
+		APlayerState_Main* PlayerState = GameInstance->PlayerControllers[i]->GetPlayerState<APlayerState_Main>();
+		if (PlayerState) {
+			PlayerState->PlayerEndState = EZombieGameWinState::LOST;
 		}
 	}
 
 	for (uint8 j = 0; j < WinningActors.Num(); j++)
 	{
-		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(WinningActors[j]->GetController());
-		if (PlayerController) {
-			PlayerController->PlayerEndState = EZombieGameWinState::WON;
+		APlayerState_Main* PlayerState = GameInstance->PlayerControllers[j]->GetPlayerState<APlayerState_Main>();
+		if (PlayerState) {
+			PlayerState->PlayerEndState = EZombieGameWinState::WON;
 		}
 	}
 

@@ -26,6 +26,10 @@ public:
 	UPROPERTY(ReplicatedUsing = OnReplicatedGameState, EditAnywhere, BlueprintReadOnly)
 		EZombieGameState GameState_Replicated;
 
+	//---Player Related Variables---
+	UPROPERTY(Replicated, Category = "Players", VisibleAnywhere, BlueprintReadOnly)
+		FString LobbyPlayerNameList;
+
 	//UPROPERTY(ReplicatedUsing = OnReplicatedEndState, EditAnywhere, BlueprintReadOnly)
 		//EZombieGameEndGameState GameEndState_Replicated;
 
@@ -34,6 +38,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDelegates")
 		FOnEndStateChanged OnEndStateChanged;
+
+
 
 public:
 	UFUNCTION()

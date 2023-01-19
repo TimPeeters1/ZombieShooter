@@ -1,11 +1,14 @@
 
 #include "Characters/Player/PlayerPawn.h"
+#include "Components/CapsuleComponent.h"
 
 #include "General/GameMode_Main.h"
 #include "Characters/Player/PlayerDeathCamera.h"
-#include "Components/CapsuleComponent.h"
-#include "GameObjective/RepairGoal.h"
+
 #include "GameFramework/GameModeBase.h"
+#include "GameObjective/RepairGoal.h"
+#include "PlayerState_Main.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -368,14 +371,14 @@ void APlayerPawn::OnDeath()
 		OnPlayerDeathLocal.Broadcast();
 	}
 
-	//Deduct a life from the remaining amount in PlayerController_Main
+	//Deduct a life from the remaining amount in PlayerState
 	if (UKismetSystemLibrary::IsServer(GetWorld())) {
-		APlayerController_Main* PlayerController = Cast<APlayerController_Main>(GetController());
-		if (PlayerController) {
-			PlayerController->PlayerRemainingLives--;
-			if (PlayerController->PlayerRemainingLives <= 0) {
-				PlayerController->PlayerRemainingLives = 0;
-				PlayerController->PlayerEndState = EZombieGameWinState::LOST;
+		APlayerState_Main* PlayerState_Main = GetController()->GetPlayerState<APlayerState_Main>();
+		if (PlayerState_Main) {
+			PlayerState_Main->PlayerRemainingLives--;
+			if (PlayerState_Main->PlayerRemainingLives <= 0) {
+				PlayerState_Main->PlayerRemainingLives = 0;
+				PlayerState_Main->PlayerEndState = EZombieGameWinState::LOST;
 			}
 		}
 	}

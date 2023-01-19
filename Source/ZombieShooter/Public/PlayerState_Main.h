@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Characters/Player/PlayerController_Main.h"
 #include "GameFramework/PlayerState.h"
 
 #include "General/GameInstance_Main.h"
@@ -42,4 +43,7 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 		void SetPlayerName_Custom(const FString& InName);
 	void SetPlayerName_Custom_Implementation(const FString& InName);
+	
+	/** Copy properties which need to be saved in inactive PlayerState */
+	virtual void CopyProperties(APlayerState* PlayerState);
 };

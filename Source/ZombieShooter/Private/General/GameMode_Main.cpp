@@ -3,6 +3,7 @@
 #include "General/GameInstance_Main.h"
 #include "General/GameState_Main.h"
 #include "PlayerState_Main.h"
+#include "Characters/Player/PlayerController_Main.h"
 
 #include "Spawning/SpawnManager.h"
 
@@ -32,7 +33,7 @@ void AGameMode_Main::BeginPlay()
 void AGameMode_Main::OverrideZombieSpawn()
 {
 	if (GameInstance->SpawnManager) {
-		GameInstance->SetGameState(EZombieGameState::INGAME);
+		GameInstance->SetZombieGameState(EZombieGameState::INGAME);
 		GameInstance->SpawnManager->StartSpawningRoutines(0.2f);
 
 		if (GEngine)
@@ -117,7 +118,7 @@ APawn* AGameMode_Main::SpawnDefaultPawnFor_Implementation(AController* NewPlayer
 	}
 
 	if (GameInstance) {
-		switch (GameInstance->GetGameState())
+		switch (GameInstance->GetZombieGameState())
 		{
 		case EZombieGameState::PRE_GAME:
 			return SpawnGamePawn(NewPlayer);
@@ -146,7 +147,7 @@ APawn* AGameMode_Main::SpawnGamePawn(AController* Controller)
 
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(NewPawn);
 	if (PlayerPawn) {
-		PlayersAliveInGame.Add(PlayerPawn);
+		PlayersInGame.Add(PlayerPawn);
 		PlayerPawn->GetHealthComponent()->OnDeath.AddUniqueDynamic(this, &AGameMode_Main::OnPlayerDeath);
 
 		if (PlayerState_Main) {
@@ -172,14 +173,14 @@ void AGameMode_Main::StartLobby(bool isLANSession)
 	const FString URL = LobbyLevel.ToString() + "?Listen";
 	GetWorld()->ServerTravel(URL, true, false);
 
-	GameInstance->SetGameState(EZombieGameState::LOBBY);
+	GameInstance->SetZombieGameState(EZombieGameState::LOBBY);
 
 	OnLobbyStart.Broadcast();
 }
 
 void AGameMode_Main::StartGame()
 {
-	GameInstance->SetGameState(EZombieGameState::PRE_GAME);
+	GameInstance->SetZombieGameState(EZombieGameState::PRE_GAME);
 
 	//Travel to GameMap
 	bUseSeamlessTravel = true;
@@ -207,11 +208,11 @@ void AGameMode_Main::ShuffleArray(TArray<AActor*>& inArray)
 
 void AGameMode_Main::EndGameLost()
 {
-	GameInstance->SetGameState(EZombieGameState::POSTGAME);
-
-	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
+	GameInstance->SetZombieGameState(EZombieGameState::POSTGAME);
+	
+	for (uint8 i = 0; i < GetGameState<AGameState_Main>()->PlayerArray.Num(); i++)
 	{
-		APlayerState_Main* PlayerState = GameInstance->PlayerControllers[i]->GetPlayerState<APlayerState_Main>();
+		APlayerState_Main* PlayerState = Cast<APlayerState_Main>(GetGameState<AGameState_Main>()->PlayerArray[i]);
 		if (PlayerState) {
 			PlayerState->PlayerEndState = EZombieGameWinState::LOST;
 		}
@@ -223,19 +224,20 @@ void AGameMode_Main::EndGameLost()
 
 void AGameMode_Main::EndGameWin(TArray<APawn*> WinningActors)
 {
-	GameInstance->SetGameState(EZombieGameState::POSTGAME);
+	GameInstance->SetZombieGameState(EZombieGameState::POSTGAME);
 
-	for (uint8 i = 0; i < GameInstance->PlayerControllers.Num(); i++)
+
+	for (uint8 i = 0; i < GetGameState<AGameState_Main>()->PlayerArray.Num(); i++)
 	{
-		APlayerState_Main* PlayerState = GameInstance->PlayerControllers[i]->GetPlayerState<APlayerState_Main>();
+		APlayerState_Main* PlayerState = Cast<APlayerState_Main>(GetGameState<AGameState_Main>()->PlayerArray[i]);
 		if (PlayerState) {
 			PlayerState->PlayerEndState = EZombieGameWinState::LOST;
 		}
 	}
-
+	
 	for (uint8 j = 0; j < WinningActors.Num(); j++)
 	{
-		APlayerState_Main* PlayerState = GameInstance->PlayerControllers[j]->GetPlayerState<APlayerState_Main>();
+		APlayerState_Main* PlayerState = Cast<APlayerState_Main>(WinningActors[j]->GetPlayerState());
 		if (PlayerState) {
 			PlayerState->PlayerEndState = EZombieGameWinState::WON;
 		}
@@ -246,16 +248,16 @@ void AGameMode_Main::EndGameWin(TArray<APawn*> WinningActors)
 
 void AGameMode_Main::OnPlayerDeath()
 {
-	for (uint8 i = 0; i < PlayersAliveInGame.Num(); i++)
+	for (uint8 i = 0; i < PlayersInGame.Num(); i++)
 	{
-		if (PlayersAliveInGame[i]->GetHealthComponent()->IsActorDead())
+		if (PlayersInGame[i]->GetHealthComponent()->IsActorDead())
 		{
-			PlayersDeadInGame.Add(PlayersAliveInGame[i]);
-			PlayersAliveInGame.RemoveAt(i);
+			PlayersDeadInGame.Add(PlayersInGame[i]);
+			PlayersInGame.RemoveAt(i);
 		}
 	}
 
-	if (PlayersAliveInGame.IsEmpty())
+	if (PlayersInGame.IsEmpty())
 	{
 		EndGameLost();
 	}
@@ -264,7 +266,7 @@ void AGameMode_Main::OnPlayerDeath()
 void AGameMode_Main::OnPlayerPawnSpawned(APawn* NewPawn)
 {
 	if (NumTravellingPlayers <= 0) {
-		GameInstance->SetGameState(EZombieGameState::INGAME);
+		GameInstance->SetZombieGameState(EZombieGameState::INGAME);
 
 		if (GameInstance->SpawnManager) {
 			GameInstance->SpawnManager->StartSpawningRoutines(0.2f);

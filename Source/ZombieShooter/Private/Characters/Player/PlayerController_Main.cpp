@@ -7,7 +7,8 @@
 #include "General/GameMode_Main.h"
 #include "Kismet/KismetStringLibrary.h"
 
-APlayerController_Main::APlayerController_Main() {
+APlayerController_Main::APlayerController_Main()
+{
 	GameInstance = Cast<UGameInstance_Main>(UGameplayStatics::GetGameInstance(GetWorld()));
 }
 
@@ -15,7 +16,8 @@ APlayerController_Main::APlayerController_Main() {
 void APlayerController_Main::BeginPlay()
 {
 	SessionSubsystem = GameInstance->GetSubsystem<USessionSubsystem_Main>();
-	if (SessionSubsystem) {
+	if (SessionSubsystem)
+	{
 		SessionSubsystem->OnFindSessionsCompleteEvent.AddUObject(this, &APlayerController_Main::OnFoundSessions);
 		SessionSubsystem->OnJoinGameSessionCompleteEvent.AddUObject(this, &APlayerController_Main::OnJoinedSession);
 	}
@@ -30,8 +32,10 @@ void APlayerController_Main::OnPossess(APawn* InPawn)
 
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
-	if (GameInstance) {
-		if (!GameInstance->PlayerPawns.Contains(InPawn)) {
+	if (GameInstance)
+	{
+		if (!GameInstance->PlayerPawns.Contains(InPawn))
+		{
 			GameInstance->PlayerPawns.Add(InPawn);
 		}
 	}
@@ -43,7 +47,8 @@ void APlayerController_Main::OnUnPossess()
 
 	if (!UKismetSystemLibrary::IsServer(GetWorld())) return;
 
-	if (GameInstance->PlayerPawns.Contains(this->GetPawn())) {
+	if (GameInstance->PlayerPawns.Contains(this->GetPawn()))
+	{
 		GameInstance->PlayerPawns.Remove(this->GetPawn());
 	}
 }
@@ -57,13 +62,16 @@ void APlayerController_Main::FindRandomSession(bool isLanSearch)
 
 void APlayerController_Main::OnFoundSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool Successful)
 {
-	if (SessionSubsystem) {
-		if (Successful && SessionResults.Num() > 0){
+	if (SessionSubsystem)
+	{
+		if (Successful && SessionResults.Num() > 0)
+		{
 			SessionSubsystem->JoinGameSession(SessionResults[0]);
 			if (GEngine)
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Joining Session!");
 		}
-		else {
+		else
+		{
 			if (GEngine)
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "No Session(s) Found!");
 		}
@@ -88,7 +96,9 @@ void APlayerController_Main::InitRespawn()
 
 	GetPawn()->Destroy();
 
-	UGameplayStatics::GetGameMode(GetWorld())->RestartPlayer(this);
+	AGameMode_Main* GameMode_Main = Cast<AGameMode_Main>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode_Main)
+	{
+		GameMode_Main->RestartPlayer(this);
+	}
 }
-
-

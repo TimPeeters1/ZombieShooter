@@ -17,3 +17,13 @@ void APlayerState_Main::SetPlayerName_Custom_Implementation(const FString& InNam
 {
 	PlayerName_Custom = InName;
 }
+
+void APlayerState_Main::CopyProperties(APlayerState* PlayerState)
+{
+	Super::CopyProperties(PlayerState);
+	if (APlayerState_Main* NewPlayerState = Cast<APlayerState_Main>(PlayerState))
+	{
+		NewPlayerState->PlayerName_Custom = PlayerName_Custom;
+		NewPlayerState->PlayerColor = PlayerColor;
+	}
+}

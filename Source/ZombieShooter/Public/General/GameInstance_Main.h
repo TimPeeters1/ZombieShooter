@@ -42,10 +42,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set GameState"), Category = "GameState")
-		void SetGameState(EZombieGameState newState);
+		void SetZombieGameState(EZombieGameState newState);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get GameState"), Category = "GameState")
-		EZombieGameState GetGameState() const;
+		EZombieGameState GetZombieGameState() const;
 
 	void HandleGameState();
 };

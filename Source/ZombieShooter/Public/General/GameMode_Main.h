@@ -1,12 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/GameEngine.h"
 #include "GameFramework/GameMode.h"
 #include "GameFramework/PlayerStart.h"
 
 #include "GameInstance_Main.h"
-#include "Characters/Player/PlayerController_Main.h"
 #include "Characters/Player/PlayerPawn.h"
 #include "SessionSubsystem_Main.h"
 
@@ -56,7 +54,7 @@ protected:
 	int32 MaxNumberOfPlayers = 4;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
-		TArray<APlayerPawn*> PlayersAliveInGame;
+		TArray<APlayerPawn*> PlayersInGame;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 		TArray<APlayerPawn*> PlayersDeadInGame;

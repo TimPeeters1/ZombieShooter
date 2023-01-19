@@ -31,6 +31,7 @@ void AHealthPickupObject::AddHealthToActor_Implementation(AActor* ActorToAdd)
 		{
 			if (PlayerPawn->GetHealthComponent()->Health < PlayerPawn->GetHealthComponent()->MaxHealth) {
 				PlayerPawn->GetHealthComponent()->AddHealth(HealthToAdd);
+		
 				OnHealthPickup.Broadcast();
 				SetLifeSpan(0.1f);
 			}
@@ -43,6 +44,7 @@ void AHealthPickupObject::OnStartInteract_RPC_Implementation(AActor* Instigating
 	AGenericInteractionActor::OnStartInteract_RPC_Implementation(InstigatingActor);
 
 	AddHealthToActor(InstigatingActor);
+	StopHover(InstigatingActor);
 }
 
 void AHealthPickupObject::StartHover_RPC_Implementation(AActor* InstigatingActor)

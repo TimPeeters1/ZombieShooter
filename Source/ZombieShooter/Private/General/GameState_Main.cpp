@@ -8,7 +8,7 @@ AGameState_Main::AGameState_Main()
 
 	UGameInstance_Main* GameInstance = Cast<UGameInstance_Main>(GetGameInstance());
 	if (GameInstance) {
-		GameState_Replicated = GameInstance->GetGameState();
+		GameState_Replicated = GameInstance->GetZombieGameState();
 	}
 }
 

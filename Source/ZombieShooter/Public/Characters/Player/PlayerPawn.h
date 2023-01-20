@@ -86,11 +86,11 @@ protected:
 
 	/*Inventory*/
 	//Inventory Component
-	UPROPERTY(replicated, Category = "Components|Inventory", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Replicated, Category = "Components|Inventory", EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		UPlayerInventoryComponent* InventoryComponent;
 
 	//Refrence to the Interactable Actor the Player is currently looking at. (InteractionTrace)
-	UPROPERTY(Category = "Interaction", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	AActor* InteractingActor;
 
 

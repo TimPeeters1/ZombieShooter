@@ -367,9 +367,9 @@ void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 
 		ETraceTypeQuery TraceChannelQuery = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
 
-		const bool Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), StartPoint, EndPoint, 50.0f,
+		const bool Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), StartPoint, EndPoint, 100.0f,
 			TraceChannelQuery, false, ActorsToIgnore,
-			EDrawDebugTrace::None, HitArray, true, FLinearColor::Red, FLinearColor::Green, 5.f);
+			EDrawDebugTrace::ForDuration, HitArray, true, FLinearColor::Red, FLinearColor::Green, 5.f);
 
 		if (Hit) {
 			for (const FHitResult HitResult : HitArray)

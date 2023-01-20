@@ -358,8 +358,8 @@ void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 	APlayerPawn* ParentPawn = Cast<APlayerPawn>(GetOwner());
 
 	if (ParentPawn) {
-		const FVector StartPoint = ParentPawn->GetFP_WeaponModel()->GetSocketLocation("TraceStart");
-		const FVector EndPoint = ParentPawn->GetFP_WeaponModel()->GetSocketLocation("TraceEnd");
+		FVector StartPoint = ParentPawn->GetActorLocation();
+		FVector EndPoint = ParentPawn->GetActorLocation() + (ParentPawn->GetActorForwardVector() * 100.f);
 
 		TArray<AActor*> ActorsToIgnore = { this->GetOwner() };
 
@@ -367,9 +367,9 @@ void UPlayerWeaponComponent::ServerMeleeWeapon_Implementation()
 
 		ETraceTypeQuery TraceChannelQuery = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
 
-		const bool Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), StartPoint, EndPoint, 100.0f,
+		const bool Hit = UKismetSystemLibrary::SphereTraceMulti(GetWorld(), StartPoint, EndPoint, 80.0f,
 			TraceChannelQuery, false, ActorsToIgnore,
-			EDrawDebugTrace::ForDuration, HitArray, true, FLinearColor::Red, FLinearColor::Green, 5.f);
+			EDrawDebugTrace::None, HitArray, true, FLinearColor::Red, FLinearColor::Green, 5.f);
 
 		if (Hit) {
 			for (const FHitResult HitResult : HitArray)

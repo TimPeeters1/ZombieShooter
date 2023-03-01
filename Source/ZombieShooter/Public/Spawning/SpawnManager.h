@@ -78,4 +78,7 @@ public:
 
 	void DecreaseAI_Population();
 
+	UFUNCTION(BlueprintCallable, meta = (Displayname = "ToggleZombieSpawning"), Category = "Spawning")
+	void ToggleZombieSpawning();
+
 };

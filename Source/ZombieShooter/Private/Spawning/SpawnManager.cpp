@@ -147,4 +147,20 @@ void ASpawnManager::DecreaseAI_Population()
 		Current_AI_Population--;
 }
 
+void ASpawnManager::ToggleZombieSpawning()
+{
+	if (GetWorldTimerManager().IsTimerPaused(PopCheckTimer)) {
+		GetWorldTimerManager().UnPauseTimer(PopCheckTimer);
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Unpause ZombieSpawning!")));
+	}
+	else {
+		GetWorldTimerManager().PauseTimer(PopCheckTimer);
+
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Purple, FString::Printf(TEXT("Pause ZombieSpawning!")));
+	}
+}
+
 
